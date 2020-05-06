@@ -1,3 +1,6 @@
+
+
+
 @import url('https://fonts.googleapis.com/css?family=Dosis|Gayathri:100,400|Work+Sans:300,400,700&display=swap');
 
 * {
@@ -324,4 +327,40 @@ p a {
 
 .table-column .table-data:nth-child(2n) {
     background-color: #eee;
+}
+
+/* page d'accueil */
+
+.home h1{
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 100px;
+}
+.home h2{
+    margin-top: 20px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 2em;
+}
+
+.button-home{
+    margin-bottom: 50px;
+}
+.button-home button{
+    display: block;
+    margin: auto;
+    padding: 5px 15px 5px 15px;
+    border : none;
+    border-radius: 20px;
+}
+.button-home .inscrire{
+    background-color: rgb(226, 82, 99);
+    color: #fff
+}
+.button-home .ensavoirplus{
+      background-color: #fff;
+    color:rgb(226, 82, 99);
+    border: 1px solid rgb(226, 82, 99);
 }
