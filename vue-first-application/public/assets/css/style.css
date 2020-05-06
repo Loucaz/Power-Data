@@ -48,6 +48,10 @@ p a {
     background-color: #57ACE5 !important;
     border: 10px solid #7EBCE6;
 }
+.table-green {
+    background-color: rgb(87, 229, 106) !important;
+    border: 10px solid rgb(126, 230, 149);
+}
 
 .navigation-bar {
     width: 300px;
@@ -344,6 +348,12 @@ p a {
     font-weight: 500;
     font-size: 2em;
 }
+.home h3{
+    margin-top: 30px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 1.5em;
+}
 
 .button-home{
     margin-bottom: 50px;
@@ -363,4 +373,36 @@ p a {
       background-color: #fff;
     color:rgb(226, 82, 99);
     border: 1px solid rgb(226, 82, 99);
+}
+.video{
+    height: 40vh;
+    margin-top: 30px;
+    background-color: #E85868;
+}
+.tuto{
+    height: 100%;
+    width: 100%;
+    padding: 0 !important;
+}
+
+.lignetuto .tuto{
+    margin: 1rem 1rem 0 0;
+    width: 150px;
+    background-color: #fbfbfb;
+    border: 1px solid #eee;
+    text-decoration: none;
+    box-shadow: 0 1px 10px rgba(0,0,0,.1);
+}
+
+.lignetuto .tuto:hover {
+    box-shadow: 0 1px 10px rgba(0,0,0,.2);
+    transition: 0.2s;
+}
+
+.lignetuto .tuto p {
+    text-align: center;
+    padding: 0.4rem;
+    font-weight: 400;
+    font-size: 0.9em;
+    color: #2C2C34;
 }
