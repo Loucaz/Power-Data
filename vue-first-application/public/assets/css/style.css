@@ -49,8 +49,8 @@ p a {
     border: 10px solid #7EBCE6;
 }
 .table-green {
-    background-color: rgb(87, 229, 106) !important;
-    border: 10px solid rgb(126, 230, 149);
+    background-color: rgb(50, 201, 70) !important;
+    border: 10px solid rgb(85, 224, 115);
 }
 
 .navigation-bar {
@@ -405,4 +405,82 @@ p a {
     font-weight: 400;
     font-size: 0.9em;
     color: #2C2C34;
+}
+
+/* pages tutos */
+
+.tutorouge{
+    background-color: #E83C50;
+    border: 15px solid #E85868;
+    padding: 1rem;
+}
+.tutoorange {
+    background-color: #F4592E !important;
+    border: 15px solid #F47450;
+    padding: 1rem;
+}
+.tutobleu {
+    background-color: #57ACE5 !important;
+    border: 15px solid #7EBCE6;
+    padding: 1rem;
+}
+.tutovert {
+    background-color: rgb(50, 201, 70) !important;
+    border: 15px solid rgb(85, 224, 115);
+    padding: 1rem;
+}
+.bandeaututo h1{
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    text-align: center;
+    padding-top: 50px;
+    padding-bottom: 100px;
+    color: #fff;
+}
+.infostuto p{
+    color: #fff;
+    display: inline-block;
+}
+.infostuto .tempstuto{
+    float: right;
+    right: 40px;
+}
+.numerotuto{
+    background-color: #E83C50;
+    border-radius: 100%;
+    color: #fff;
+    padding: 3px 12px 3px 12px;
+}
+.tuto h2{
+    margin-top: 20px;
+    font-size: 1.5em;
+}
+.tuto h3{
+    margin-top: 20px;
+    font-size: 1.2em;
+}
+.tutoetapes p{
+    margin-left: 30px;
+}
+
+.tutosuivant{
+    background-color: #E83C50;
+    padding: 1.5rem;
+}
+.tutosuivant h3,i{
+    display: inline;
+}
+.tutosuivant i{
+    float: right;
+    right: 200px;
+    font-size: 1.5em;
+}
+.lientutosuivant{
+    color:#fff  !important;
+}
+.tutosuivant h3{
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    color: #fff;
+    padding-left: 5%;
 }

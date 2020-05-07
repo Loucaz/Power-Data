@@ -19,7 +19,7 @@
     <div class="row lignetuto">
       <div class="col"></div>
      <div class="col-2 tuto">
-          <router-link to="/">
+          <router-link to="/tutobases">
             <div class="table-icon table-blue">
             <i class="fa fa-database" aria-hidden="true"></i>
           </div>
