@@ -13,12 +13,12 @@ let ColumnSchema = new Schema({
       ref: "Type",
     },
 
-    minLength: {
+    min: {
         type: Number,
         required: false,
     },
 
-    maxLength: {
+    max: {
         type: Number,
         required: false,
     },
@@ -29,7 +29,7 @@ let ColumnSchema = new Schema({
     },
 
     defaultStringValue: {
-        type: Number,
+        type: String,
         required: false,
     },
 
@@ -49,18 +49,23 @@ let ColumnSchema = new Schema({
         required: false,
     },
 
-    dateIsPast: {
+    dateIsToday: {
         type: Boolean,
         required: false,
     },
 
-    dateIsFuture: {
+    dateIsFree: {
         type: Boolean,
         required: false,
     },
 
-    dataIsToday: {
-        type: Boolean,
+    dateStart: {
+        type: Date,
+        required: false,
+    },
+
+    dateEnd: {
+        type: Date,
         required: false,
     },
 

@@ -47,7 +47,8 @@ p a {
 }
 
 .navigation-bar {
-    width: 300px;
+    width: 30vw;
+    max-width: 300px;
     height: 100vh;
     border-right: 1px solid #eee;
     background-color: #fbfbfb;
@@ -255,6 +256,7 @@ p a {
 }
 
 .table-header {
+    height: 100px;
     background-color: #fbfbfb;
     border-bottom: 1px solid #eee;
     font-family: 'Work Sans', sans-serif;
@@ -265,11 +267,12 @@ p a {
 }
 
 .table-actions {
+    height: 40px;
     width: 100%;
     background-color: #fbfbfb;
     border-bottom: 1px solid #eee;
-    padding: 0.6rem 1rem;
     display: flex;
+    align-items: center;
 }
 
 .action-btn {
@@ -292,12 +295,19 @@ p a {
 }
 
 .table-data-container {
+    width: 100%;
+    height: calc(100vh - 140px);
+    display: flex;
+    justify-content: space-between;
+}
+
+.table-datas {
     display: flex;
     justify-content: flex-start;
 }
 
-.table-data-container .table-column {
-    width: 150px;
+.table-datas .table-column {
+    min-width: 80px;
     display: flex;
     border-right: 1px solid #eee;
     flex-direction: column;
@@ -324,4 +334,46 @@ p a {
 
 .table-column .table-data:nth-child(2n) {
     background-color: #eee;
+}
+
+.table-bloc-settings {
+    background-color: #fbfbfb;
+    border-left: 1px solid #eee;
+    width: 20%;
+    min-width: 250px;
+    max-width: 350px;
+    height: 100%;
+    font-weight: 300;
+}
+
+.table-settings-header {
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0.8rem 1rem;
+}
+
+#table-settings-title {
+    font-size: 1rem;
+    margin-left: 0.8rem;
+    font-weight: 400;
+    margin-bottom: 0;
+}
+
+.table-settings-content {
+    padding: 1rem 2rem;
+}
+
+
+.slide-fade-enter-active {
+    transition: all .3s ease;
+}
+.slide-fade-leave-active {
+    transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-to
+    /* .slide-fade-leave-active below version 2.1.8 */ {
+    transform: translateX(10px);
+    opacity: 0;
 }

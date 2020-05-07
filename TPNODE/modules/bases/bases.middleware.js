@@ -18,22 +18,99 @@ module.exports = {
     },
 
     addColumn: function (req, res, next) {
-        var type = Type.find({ _id: req.body.type }).exec(function(err, bases) {
+        console.log("Requete ajout colonne");
+        console.log(req.body.type);
+        Type.findOne({realName: req.body.type }).exec(function(err, typeFind) {
             if (err) {
                 return next({
                     status: 404,
                     message: "Type de colonne incorrect."
                 });
+            } else {
+                console.log('Type trouvé : ' + typeFind.realName);
+                var c = new Column();
+                switch (typeFind.realName) {
+                    case 'number':
+                        c = new Column({
+                            name: req.body.name,
+                            type: typeFind,
+                            min: (req.body.min == null) ? -99999999999999999 : req.body.min,
+                            max: (req.body.max == null) ? 9999999999999999999 : req.body.max,
+                            numberStepValue: (req.body.numberStepValue == null) ? 0.001 : req.body.numberStepValue,
+                            nullable: req.body.nullable,
+                        });
+                        if(c.min > c.max) {
+                            let tmp = c.min;
+                            c.min = c.max;
+                            c.max = tmp;
+                        }
+                        break;
+                    case 'shorttext':
+                        c = new Column({
+                            name: req.body.name,
+                            type: typeFind,
+                            min: (req.body.min == null) ? 0 : req.body.min,
+                            max: (req.body.max == null) ? 255 : req.body.max,
+                            defaultStringValue: (req.body.defaultStringValue == null) ? '' : req.body.defaultStringValue,
+                            nullable: req.body.nullable,
+                        });
+                        break;
+                    case 'longtext':
+                        c = new Column({
+                            name: req.body.name,
+                            type: typeFind,
+                            min: (req.body.min == null) ? 0 : req.body.min,
+                            max: (req.body.max == null) ? 2500 : req.body.max,
+                            defaultStringValue: (req.body.defaultStringValue == null) ? '' : req.body.defaultStringValue,
+                            nullable: req.body.nullable,
+                        });
+                        break;
+                    case 'boolean':
+                        c = new Column({
+                            name: req.body.name,
+                            type: typeFind,
+                            nullable: req.body.nullable,
+                        });
+                        break;
+                    case 'date':
+                        c = new Column({
+                            name: req.body.name,
+                            type: typeFind,
+                            dateStart: req.body.dateStart,
+                            dateEnd: req.body.dateEnd,
+                            dateIsToday: (req.body.dateIsToday == null) ? false : req.body.dateIsToday,
+                            dateIsFree: (req.body.dateIsFree == null) ? false : req.body.dateIsFree,
+                            nullable: req.body.nullable,
+                        });
+                        break;
+                    default:
+                        break;
+                }
+
+                console.log('Colonne créé : ' + c);
+                c.save(function(err, columnSaved) {
+                    if (err) {
+                        console.log('Colonne non sauvegardée');
+                        console.log('Erreur : ' + err.toString());
+                        return next({
+                            message: "La colonne n'a pas pu etre ajouté"
+                        });
+                    }
+                    console.log('Colonne sauvegardée : ' + columnSaved);
+                    req.data.table.columns.push(columnSaved);
+                    req.data.table.save(function(err, tableUpdated) {
+                        if (err) {
+                            return next({
+                                message: "La colonne à été créée mais n'a pas pu être ajoutée à la table",
+                            });
+                        }
+                        console.log('Table modifiée : ' + tableUpdated);
+                        res.send(columnSaved);
+                    });
+                });
             }
-            if (bases.length !== 1) {
-                return next({
-                    status: 404,
-                    message: "base introuvable"
-                })
-            }
-            req.data.base = bases[0];
         });
-        console.log(type.name);
+
         /*
         const column = new Column({
             name: req.body.name,
