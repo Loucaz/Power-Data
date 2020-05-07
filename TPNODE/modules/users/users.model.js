@@ -3,14 +3,17 @@ const Schema = mongoose.Schema;
 
 let UserSchema = new Schema({
 
-    name: {
+    username: {
         type: String,
         required: true
     },
-
-    binome: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+    password: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
     }
 
 });
