@@ -211,6 +211,12 @@ export default {
       },
       newData: {
         value: String,
+        valueString: String,
+        valueNumber: Number,
+        valueBoolean: Boolean,
+        valueDate: Date,
+        line: Number,
+        Column: String,
       },
       typeDate: Number,
       dateInterval: false,

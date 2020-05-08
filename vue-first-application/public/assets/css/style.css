@@ -405,6 +405,24 @@ p a {
     box-shadow: 0 1px 10px rgba(0,0,0,.1);
 }
 
+.table-bloc-settings {
+    background-color: #fbfbfb;
+    border-left: 1px solid #eee;
+}
+
+.table-settings-header {
+    padding: 0.8rem 1rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    width: 100%;
+}
+
+.table-settings-content {
+    padding: 1rem;
+}
+
 .table-settings-title {
     font-size: 1rem;
     margin-left: 0.8rem;
