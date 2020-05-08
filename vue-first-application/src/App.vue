@@ -15,10 +15,10 @@
           </router-link>
           <a @click="$bvModal.show('bv-modal-create-base')"><i class="fa fa-plus" aria-hidden="true"></i>Cr&eacute;er</a>
           <h2>Tutoriels:</h2>
-          <a href="#"><i class="fa fa-database" aria-hidden="true"></i>Créer une base</a>
-          <a href="#"><i class="fa fa-bars" aria-hidden="true"></i>Créer des tables</a>
-          <a href="#"><i class="fa fa-check-square-o" aria-hidden="true"></i>Créer des formulaires</a>
-          <a href="#"><i class="fa fa-flag-checkered" aria-hidden="true"></i>Collecter des donn&eacute;es</a>
+          <router-link to="/tutobases"><i class="fa fa-database" aria-hidden="true"></i>Créer une base</router-link>
+          <router-link to="/tutotables"><i class="fa fa-bars" aria-hidden="true"></i>Créer des tables</router-link>
+          <router-link to="/tutoformulaires"><i class="fa fa-check-square-o" aria-hidden="true"></i>Créer des formulaires</router-link>
+          <router-link to="/tutodonnees"><i class="fa fa-flag-checkered" aria-hidden="true"></i>Collecter des donn&eacute;es</router-link>
           <a href="#"><i class="fa fa-plus" aria-hidden="true"></i>Voir plus</a>
         </div>
       </div>

@@ -43,6 +43,26 @@ const routes = [
     name: 'table',
     component: () => import('../views/Table.vue'),
   },
+  {
+    path: '/tutobases',
+    name: 'tutobases',
+    component: () => import('../views/Tutobases.vue'),
+  },
+  {
+    path: '/Tutotables',
+    name: 'Tutotables',
+    component: () => import('../views/Tutotables.vue'),
+  },
+  {
+    path: '/Tutoformulaires',
+    name: 'Tutoformulaires',
+    component: () => import('../views/Tutoformulaires.vue'),
+  },
+  {
+    path: '/Tutodonnees',
+    name: 'Tutodonnees',
+    component: () => import('../views/Tutodonnees.vue'),
+  },
 ];
 
 
