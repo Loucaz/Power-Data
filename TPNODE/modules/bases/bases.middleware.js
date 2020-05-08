@@ -18,8 +18,6 @@ module.exports = {
     },
 
     addColumn: function (req, res, next) {
-        console.log("Requete ajout colonne");
-        console.log(req.body.type);
         Type.findOne({realName: req.body.type }).exec(function(err, typeFind) {
             if (err) {
                 return next({
@@ -27,7 +25,6 @@ module.exports = {
                     message: "Type de colonne incorrect."
                 });
             } else {
-                console.log('Type trouvé : ' + typeFind.realName);
                 var c = new Column();
                 switch (typeFind.realName) {
                     case 'number':
@@ -87,16 +84,12 @@ module.exports = {
                         break;
                 }
 
-                console.log('Colonne créé : ' + c);
                 c.save(function(err, columnSaved) {
                     if (err) {
-                        console.log('Colonne non sauvegardée');
-                        console.log('Erreur : ' + err.toString());
                         return next({
                             message: "La colonne n'a pas pu etre ajouté"
                         });
                     }
-                    console.log('Colonne sauvegardée : ' + columnSaved);
                     req.data.table.columns.push(columnSaved);
                     req.data.table.save(function(err, tableUpdated) {
                         if (err) {
@@ -104,29 +97,11 @@ module.exports = {
                                 message: "La colonne à été créée mais n'a pas pu être ajoutée à la table",
                             });
                         }
-                        console.log('Table modifiée : ' + tableUpdated);
                         res.send(columnSaved);
                     });
                 });
             }
         });
-
-        /*
-        const column = new Column({
-            name: req.body.name,
-            type: req.body.type,
-        });
-
-        type.save(function(err, typeSaved) {
-            if (err) {
-                return next({
-                    message: "Le type de colonne n'a pas pu etre ajouté"
-                });
-            }
-            res.send(typeSaved);
-        });
-
-         */
     },
 
     baseIdParam: function (req, res, next, id) {
@@ -172,6 +147,7 @@ module.exports = {
     },
 
     getTable: function(req, res) {
+        console.log(req.data.table);
         res.send({
             base: req.data.base,
             table: req.data.table,

@@ -8,11 +8,11 @@ let TableSchema = new Schema({
         required: true
     },
 
-    columns: {
-        type: [Schema.Types.ObjectId],
+    columns: [{
+        type: Schema.Types.ObjectId,
         ref: "Column",
         required: false
-    },
+    }],
 
     data: {
         type: [Schema.Types.ObjectId],

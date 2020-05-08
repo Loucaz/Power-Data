@@ -53,68 +53,28 @@
     </div>
     <div class="table-data-container">
       <div class="table-datas">
-        <div class="table-column">
-          <div class="table-column-header">
-            <p>ID</p>
-          </div>
-          <div class="table-column-data">
-            <div class="table-data">
-              0
-            </div>
-            <div class="table-data">
-              1
-            </div>
-            <div class="table-data">
-              2
-            </div>
-            <div class="table-data">
-              3
-            </div>
-            <div class="table-data">
-              4
-            </div>
-          </div>
-        </div>
-        <div class="table-column">
-          <div class="table-column-header">
-            <p>Nom</p>
-            <div class="dropdown">
-              <a class="action-btn dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              </a>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                <h6 class="dropdown-header">Modification</h6>
-                <a class="dropdown-item" href="#">Renommer</a>
-                <a class="dropdown-item" href="#">Type de colonne</a>
-                <a class="dropdown-item" href="#">Description</a>
-                <a class="dropdown-item" href="#">Supprimer</a>
-              </div>
-            </div>
-          </div>
-          <div class="table-column-data">
-            <div class="table-data">
-              Julien
-            </div>
-            <div class="table-data">
-              Vincent
-            </div>
-            <div class="table-data">
-              Roger
-            </div>
-            <div class="table-data">
-              Bernard
-            </div>
-            <div class="table-data">
-              Jean-mi
-            </div>
-          </div>
-        </div>
+        <md-table>
+          <md-table-row>
+            <md-table-head md-numeric>ID</md-table-head>
+            <md-table-head v-for="c in table.columns" v-bind:key="c.id">
+              {{ c.name }}
+            </md-table-head>
+          </md-table-row>
+
+          <md-table-row @click="showInsertData = true">
+            <md-table-cell md-numeric>1</md-table-cell>
+            <md-table-cell></md-table-cell>
+            <md-table-cell></md-table-cell>
+          </md-table-row>
+        </md-table>
       </div>
 
+      <!-- BLOC CREATE COLUMN -->
       <transition name="slide-fade">
         <div class="table-bloc-settings" v-if="showAddColumn">
           <div class="table-settings-header">
-            <a id="table-settings-close-btn" @click="showAddColumn = !showAddColumn">x</a>
-            <h3 id="table-settings-title">Ajouter une colonne</h3>
+            <a class="table-settings-close-btn" @click="showAddColumn = !showAddColumn">x</a>
+            <h3 class="table-settings-title">Ajouter une colonne</h3>
           </div>
           <div class="table-settings-content">
             <p>La colonne sera ajoutée dans la table <strong>{{ table.name }}</strong></p>
@@ -156,6 +116,23 @@
           </div>
         </div>
       </transition>
+      <!-- END BLOC CREATE COLUMN -->
+
+      <!-- BLOC INSERT DATA -->
+      <transition name="slide-fade">
+        <div class="table-bloc-settings" v-if="showInsertData">
+          <div class="table-settings-header">
+            <a class="table-settings-close-btn" @click="showInsertData = !showInsertData">x</a>
+            <h3 class="table-settings-title">Ajouter une ligne</h3>
+          </div>
+          <div class="table-settings-content">
+            <p>Les données seront ajoutées dans la table <strong>{{ table.name }}</strong></p>
+            <md-button class="md-primary" @click="addColumn">Créer</md-button>
+            <md-button @click="showAddColumn = !showAddColumn">Annuler</md-button>
+          </div>
+        </div>
+      </transition>
+      <!-- END BLOC INSERT DATA -->
     </div>
     <b-modal id="bv-modal-add-column" hide-footer>
       <template v-slot:modal-title>
@@ -232,6 +209,9 @@ export default {
         dateStart: format(now, dateFormat),
         dateEnd: format(now, dateFormat),
       },
+      newData: {
+        value: String,
+      },
       typeDate: Number,
       dateInterval: false,
       nullableOption: true,
@@ -248,6 +228,7 @@ export default {
       },
       loading: true,
       showAddColumn: false,
+      showInsertData: false,
     };
   },
   created() {
@@ -321,7 +302,9 @@ export default {
         })
           .then(res => res.json())
           .then((res) => {
-            console.log(res);
+            const tmp = this.table;
+            tmp.columns.push(res);
+            this.table = tmp;
           });
       }
     },
