@@ -1,3 +1,6 @@
+
+
+
 @import url('https://fonts.googleapis.com/css?family=Dosis|Gayathri:100,400|Work+Sans:300,400,700&display=swap');
 
 * {
@@ -45,10 +48,13 @@ p a {
     background-color: #57ACE5 !important;
     border: 10px solid #7EBCE6;
 }
+.table-green {
+    background-color: rgb(50, 201, 70) !important;
+    border: 10px solid rgb(85, 224, 115);
+}
 
 .navigation-bar {
-    width: 30vw;
-    max-width: 300px;
+    width: 300px;
     height: 100vh;
     border-right: 1px solid #eee;
     background-color: #fbfbfb;
@@ -256,7 +262,6 @@ p a {
 }
 
 .table-header {
-    height: 100px;
     background-color: #fbfbfb;
     border-bottom: 1px solid #eee;
     font-family: 'Work Sans', sans-serif;
@@ -267,12 +272,11 @@ p a {
 }
 
 .table-actions {
-    height: 40px;
     width: 100%;
     background-color: #fbfbfb;
     border-bottom: 1px solid #eee;
+    padding: 0.6rem 1rem;
     display: flex;
-    align-items: center;
 }
 
 .action-btn {
@@ -306,9 +310,25 @@ p a {
     display: flex;
     justify-content: flex-start;
 }
+.table-datas .md-table {
+    width:100%;
+}
 
-.table-datas .md-table
-{
+.table-data-container .table-column {
+    width: 150px;
+    display: flex;
+    border-right: 1px solid #eee;
+    flex-direction: column;
+}
+
+.table-column-header p {
+    margin-bottom: 0;
+}
+
+.table-column-header {
+    background-color: #fbfbfb;
+    padding: 0.4rem;
+>>>>>>> 39ca02095baaa56ce307b27ca04dc369ce68098f
     width: 100%;
 }
 
@@ -316,22 +336,73 @@ p a {
     text-align: left !important;
 }
 
-.table-bloc-settings {
-    background-color: #fbfbfb;
-    border-left: 1px solid #eee;
-    width: 20%;
-    min-width: 250px;
-    max-width: 350px;
-    height: 100%;
-    font-weight: 300;
+/* page d'accueil */
+
+.home{
+    background-color: rgb(34, 150, 165);
+    border: 15px solid rgb(42, 183, 202);
+    padding: 1rem;
+    margin-bottom: 30px;
+}
+.home h1{
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 100px;
+    color: #fff;
 }
 
-.table-settings-header {
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 0.8rem 1rem;
+.home h2{
+    margin-top: 20px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 2em;
+}
+.home h3{
+    margin-top: 30px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 1.5em;
+}
+
+.button-home{
+    margin-bottom: 50px;
+}
+.button-home button{
+    display: block;
+    margin: auto;
+    padding: 5px 15px 5px 15px;
+    border : none;
+    border-radius: 20px;
+}
+.button-home .inscrire{
+    background-color: #fff;
+    color: rgb(34, 150, 165);
+}
+.button-home .ensavoirplus{
+    background-color: rgb(34, 150, 165);
+    color: #fff;
+    border: 1px solid  #fff;
+}
+.video{
+    height: 40vh;
+    margin-top: 30px;
+    background-color: #E85868;
+}
+.tuto{
+    height: 100%;
+    width: 100%;
+    padding: 0 !important;
+}
+
+.lignetuto .tuto{
+    margin: 1rem 1rem 0 0;
+    width: 150px;
+    background-color: #fbfbfb;
+    border: 1px solid #eee;
+    text-decoration: none;
+    box-shadow: 0 1px 10px rgba(0,0,0,.1);
 }
 
 .table-settings-title {
@@ -341,19 +412,92 @@ p a {
     margin-bottom: 0;
 }
 
-.table-settings-content {
-    padding: 1rem 2rem;
+.lignetuto .tuto:hover {
+    box-shadow: 0 1px 10px rgba(0,0,0,.2);
 }
 
+.lignetuto .tuto p {
+    text-align: center;
+    padding: 0.4rem;
+    font-weight: 400;
+    font-size: 0.9em;
+    color: #2C2C34;
+}
 
-.slide-fade-enter-active {
-    transition: all .3s ease;
+/* pages tutos */
+
+.tutorouge{
+    background-color: #E83C50;
+    border: 15px solid #E85868;
+    padding: 1rem;
 }
-.slide-fade-leave-active {
-    transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+.tutoorange {
+    background-color: #F4592E !important;
+    border: 15px solid #F47450;
+    padding: 1rem;
 }
-.slide-fade-enter, .slide-fade-leave-to
-    /* .slide-fade-leave-active below version 2.1.8 */ {
-    transform: translateX(10px);
-    opacity: 0;
+.tutobleu {
+    background-color: #57ACE5 !important;
+    border: 15px solid #7EBCE6;
+    padding: 1rem;
+}
+.tutovert {
+    background-color: rgb(50, 201, 70) !important;
+    border: 15px solid rgb(85, 224, 115);
+    padding: 1rem;
+}
+.bandeaututo h1{
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    text-align: center;
+    padding-top: 50px;
+    padding-bottom: 100px;
+    color: #fff;
+}
+.infostuto p{
+    color: #fff;
+    display: inline-block;
+}
+.infostuto .tempstuto{
+    float: right;
+    right: 40px;
+}
+.numerotuto{
+    background-color: #E83C50;
+    border-radius: 100%;
+    color: #fff;
+    padding: 3px 12px 3px 12px;
+}
+.tuto h2{
+    margin-top: 20px;
+    font-size: 1.5em;
+}
+.tuto h3{
+    margin-top: 20px;
+    font-size: 1.2em;
+}
+.tutoetapes p{
+    margin-left: 30px;
+}
+
+.tutosuivant{
+    background-color: #E83C50;
+    padding: 1.5rem;
+}
+.tutosuivant h3,i{
+    display: inline;
+}
+.tutosuivant i{
+    float: right;
+    right: 200px;
+    font-size: 1.5em;
+}
+.lientutosuivant{
+    color:#fff  !important;
+}
+.tutosuivant h3{
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    color: #fff;
+    padding-left: 5%;
 }
