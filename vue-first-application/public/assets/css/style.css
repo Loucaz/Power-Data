@@ -335,13 +335,21 @@ p a {
 
 /* page d'accueil */
 
+.home{
+    background-color: rgb(34, 150, 165);
+    border: 15px solid rgb(42, 183, 202);
+    padding: 1rem;
+    margin-bottom: 30px;
+}
 .home h1{
     font-family: 'Roboto', sans-serif;
     font-weight: 700;
     text-align: center;
     margin-top: 50px;
     margin-bottom: 100px;
+    color: #fff;
 }
+
 .home h2{
     margin-top: 20px;
     font-family: 'Roboto', sans-serif;
@@ -366,13 +374,13 @@ p a {
     border-radius: 20px;
 }
 .button-home .inscrire{
-    background-color: rgb(226, 82, 99);
-    color: #fff
+    background-color: #fff;
+    color: rgb(34, 150, 165);
 }
 .button-home .ensavoirplus{
-      background-color: #fff;
-    color:rgb(226, 82, 99);
-    border: 1px solid rgb(226, 82, 99);
+    background-color: rgb(34, 150, 165);
+    color: #fff;
+    border: 1px solid  #fff;
 }
 .video{
     height: 40vh;
