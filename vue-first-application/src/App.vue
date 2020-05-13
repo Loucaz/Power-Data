@@ -6,7 +6,7 @@
           <router-link :to="{ name: 'home' }">
             <img src="../public/assets/img/logo.svg" alt="logo"/>
             <h1>POWER-DATA</h1>
-          </router-link>
+          </router-link> 
         </div>
         <div class="navigation">
           <h2>Bases de donn&eacute;es:</h2>

@@ -328,7 +328,6 @@ p a {
 .table-column-header {
     background-color: #fbfbfb;
     padding: 0.4rem;
->>>>>>> 39ca02095baaa56ce307b27ca04dc369ce68098f
     width: 100%;
 }
 
@@ -518,4 +517,16 @@ p a {
     font-weight: 700;
     color: #fff;
     padding-left: 5%;
+}
+
+/* page table */
+
+.tabs{
+    margin-top: 15px;
+}
+form {
+    margin-left: 20px ;
+}
+form input{
+    margin-left: 10px ;
 }
