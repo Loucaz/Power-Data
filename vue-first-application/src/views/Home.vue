@@ -4,7 +4,7 @@
     <h1 class="bienvenu">Bienvenue sur Power Data</h1>
     <div class="row button-home">
       <div class="col"></div>
-      <div class="col"> <a href="#"><button class="inscrire">S'inscrire</button></a></div>
+      <router-link to="/register" class="col"> <a><button class="inscrire">S'inscrire</button></a></router-link>
       <div class="col"><a href="#ancresavoirplus"> <button class="ensavoirplus">En savoir plus</button></a></div>
        <div class="col"></div>
     </div>

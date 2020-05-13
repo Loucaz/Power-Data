@@ -7,4 +7,6 @@ router.route('/register')
     .post(UM.register);
 router.route('/login')
     .post(UM.login);
+router.route('/me')
+    .get(UM.getUserProfile);
 module.exports = router;

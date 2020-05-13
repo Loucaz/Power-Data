@@ -22,14 +22,19 @@
           <a href="#"><i class="fa fa-plus" aria-hidden="true"></i>Voir plus</a>
         </div>
       </div>
-      <div class="user-block">
+      <div v-if="username" class="user-block">
         <div class="user-informations">
           <i class="fa fa-user-circle" aria-hidden="true"></i>
-          <h3>Julien Lardet</h3>
+          <h3>{{this.username}}</h3>
         </div>
         <div class="user-navigation">
-          <a href="#">Mon compte</a>
-          <a href="#">D&eacute;connexion</a>
+          <router-link @click.native="Logout" to="/login">D&eacute;connexion</router-link>
+        </div>
+      </div>
+      <div v-else class="user-block">
+        <div class="user-navigation">
+          <router-link to="/register">Inscription</router-link>
+          <router-link to="/login">Connexion</router-link>
         </div>
       </div>
     </div>
@@ -50,6 +55,8 @@
 
 
 <script>
+import router from "./router";
+
 export default {
   data: function data() {
     return {
@@ -58,6 +65,7 @@ export default {
       newBase: {
         name: '',
       },
+      username: null,
     };
   },
   created() {
@@ -71,6 +79,7 @@ export default {
   watch: {
     // call again the method if the route changes
     $route: 'fetchData',
+
   },
   methods: {
     addBase: function addBase() {
@@ -96,7 +105,16 @@ export default {
           this.bases = bases;
           this.loading = false;
         });
+      this.username=null;
+      if(localStorage.getItem('username') != null){
+        this.username=localStorage.getItem('username');
+      }
     },
+    Logout(){
+      this.username=null;
+      localStorage.clear();
+      this.router.navigate("/login")
+    }
   },
 };
 </script>
