@@ -328,7 +328,6 @@ p a {
 .table-column-header {
     background-color: #fbfbfb;
     padding: 0.4rem;
->>>>>>> 39ca02095baaa56ce307b27ca04dc369ce68098f
     width: 100%;
 }
 
@@ -533,4 +532,66 @@ p a {
 
 .error-bloc strong {
     font-weight: 400;
+}
+
+/* page table */
+
+.tabs{
+    margin-top: 15px;
+}
+form {
+    margin-left: 20px ;
+}
+form input{
+    margin-left: 10px ;
+}
+
+.submit{
+    margin-right: 10px;
+}
+
+/* login register */
+
+.fondbleu{
+    background-color: rgb(34, 150, 165);
+    padding-bottom: 300px;
+    width: 100%;
+}
+.formregister .formtitle{
+    margin-bottom: 15px;
+}
+.formregister{
+    margin-left: auto;
+    margin-right:  auto;
+    margin-top: 20vh;
+    padding: 30px 40px 30px 40px ;
+    background-color: #eee;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 20px 20px 5px 5px rgba(0, 0, 0, 0.15);
+    width:300px;
+}
+
+.formregister label{
+    margin-bottom: 2px;
+}
+.formregister input{
+    border: none;
+    border-radius: 2px;
+    background-color: #d1d1d1;
+    margin-bottom: 15px;
+    padding: 5px;
+}
+.formregister .registerbtn{
+    border: none;
+    border-radius: 2px;
+    background-color: #ff1a40;
+    padding: 10px 40px 10px 40px;
+    box-shadow: 3px 3px 2px 1px #cc0022;
+    color:#eee;
+    box-shadow: blueviolet;
+}
+.formregister p{
+    margin-top: 10px;
+    font-size: 0.8em;
 }

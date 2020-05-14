@@ -115,13 +115,15 @@ module.exports = {
             if (userFound) {
                 return res.status(201).json({
                     'userId': userFound.id,
-                    'token': jwtUtils.generateTokenForUser(userFound)
+                    'token': jwtUtils.generateTokenForUser(userFound),
+                    'username': userFound.username,
                 });
             } else {
                 return res.status(500).json({ 'error': 'cannot log on user' });
             }
         });
     },
+
     getUserProfile: function(req, res) {
         // Getting auth header
         var headerAuth  = req.headers['authorization'];
@@ -130,10 +132,8 @@ module.exports = {
         if (userId < 0)
             return res.status(400).json({ 'error': 'wrong token' });
 
-        User.findOne({
-            attributes: [ 'id', 'email', 'username' ],
-            where: { id: userId }
-        }).then(function(user) {
+        User.findOne({ _id: userId }
+        ).then(function(user) {
             if (user) {
                 res.status(201).json(user);
             } else {

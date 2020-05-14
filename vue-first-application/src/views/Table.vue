@@ -1,6 +1,6 @@
 <template>
   <div class="table-container" v-if="!loading">
-      <div class="table-header">
+    <div class="table-header">
       <div class="base-informations">
         <div class="base-icon table-blue">
           <i class="fa fa-envelope" aria-hidden="true"></i>
@@ -165,25 +165,6 @@
       </transition>
       <!-- END BLOC INSERT DATA -->
     </div>
-    <b-modal id="bv-modal-add-column" hide-footer>
-      <template v-slot:modal-title>
-        Créer une nouvelle colonne
-      </template>
-      <p>La colonne sera ajoutée dans la table <strong>{{ table.name }}</strong></p>
-      <md-field>
-        <label>Nom de la colonne</label>
-        <md-input v-model="newColumn.name" md-counter="30"></md-input>
-      </md-field>
-
-      <md-field>
-        <label>Type de la colonne</label>
-        <md-select v-model="newColumn.type" name="type" id="type-select">
-          <md-option :value="type.realName" v-for="type in types" :key="type._id">{{ type.name }}</md-option>
-        </md-select>
-      </md-field>
-      <md-button class="md-primary" @click="addColumn">Créer</md-button>
-      <md-button @click="$bvModal.hide('bv-modal-add-table')">Annuler</md-button>
-    </b-modal>
     <b-modal id="bv-modal-add-type" hide-footer>
       <template v-slot:modal-title>
         Ajouter un type
@@ -216,6 +197,15 @@ export default {
     const dateFormat = this.$material.locale.dateFormat || 'yyyy-MM-dd';
     const now = new Date();
     return {
+      weekday: 1,
+      form: {
+          email: '',
+          name: '',
+          food: null,
+          checked: []
+        },
+        foods: [{ text: 'Select One', value: null }, 'Carrots', 'Beans', 'Tomatoes', 'Corn'],
+        show: true,
       base: {
         name: String,
         _id: String,
@@ -302,6 +292,23 @@ export default {
 
   },
   methods: {
+    onSubmit(evt) {
+        evt.preventDefault()
+        alert(JSON.stringify(this.form))
+      },
+      onReset(evt) {
+        evt.preventDefault()
+        // Reset our form values
+        this.form.email = ''
+        this.form.name = ''
+        this.form.food = null
+        this.form.checked = []
+        // Trick to reset/clear native browser form validation state
+        this.show = false
+        this.$nextTick(() => {
+          this.show = true
+        })
+      },
     deleteTable: function deleteTable() {
       const url = `http://localhost:3000/bases/${this.base._id}`;
       fetch(url, { method: 'DELETE' });
