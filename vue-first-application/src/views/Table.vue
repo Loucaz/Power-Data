@@ -22,7 +22,6 @@
       </div>
     </div>
 
-    <div class="">
       <b-tabs content-class="mt-3">
         <b-tab title="Grille" active>
           <div class="table-actions">
@@ -178,32 +177,26 @@
           </b-modal>
         </b-tab>
 
-
         <b-tab title="Formulaire">
-            <div> 
-              <md-table-head v-for="c in table.columns" v-bind:key="c.id">
-                   
-                  </md-table-head>
+          <div> 
             <b-form @submit="onSubmit" @reset="onReset" v-if="show">
               <b-form-group
-                v-for="c in table.columns" v-bind:key="c.id"
-                id="input-group-1"
-                label-for="input-1"
-                >
+              v-for="c in table.columns" v-bind:key="c.id"
+              id="input-group"
+              label-for="input"
+              >
                 <p>{{ c.name }} :</p>
-                 <!-- label="Email address:" -->
+                <!-- label="Email address:" -->
                 <!-- description="We'll never share your email with anyone else." -->
                 <b-form-input
-                  id="input-1"
+                  id="input"
                   class="col-3"
-                  v-model="form.email"
-                  type="email"
                   required=""
+                  
                 >
                 </b-form-input>
               </b-form-group>
-
-              <b-button type="submit" variant="primary">Submit</b-button>
+              <b-button type="submit" class="submit" variant="primary">Submit</b-button>
               <b-button type="reset" variant="danger">Reset</b-button>
             </b-form>
           </div>
@@ -215,7 +208,6 @@
         
         </b-tab>
       </b-tabs>
-    </div>
 
 
 

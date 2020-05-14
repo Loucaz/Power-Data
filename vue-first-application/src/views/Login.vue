@@ -1,24 +1,19 @@
 <template>
-  <div>
-    <h4>Login</h4>
-    <form>
-      <label for="email" >E-Mail Address</label>
-      <div>
-        <input id="email" type="email" v-model="email" required autofocus>
+<div class="fondbleu">
+    <form class="formregister">
+      <h4 class="formtitle">Login</h4>
 
-      </div>
-      <div>
-        <label for="password" >Password</label>
-        <div>
-          <input id="password" type="password" v-model="password" required>
-        </div>
-      </div>
-      <div>
-        <button type="submit" @click="handleSubmit">
-          Login
-        </button>
-        <p class="error" v-if="error">{{ error }}</p>
-      </div>
+      <label for="email" >E-Mail Address</label> <br>
+      <input id="email" type="email" v-model="email" required autofocus>
+      <br>
+      <label for="password" >Password</label> <br>
+      <input id="password" type="password" v-model="password" required>
+      <br>
+      <button class="registerbtn" type="submit" @click="handleSubmit">
+        Login
+      </button>
+      <p>vous n'avez pas de compte? <br>  <router-link to="/register"> créer vous un compte </router-link> </p>
+      <p class="error" v-if="error">{{ error }}</p>
     </form>
   </div>
 </template>
