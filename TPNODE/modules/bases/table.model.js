@@ -14,11 +14,11 @@ let TableSchema = new Schema({
         required: false
     }],
 
-    data: {
-        type: [Schema.Types.ObjectId],
-        ref: "Data",
+    lines: [{
+        type: Schema.Types.ObjectId,
+        ref: "Line",
         required: false
-    }
+    }],
 
 });
 

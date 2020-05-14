@@ -9,8 +9,10 @@ app.use(CORS());
 require('./modules/posts/posts.model');
 require('./modules/types/type.model');
 require('./modules/bases/column.model');
+require('./modules/bases/data.model');
 require('./modules/bases/table.model');
 require('./modules/bases/bases.model');
+require('./modules/bases/line.model');
 require('./modules/users/users.model');
 
 const postRouter = require("./modules/posts/posts.router");

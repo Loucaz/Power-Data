@@ -27,8 +27,8 @@
           Table
         </a>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-          <a class="dropdown-item" @click="showAddColumn = !showAddColumn">Ajouter une colonne</a>
-          <a class="dropdown-item" href="#">Ajouter une ligne</a>
+          <a class="dropdown-item" @click="showToolBar('add-column')">Ajouter une colonne</a>
+          <a class="dropdown-item" @click="showToolBar('add-data')">Ajouter une ligne</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#">Exporter</a>
         </div>
@@ -61,10 +61,19 @@
             </md-table-head>
           </md-table-row>
 
-          <md-table-row @click="showInsertData = true">
-            <md-table-cell md-numeric>1</md-table-cell>
-            <md-table-cell></md-table-cell>
-            <md-table-cell></md-table-cell>
+          <md-table-row v-for="l in table.lines" v-bind:key="l.id">
+            <md-table-cell md-numeric>{{ l.number }}</md-table-cell>
+            <md-table-cell v-for="c in table.columns" v-bind:key="c.id">
+              <p v-for="d in l.data" v-bind:key="d.id">
+                <span v-if="d.column == c._id && c.type.realName == 'date'">{{ d.value }}</span>
+                <span v-if="d.column == c._id">{{ d.value }}</span>
+              </p>
+            </md-table-cell>
+          </md-table-row>
+
+          <md-table-row @click="showToolBar('add-data')">
+            <md-table-cell md-numeric>+</md-table-cell>
+            <md-table-cell v-for="c in table.columns" v-bind:key="c.id"></md-table-cell>
           </md-table-row>
         </md-table>
       </div>
@@ -73,7 +82,7 @@
       <transition name="slide-fade">
         <div class="table-bloc-settings" v-if="showAddColumn">
           <div class="table-settings-header">
-            <a class="table-settings-close-btn" @click="showAddColumn = !showAddColumn">x</a>
+            <a class="table-settings-close-btn" @click="showToolBar">x</a>
             <h3 class="table-settings-title">Ajouter une colonne</h3>
           </div>
           <div class="table-settings-content">
@@ -122,12 +131,34 @@
       <transition name="slide-fade">
         <div class="table-bloc-settings" v-if="showInsertData">
           <div class="table-settings-header">
-            <a class="table-settings-close-btn" @click="showInsertData = !showInsertData">x</a>
+            <a class="table-settings-close-btn" @click="showToolBar">x</a>
             <h3 class="table-settings-title">Ajouter une ligne</h3>
           </div>
           <div class="table-settings-content">
             <p>Les données seront ajoutées dans la table <strong>{{ table.name }}</strong></p>
-            <md-button class="md-primary" @click="addColumn">Créer</md-button>
+
+            <div v-if="errorsAddData.length > 0" class="error-bloc">
+              <p v-for="e in errorsAddData" v-bind:key="e.column"><strong>{{ e.column }}</strong> : {{ e.message }}</p>
+            </div>
+
+            <div v-for="(c, index) in table.columns" :key="c.id">
+              <md-field v-if="c.type.realName != 'date'">
+                <label>{{ c.name }}</label>
+                <md-input v-if="c.type.realName == 'shorttext' || c.type.realName == 'longtext'" v-model="newDatas.datas[index].valueString" md-counter="30"></md-input>
+                <md-input v-if="c.type.realName == 'number'" v-model="newDatas.datas[index].valueNumber" type="number"></md-input>
+                <md-select v-if="c.type.realName == 'boolean'" v-model="newDatas.datas[index].valueBoolean" md-dense>
+                  <md-option value="1">Oui</md-option>
+                  <md-option value="0">Non</md-option>
+                </md-select>
+                <span v-if="c.helper != null" class="md-helper-text">{{ c.helper }}</span>
+              </md-field>
+              <md-datepicker v-if="c.type.realName == 'date'" v-model="newDatas.datas[index].valueDate">
+                <label>{{ c.name }}</label>
+              </md-datepicker>
+            </div>
+
+
+            <md-button class="md-primary" @click="addData">Créer</md-button>
             <md-button @click="showAddColumn = !showAddColumn">Annuler</md-button>
           </div>
         </div>
@@ -194,7 +225,7 @@ export default {
         columns: [],
         name: String,
         _id: String,
-        data: [],
+        lines: [],
       },
       newColumn: {
         name: String,
@@ -209,14 +240,16 @@ export default {
         dateStart: format(now, dateFormat),
         dateEnd: format(now, dateFormat),
       },
-      newData: {
-        value: String,
-        valueString: String,
-        valueNumber: Number,
-        valueBoolean: Boolean,
-        valueDate: Date,
-        line: Number,
-        Column: String,
+      newDatas: {
+        datas : [{
+          value: String,
+          valueString: String,
+          valueNumber: Number,
+          valueBoolean: Boolean,
+          valueDate: Date,
+          line: Number,
+          Column: String,
+        }]
       },
       typeDate: Number,
       dateInterval: false,
@@ -226,6 +259,7 @@ export default {
       constraint: {
         label: String,
       },
+      errorsAddData: [],
       types: [],
       newType: {
         name: String,
@@ -244,6 +278,8 @@ export default {
       .then((rep) => {
         this.base = rep.base;
         this.table = rep.table;
+        console.log(this.table);
+        this.initArrayData();
       });
 
     const urlTypes = 'http://localhost:3000/types';
@@ -263,6 +299,7 @@ export default {
     this.newType.name = '';
     this.newType.realName = '';
     this.newType.description = '';
+
   },
   methods: {
     deleteTable: function deleteTable() {
@@ -270,6 +307,62 @@ export default {
       fetch(url, { method: 'DELETE' });
       this.$router.push({ name: 'home' });
     },
+
+    initArrayData: function initArrayData() {
+      for(let i = 0; i<this.table.columns.length; i++)
+      {
+        this.newDatas.datas[i] = {
+          value: null,
+          valueString: null,
+          valueNumber: null,
+          valueBoolean: null,
+          valueDate: null,
+          line: null,
+          column: this.table.columns[i],
+        };
+      }
+    },
+
+    debug: function debug(x) {
+      console.log(x);
+    },
+
+    addData: function addData() {
+      this.errorsAddData = [];
+
+      this.newDatas.datas.forEach(function(e) {
+        e.value =
+          (e.valueDate != null) ? e.valueDate :
+            (e.valueString != null) ? e.valueString :
+              (e.valueNumber != null) ? e.valueNumber :
+                (e.valueBoolean != null) ? e.valueBoolean : null;
+        if(e.line == null) e.line = -1;
+        if(e.valueBoolean === '0') e.valueBoolean = false;
+        if(e.valueBoolean === '1') e.valueBoolean = true;
+      });
+
+      console.log("FUNCTION ADD DATA");
+
+      const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line`;
+      fetch(url, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify(this.newDatas),
+        })
+        .then(res => res.json())
+        .then((rep) => {
+          if(Array.isArray(rep)) {
+            this.errorsAddData = rep;
+            console.log('ERRORS :' + rep);
+          }
+          else {
+            this.table = rep;
+          }
+        });
+    },
+
     addType: function addType() {
       if (this.newType.name.length > 0 && this.newType.realName.length > 0 && this.newType.description.length > 0) {
         const url = 'http://localhost:3000/types';
@@ -289,8 +382,26 @@ export default {
         this.newType.description = '';
       }
     },
+
+    showToolBar: function showToolBar(name) {
+      switch(name) {
+        case 'add-column':
+          this.showInsertData = false;
+          this.showAddColumn = true;
+          break;
+        case 'add-data':
+          this.showAddColumn = false;
+          this.showInsertData = true;
+          break;
+        default:
+          this.showAddColumn = false;
+          this.showInsertData = false;
+          break;
+      }
+    },
+
     addColumn: function addColumn() {
-      this.newColumn.min = (this.$refs['newcolumn-min'] != null) ? this.$refs['newcolumn-min'][0].value : null;
+      this.newColumn.min = (typeof this.$refs['newcolumn-min'] == 'undefined' || this.$refs['newcolumn-min'] == null) ? null : this.$refs['newcolumn-min'][0].value;
       this.newColumn.max = (this.$refs['newcolumn-max'] != null) ? this.$refs['newcolumn-max'][0].value : null;
       this.newColumn.numberStepValue = (this.$refs['step-value'] != null) ? this.$refs['step-value'][0].value : null;
       this.newColumn.defaultStringValue = (this.$refs['default-text'] != null) ? this.$refs['default-text'][0].value : null;
@@ -311,6 +422,10 @@ export default {
             const tmp = this.table;
             tmp.columns.push(res);
             this.table = tmp;
+            this.initArrayData();
+            this.newColumn = {
+
+            };
           });
       }
     },
@@ -341,7 +456,6 @@ export default {
     },
     getColumnSettings: function getColumnSettings(typeRealname) {
       this.dateInterval = false;
-      this.newColumn.dateIsToday = false;
       switch (typeRealname) {
         case 'number':
           this.newColumn.min = -1000;

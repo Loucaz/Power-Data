@@ -519,3 +519,18 @@ p a {
     color: #fff;
     padding-left: 5%;
 }
+
+.error-bloc {
+    margin-top: 1rem;
+}
+
+.error-bloc p {
+    margin-bottom: 0;
+    font-size: 1rem;
+    color: #EF271B;
+    font-weight: 300;
+}
+
+.error-bloc strong {
+    font-weight: 400;
+}
