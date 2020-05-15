@@ -52,7 +52,7 @@
                 console.log(response);
                 this.error=response.error;
               }else {
-                localStorage.setItem('user', JSON.stringify(response.userId));
+                localStorage.setItem('user', response.userId);
                 localStorage.setItem('jwt', response.token);
                 localStorage.setItem('username', response.username);
                 if (localStorage.getItem('jwt') != null) {
