@@ -5,7 +5,7 @@ let DataSchema = new Schema({
 
     value: {
       type: String,
-      required: true
+      required: false
     },
 
     valueString: {
@@ -26,11 +26,6 @@ let DataSchema = new Schema({
     valueBoolean: {
         type: Boolean,
         required: false
-    },
-
-    line: {
-        type: Number,
-        required: true
     },
 
     column: {

@@ -23,4 +23,10 @@ router.route('/:baseId/:tableId')
 router.route('/:baseId/:tableId/column')
     .post(BM.addColumn);
 
+router.route('/:baseId/:tableId/data')
+    .get(BM.getData);
+
+router.route('/:baseId/:tableId/data/line')
+    .post(BM.testValidity, BM.setLine, BM.addDataline);
+
 module.exports = router;

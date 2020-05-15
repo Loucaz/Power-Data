@@ -1,34 +1,24 @@
 <template>
-  <div>
-    <h4>Register</h4>
-    <form>
-      <label for="name">Name</label>
-      <div>
-        <input id="name" type="text" v-model="name" required autofocus>
-      </div>
+  <div class="fondbleu">
+    <form class="formregister">
+      <h4 class="formtitle">Register</h4>
 
-      <label for="email" >E-Mail Address</label>
-      <div>
-        <input id="email" type="email" v-model="email" required>
-      </div>
-
-      <label for="password">Password</label>
-      <div>
-        <input id="password" type="password" v-model="password" required>
-      </div>
-
-      <label for="password-confirm">Confirm Password</label>
-      <div>
-        <input id="password-confirm" type="password" v-model="password_confirmation" required>
-      </div>
-
-      <div>
-        <button type="submit" @click="handleSubmit">
+      <label for="name">Name</label> <br>
+      <input id="name" type="text" v-model="name" required autofocus>
+      <br>
+      <label for="email" >E-Mail Address</label> <br>
+      <input id="email" type="email" v-model="email" required>
+      <br>
+      <label for="password">Password</label> <br>
+      <input id="password" type="password" v-model="password" required>
+      <br>
+      <label for="password-confirm">Confirm Password</label> <br>
+      <input id="password-confirm" type="password" v-model="password_confirmation" required>
+      <br>
+        <button class="registerbtn" type="submit" @click="handleSubmit">
           Register
         </button>
-
         <p class="error" v-if="error">{{ error }}</p>
-      </div>
     </form>
   </div>
 </template>
