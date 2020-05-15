@@ -10,7 +10,7 @@
       </div>
       <div v-if="username" class="navigation">
         <h2>Bases de donn&eacute;es:</h2>
-        <router-link v-for="base in user.bases" :key="base._id" :data="base"
+        <router-link v-for="base in bases" :key="base._id" :data="base"
                      :to="{ name: 'base', params: { id: base._id }}">
           <i class="fa fa-database" aria-hidden="true"></i>{{ base.name }}
         </router-link>
@@ -71,9 +71,7 @@
     data: function data() {
       return {
         loading: true,
-        user: {
-          bases: [],
-        },
+        bases: [],
         newBase: {
           name: '',
         },
@@ -134,7 +132,7 @@
               if(res.error){
                 return this.Logout();
               }
-              this.user.bases = res.user.bases;
+              this.bases = res.user.bases;
               this.loading = false;
             });
           this.username = localStorage.getItem('username');
@@ -144,7 +142,7 @@
       },
       Logout() {
         this.username = null;
-        this.user.bases = null;
+        this.bases = null;
         localStorage.clear();
       }
     },
