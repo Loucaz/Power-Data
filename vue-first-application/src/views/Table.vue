@@ -54,6 +54,13 @@
     <div class="table-data-container">
       <div class="table-datas">
         <md-table>
+          <md-table-toolbar v-if="dataSelected.length > 0" style="background-color: #ffdcdc;">
+            <div class="md-toolbar-section-start">{{ getLabel(dataSelected.length) }}</div>
+              <md-button class="md-icon-button" @click="deleteSelected">
+                <md-icon>delete</md-icon>
+              </md-button>
+          </md-table-toolbar>
+
           <md-table-row>
             <md-table-head md-numeric>ID</md-table-head>
             <md-table-head v-for="c in table.columns" v-bind:key="c.id">
@@ -61,8 +68,8 @@
             </md-table-head>
           </md-table-row>
 
-          <md-table-row v-for="l in table.lines" v-bind:key="l.id">
-            <md-table-cell md-numeric>{{ l.number }}</md-table-cell>
+          <md-table-row v-for="(l, index) in table.lines" v-bind:key="l.id" @click="onSelect(l)" :style="getClass(l)">
+            <md-table-cell md-numeric>{{ index }}</md-table-cell>
             <md-table-cell v-for="c in table.columns" v-bind:key="c.id">
               <p v-for="d in l.data" v-bind:key="d.id">
                 <span v-if="d.column == c._id && c.type.realName == 'date'">{{ d.value }}</span>
@@ -164,6 +171,41 @@
         </div>
       </transition>
       <!-- END BLOC INSERT DATA -->
+
+      <!-- BLOC EDIT DATA -->
+      <transition name="slide-fade">
+        <div class="table-bloc-settings" v-if="showEditData">
+          <div class="table-settings-header">
+            <a class="table-settings-close-btn" @click="showToolBar">x</a>
+            <h3 class="table-settings-title">Modifier une ligne</h3>
+          </div>
+          <div class="table-settings-content">
+            <div v-if="errorsAddData.length > 0" class="error-bloc">
+              <p v-for="e in errorsAddData" v-bind:key="e.column"><strong>{{ e.column }}</strong> : {{ e.message }}</p>
+            </div>
+
+            <div v-for="(d, index) in lineUpdate.datas" :key="d.id">
+              <md-field v-if="d.column.type.realName != 'date'">
+                <label>{{ d.column.name }}</label>
+                <md-input v-if="d.column.type.realName == 'shorttext' || d.column.type.realName == 'longtext'" v-model="lineUpdate.datas[index].valueString" md-counter="30"></md-input>
+                <md-input v-if="d.column.type.realName == 'number'" v-model="lineUpdate.datas[index].valueNumber" type="number"></md-input>
+                <md-select v-if="d.column.type.realName == 'boolean'" v-model="lineUpdate.datas[index].valueBoolean" md-dense>
+                  <md-option value="1">Oui</md-option>
+                  <md-option value="0">Non</md-option>
+                </md-select>
+                <span v-if="d.helper != null" class="md-helper-text">{{ d.helper }}</span>
+              </md-field>
+              <md-datepicker v-if="d.column.type.realName == 'date'" v-model="lineUpdate.datas[index].valueDate">
+                <label>{{ d.column.name }}</label>
+              </md-datepicker>
+            </div>
+
+            <md-button class="md-primary" @click="updateLine">Modifier</md-button>
+            <md-button @click="showEditData = !showEditData">Annuler</md-button>
+          </div>
+        </div>
+      </transition>
+      <!-- END BLOC EDIT DATA -->
     </div>
     <b-modal id="bv-modal-add-type" hide-footer>
       <template v-slot:modal-title>
@@ -230,6 +272,7 @@ export default {
         dateStart: format(now, dateFormat),
         dateEnd: format(now, dateFormat),
       },
+      dataSelected: [],
       newDatas: {
         datas : [{
           value: String,
@@ -239,6 +282,18 @@ export default {
           valueDate: Date,
           line: Number,
           Column: String,
+        }]
+      },
+      lineUpdate: {
+        datas : [{
+          value: String,
+          valueString: String,
+          valueNumber: Number,
+          valueBoolean: Boolean,
+          valueDate: Date,
+          line: Number,
+          Column: String,
+          _id: String,
         }]
       },
       typeDate: Number,
@@ -259,6 +314,7 @@ export default {
       loading: true,
       showAddColumn: false,
       showInsertData: false,
+      showEditData: false,
     };
   },
   created() {
@@ -268,7 +324,6 @@ export default {
       .then((rep) => {
         this.base = rep.base;
         this.table = rep.table;
-        console.log(this.table);
         this.initArrayData();
       });
 
@@ -292,23 +347,100 @@ export default {
 
   },
   methods: {
+
     onSubmit(evt) {
-        evt.preventDefault()
-        alert(JSON.stringify(this.form))
-      },
-      onReset(evt) {
-        evt.preventDefault()
-        // Reset our form values
-        this.form.email = ''
-        this.form.name = ''
-        this.form.food = null
-        this.form.checked = []
-        // Trick to reset/clear native browser form validation state
-        this.show = false
-        this.$nextTick(() => {
-          this.show = true
+      evt.preventDefault()
+      alert(JSON.stringify(this.form))
+    },
+
+    onReset(evt) {
+      evt.preventDefault()
+      // Reset our form values
+      this.form.email = ''
+      this.form.name = ''
+      this.form.food = null
+      this.form.checked = []
+      // Trick to reset/clear native browser form validation state
+      this.show = false
+      this.$nextTick(() => {
+        this.show = true
+      })
+    },
+
+    getLabel: function getLabel(count) {
+      if(count > 1) return `${count} lignes selectionnées`;
+      else return `${count} ligne selectionnée`;
+    },
+
+    reloadTable: function reloadTable() {
+      const url = `http://localhost:3000/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
+      fetch(url)
+        .then(res => res.json())
+        .then((rep) => {
+          this.base = rep.base;
+          this.table = rep.table;
+          this.initArrayData();
+        });
+    },
+
+    onSelect: function onSelect(item) {
+      if(this.dataSelected.includes(item)) {
+        let index = this.dataSelected.indexOf(item);
+        if (index > -1) {
+          this.dataSelected.splice(index, 1);
+        }
+        item.selected = false;
+      } else {
+        this.dataSelected.push(item)
+        item.selected = true;
+      }
+
+      if(this.dataSelected.length === 1) this.showToolBar('edit-data');
+      else this.showToolBar();
+
+      /*
+
+      if(this.dataSelected.includes(item)) {
+        let index = this.dataSelected.indexOf(item);
+        if (index > -1) {
+          this.dataSelected.splice(index, 1);
+        }
+        item.selected = false;
+        if(this.dataSelected.length === 1) this.showToolBar('edit-data');
+        else this.showToolBar();
+      } else {
+        item.selected = true;
+        this.dataSelected.push(item)
+        if(this.dataSelected.length === 1) this.showToolBar('edit-data');
+        else this.showToolBar();
+      }
+       */
+    },
+
+    deleteSelected: function deleteSelected() {
+      if(this.dataSelected.length > 0) {
+        var base = this.base;
+        var table = this.table;
+
+        this.dataSelected.forEach(function(i) {
+          const url = `http://localhost:3000/bases/${base._id}/${table._id}/data/line/${i._id}`;
+          fetch(url, { method: 'DELETE' });
+          let index = table.lines.indexOf(i);
+          if (index > -1) {
+            table.lines.splice(index, 1);
+          }
         })
-      },
+        this.table = table;
+        this.dataSelected = [];
+        this.showToolBar();
+      }
+    },
+
+    getClass: function getStyle(l) {
+      if(l.selected) return 'cursor: pointer; background-color: #448aff; color: #fff;';
+      else return 'cursor: pointer;';
+    },
+
     deleteTable: function deleteTable() {
       const url = `http://localhost:3000/bases/${this.base._id}`;
       fetch(url, { method: 'DELETE' });
@@ -328,6 +460,42 @@ export default {
           column: this.table.columns[i],
         };
       }
+    },
+
+    initArrayUpdateLine: function initArrayUpdateLine(line) {
+      for (let i = 0; i < this.table.columns.length; i++) {
+        let x = 0
+        while (x < line.data.length && line.data[x].column !== this.table.columns[i]._id) x++;
+        if (x >= line.data.length) {
+          this.lineUpdate.datas[i] = {
+            value: null,
+            valueString: null,
+            valueNumber: null,
+            valueBoolean: null,
+            valueDate: null,
+            line: line.number,
+            column: this.table.columns[i],
+          };
+        } else {
+          let dateFormat = this.$material.locale.dateFormat || 'yyyy-MM-dd';
+
+          let vDate;
+          if(this.table.columns[i].type.realName === 'date') vDate = format(new Date(line.data[x].valueDate), dateFormat);
+          else vDate = null;
+
+          this.lineUpdate.datas[i] = {
+            value: line.data[x].value,
+            valueString: line.data[x].valueString,
+            valueNumber: line.data[x].valueNumber,
+            valueBoolean: line.data[x].valueBoolean,
+            valueDate: vDate,
+            _id: line.data[x]._id,
+            line: line.number,
+            column: this.table.columns[i],
+          }
+        }
+      }
+      console.log(this.lineUpdate)
     },
 
     debug: function debug(x) {
@@ -370,6 +538,42 @@ export default {
         });
     },
 
+    updateLine: function updateLine() {
+      this.errorsAddData = [];
+      this.lineUpdate.datas.forEach(function(e) {
+        e.value =
+          (e.valueDate != null) ? e.valueDate :
+            (e.valueString != null) ? e.valueString :
+              (e.valueNumber != null) ? e.valueNumber :
+                (e.valueBoolean != null) ? e.valueBoolean : null;
+        if(e.valueBoolean === '0') e.valueBoolean = false;
+        if(e.valueBoolean === '1') e.valueBoolean = true;
+      });
+      console.log("FUNCTION UPDATE LINE");
+      var index = this.table.lines.indexOf(this.dataSelected[0]);
+      const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line/${this.dataSelected[0]._id}`;
+      fetch(url, {
+        method: 'PUT',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(this.lineUpdate),
+      })
+        .then(res => res.json())
+        .then((rep) => {
+          if(Array.isArray(rep)) {
+            this.errorsAddData = rep;
+            console.log('ERRORS :' + rep);
+          } else {
+            this.reloadTable();
+            this.dataSelected = [];
+            this.showToolBar();
+            this.table.lines.splice(index, 1, rep);
+            console.log(this.table.lines);
+          }
+        });
+    },
+
     addType: function addType() {
       if (this.newType.name.length > 0 && this.newType.realName.length > 0 && this.newType.description.length > 0) {
         const url = 'http://localhost:3000/types';
@@ -395,25 +599,39 @@ export default {
         case 'add-column':
           this.showInsertData = false;
           this.showAddColumn = true;
+          this.showEditData = false;
           break;
         case 'add-data':
           this.showAddColumn = false;
           this.showInsertData = true;
+          this.showEditData = false;
+          break;
+        case 'edit-data':
+          if(this.dataSelected.length === 1) {
+            this.showAddColumn = false;
+            this.showInsertData = false;
+            this.showEditData = true;
+            this.initArrayUpdateLine(this.dataSelected[0]);
+          } else {
+            this.showAddColumn = false;
+            this.showInsertData = false;
+            this.showEditData = false;
+          }
           break;
         default:
           this.showAddColumn = false;
           this.showInsertData = false;
+          this.showEditData = false;
           break;
       }
     },
 
     addColumn: function addColumn() {
-      this.newColumn.min = (typeof this.$refs['newcolumn-min'] == 'undefined' || this.$refs['newcolumn-min'] == null) ? null : this.$refs['newcolumn-min'][0].value;
-      this.newColumn.max = (this.$refs['newcolumn-max'] != null) ? this.$refs['newcolumn-max'][0].value : null;
-      this.newColumn.numberStepValue = (this.$refs['step-value'] != null) ? this.$refs['step-value'][0].value : null;
-      this.newColumn.defaultStringValue = (this.$refs['default-text'] != null) ? this.$refs['default-text'][0].value : null;
 
-      console.log(this.newColumn);
+      if(this.$refs['newcolumn-min'] !== undefined && this.$refs['newcolumn-min'][0] !== undefined) this.newColumn.min = this.$refs['newcolumn-min'][0].value;
+      if(this.$refs['newcolumn-max'] !== undefined) this.newColumn.max = this.$refs['newcolumn-max'][0].value;
+      if(this.$refs['step-value'] !== undefined) this.newColumn.numberStepValue = this.$refs['step-value'][0].value;
+      if(this.$refs['default-text'] !== undefined) this.newColumn.defaultStringValue = this.$refs['default-text'][0].value;
 
       if (this.newColumn.name.length > 0 && this.newColumn.type.length > 0) {
         const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/column`;
@@ -431,7 +649,15 @@ export default {
             this.table = tmp;
             this.initArrayData();
             this.newColumn = {
-
+              name: '',
+              type: String,
+              nullable: true,
+              min: Number,
+              max: Number,
+              defaultStringValue: String,
+              numberStepValue: Number,
+              dateIsToday: false,
+              dateIsFree: false,
             };
           });
       }

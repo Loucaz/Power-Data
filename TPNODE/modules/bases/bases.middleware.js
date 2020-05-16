@@ -29,6 +29,7 @@ module.exports = {
                 });
             } else {
                 var c = new Column();
+                var n = (null === req.body.nullable || undefined === req.body.nullable) ? false : req.body.nullable;
                 switch (typeFind.realName) {
                     case 'number':
                         c = new Column({
@@ -37,7 +38,7 @@ module.exports = {
                             min: (req.body.min == null) ? -99999999999999999 : req.body.min,
                             max: (req.body.max == null) ? 9999999999999999999 : req.body.max,
                             numberStepValue: (req.body.numberStepValue == null) ? 0.001 : req.body.numberStepValue,
-                            nullable: req.body.nullable,
+                            nullable: n,
                         });
                         if(c.min > c.max) {
                             let tmp = c.min;
@@ -52,7 +53,7 @@ module.exports = {
                             min: (req.body.min == null) ? 0 : req.body.min,
                             max: (req.body.max == null) ? 255 : req.body.max,
                             defaultStringValue: (req.body.defaultStringValue == null) ? '' : req.body.defaultStringValue,
-                            nullable: req.body.nullable,
+                            nullable: n,
                         });
                         break;
                     case 'longtext':
@@ -62,14 +63,14 @@ module.exports = {
                             min: (req.body.min == null) ? 0 : req.body.min,
                             max: (req.body.max == null) ? 2500 : req.body.max,
                             defaultStringValue: (req.body.defaultStringValue == null) ? '' : req.body.defaultStringValue,
-                            nullable: req.body.nullable,
+                            nullable: n,
                         });
                         break;
                     case 'boolean':
                         c = new Column({
                             name: req.body.name,
                             type: typeFind,
-                            nullable: req.body.nullable,
+                            nullable: n,
                         });
                         break;
                     case 'date':
@@ -80,7 +81,7 @@ module.exports = {
                             dateEnd: req.body.dateEnd,
                             dateIsToday: (req.body.dateIsToday == null) ? false : req.body.dateIsToday,
                             dateIsFree: (req.body.dateIsFree == null) ? false : req.body.dateIsFree,
-                            nullable: req.body.nullable,
+                            nullable: n,
                         });
                         break;
                     default:
@@ -160,6 +161,19 @@ module.exports = {
             });
     },
 
+    lineIdParam: function (req, res, next, id) {
+        Line.findOne({"_id": id}).populate('data').exec(function(err, line) {
+            if (err) {
+                return next({
+                    status: 404,
+                    message: "Ligne introuvable."
+                });
+            }
+            req.data.line = line;
+            next();
+        });
+    },
+
     getBase: function (req, res) {
         res.send({base: req.data.base});
     },
@@ -208,6 +222,95 @@ module.exports = {
         });
     },
 
+    updateLine: function (req, res, next) {
+
+        var asyncForeach = function asyncForeach(req, res) {
+            return new Promise(function (resolve, reject) {
+                var index = 0;
+                if(req.body.datas.length === 0) resolve();
+                req.body.datas.forEach(function(e) {
+                    Data.findOne({_id:e._id}).exec(function (err, data) {
+                        if(err || data === null) {
+                            let data = new Data({
+                                valueString: e.valueString,
+                                valueNumber: e.valueNumber,
+                                valueBoolean: e.valueBoolean,
+                                valueDate: e.valueDate,
+                                value: e.value,
+                                column: e.column,
+                            });
+                            data.save(function(err, dataSaved) {
+                                if(err) {
+                                    console.log("La donnée n'a pas pu etre créé : " + e.value);
+                                    return next({
+                                        message: "Impossible de créer la donnée"
+                                    });
+                                }
+                                console.log("donnée créé : " + dataSaved.value);
+                                req.data.line.data.push(dataSaved);
+                                index++;
+                                if (index >= req.body.datas.length) resolve();
+                            });
+                            console.log("CREATE DATA FOR " + e.value);
+                        } else {
+                            let update = {
+                                valueString: e.valueString,
+                                valueNumber: e.valueNumber,
+                                valueBoolean: e.valueBoolean,
+                                valueDate: e.valueDate,
+                                value: e.value,
+                            };
+                            let options = { new: true };
+                            Data.findOneAndUpdate({ _id:data._id }, update, options, function(err, dataUpdated){
+                                if(err) {
+                                    console.log("Donnée non MAJ : " + e.value);
+                                    return next({
+                                        message: "Impossible de créer la donnée"
+                                    });
+                                }
+                                console.log("Donnée MAJ: " + dataUpdated);
+                                console.log("Donnée: " + e.value);
+                                console.log("Donnée MAJ : " + dataUpdated);
+                                index++;
+                                if (index >= req.body.datas.length) resolve();
+                            });
+                        }
+                    })
+                })
+            })
+        };
+
+        asyncForeach(req, res).then(function () {
+            console.log("All data create / update");
+            let update = { data: req.data.line.data };
+            let options = { new: true };
+            Line
+                .findOneAndUpdate({ _id: req.data.line._id }, update, options)
+                .populate({
+                    path: 'data',
+                    populate: {
+                        path: 'column',
+                        model: 'Column',
+                        populate: {
+                            path: 'type',
+                            model: 'Type',
+                        }
+                    }
+                })
+                .exec( function(err, lineUpdated) {
+                    if(err) {
+                        console.log("ERREUR MAJ LINE");
+                        return next({
+                            message: "La ligne n'a pa pu être mise à jour"
+                        });
+                    }
+                    console.log("MAJ ligne réussie");
+                    res.send(lineUpdated);
+                })
+        });
+    },
+
+
     deleteBase: function (req, res, next) {
         req.data.base.tables.forEach(item => {
            item.remove(function(err, itemRemoved) {
@@ -226,6 +329,79 @@ module.exports = {
                });
            });
         });
+    },
+
+    deleteLine: function(req, res, next) {
+        var found = true;
+
+        if(found) {
+            console.log("Line find in lines");
+            var asyncForeach = function asyncForeach(req, res) {
+                return new Promise(function (resolve, reject) {
+                    let line = req.data.line;
+                    var index = 0;
+                    if (line.data.length === 0) resolve();
+                    line.data.forEach(function (d) {
+                        console.log("Suppression data : " + d.value);
+                        Data.deleteOne({_id: d._id}, function(err) {
+                            if(err) {
+                                console.log("Suppression impossible : " + d.value);
+                                return next({
+                                    message: "Une donnée na pas pu être supprimée."
+                                });
+                            }
+                            console.log("Suppression réussie : " + d.value);
+                            index++;
+                            if (index >= line.data.length) resolve();
+                        })
+                    })
+                })
+            };
+
+            asyncForeach(req, res).then(function () {
+                console.log("All data supprimées, MAJ table");
+                Table.updateOne({ lines: req.data.table.lines.pull(req.data.line._id) }, { _id: req.data.line._id }, function(err, tableUpdated) {
+                    if(err) {
+                        console.log("ERREUR MAJ table");
+                        return next({
+                            message: "La table n'a pa pu être mise à jour"
+                        });
+                    }
+                    console.log("MAJ table réussie");
+                    Line.deleteOne({_id: req.data.line._id}, function(err) {
+                        if(err) {
+                            console.log("ERREUR SUPPRESSION LIGNE");
+                            return next({
+                                message: "la ligne n'a pas pu être supprimée."
+                            });
+                        }
+                        console.log("Ligne supprimée");
+                        res.send(tableUpdated);
+                    })
+                })
+            });
+        } else {
+            req.data.table.lines.forEach((x) => console.log(x._id));
+            console.log(req.data.line._id);
+            req.data.table.lines.includes()
+
+
+            return next({
+                message: "Erreur de ligne."
+            });
+        }
+
+        if(req.data.table.lines.includes(req.data.line)) {
+            req.data.line.data.forEach(function(d) {
+               Data.deleteOne({ _id:d._id }, function(err) {
+                   if(err) {
+                       return next({
+                           message: "Une donnée na pas pu être supprimée."
+                       });
+                   }
+               })
+            });
+        }
     },
 
     newBase: function (req, res, next) {

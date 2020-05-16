@@ -4,6 +4,7 @@ var router = express.Router();
 
 router.param("baseId", BM.baseIdParam);
 router.param("tableId", BM.tableIdParam);
+router.param("lineId", BM.lineIdParam);
 
 router.route("/")
     .get(BM.getBases)
@@ -28,5 +29,9 @@ router.route('/:baseId/:tableId/data')
 
 router.route('/:baseId/:tableId/data/line')
     .post(BM.testValidity, BM.setLine, BM.addDataline);
+
+router.route('/:baseId/:tableId/data/line/:lineId')
+    .put(BM.testValidity, BM.updateLine)
+    .delete(BM.deleteLine);
 
 module.exports = router;
