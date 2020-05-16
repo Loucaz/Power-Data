@@ -21,6 +21,8 @@
         <a href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
       </div>
     </div>
+
+
     <div class="table-actions">
       <div class="dropdown">
         <a class="action-btn dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -72,7 +74,6 @@
             <md-table-cell md-numeric>{{ index }}</md-table-cell>
             <md-table-cell v-for="c in table.columns" v-bind:key="c.id">
               <p v-for="d in l.data" v-bind:key="d.id">
-                <span v-if="d.column == c._id && c.type.realName == 'date'">{{ d.value }}</span>
                 <span v-if="d.column == c._id">{{ d.value }}</span>
               </p>
             </md-table-cell>
@@ -171,7 +172,6 @@
         </div>
       </transition>
       <!-- END BLOC INSERT DATA -->
-
       <!-- BLOC EDIT DATA -->
       <transition name="slide-fade">
         <div class="table-bloc-settings" v-if="showEditData">
@@ -207,25 +207,6 @@
       </transition>
       <!-- END BLOC EDIT DATA -->
     </div>
-    <b-modal id="bv-modal-add-type" hide-footer>
-      <template v-slot:modal-title>
-        Ajouter un type
-      </template>
-      <md-field>
-        <label>Nom du type</label>
-        <md-input v-model="newType.name" md-counter="30"></md-input>
-      </md-field>
-      <md-field>
-        <label>Real name</label>
-        <md-input v-model="newType.realName" md-counter="30"></md-input>
-      </md-field>
-      <md-field>
-        <label>description</label>
-        <md-input v-model="newType.description" md-counter="60"></md-input>
-      </md-field>
-      <md-button class="md-primary" @click="addType">Créer</md-button>
-      <md-button @click="$bvModal.hide('bv-modal-add-type')">Annuler</md-button>
-    </b-modal>
   </div>
 </template>
 
@@ -234,19 +215,22 @@
 import format from 'date-fns/format';
 
 export default {
+  name: 'RegularCheckboxes',
   name: 'table',
   data: function data() {
-    const dateFormat = this.$material.locale.dateFormat || 'yyyy-MM-dd';
+    const dateFormat = 'yyyy-MM-dd';
     const now = new Date();
     return {
       weekday: 1,
+      array: [],
+      obj2: {name: 'obj1'},
+      obj: null,
       form: {
           email: '',
           name: '',
           food: null,
           checked: []
         },
-        foods: [{ text: 'Select One', value: null }, 'Carrots', 'Beans', 'Tomatoes', 'Corn'],
         show: true,
       base: {
         name: String,
@@ -477,7 +461,7 @@ export default {
             column: this.table.columns[i],
           };
         } else {
-          let dateFormat = this.$material.locale.dateFormat || 'yyyy-MM-dd';
+          let dateFormat = 'yyyy-MM-dd';
 
           let vDate;
           if(this.table.columns[i].type.realName === 'date') vDate = format(new Date(line.data[x].valueDate), dateFormat);

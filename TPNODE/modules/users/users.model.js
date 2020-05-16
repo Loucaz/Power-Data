@@ -14,8 +14,12 @@ let UserSchema = new Schema({
     email: {
         type: String,
         required: true
-    }
-
+    },
+    bases: [{
+        type: Schema.Types.ObjectId,
+        ref: "Base",
+        required: false
+    }],
 });
 
 mongoose.model('User', UserSchema);
