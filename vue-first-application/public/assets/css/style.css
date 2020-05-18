@@ -546,11 +546,26 @@ form input{
     margin-left: 10px ;
 }
 
+.btnformtable button{
+    border: none;
+    color:#fff;
+    background-color: #2AB7CA;
+    border-radius: 3px;
+    padding: 4px 7px  4px 7px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+.btnformtable button:hover{
+    border: 1px solid #2AB7CA;
+    background-color: #fff;
+    color: #2AB7CA;
+}
+
 .submit{
     margin-right: 10px;
 }
 
-/* login register */
+/* login register login */
 
 .fondbleu{
     background-color: rgb(34, 150, 165);
@@ -595,3 +610,5 @@ form input{
     margin-top: 10px;
     font-size: 0.8em;
 }
+
+

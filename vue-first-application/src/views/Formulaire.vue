@@ -21,194 +21,74 @@
         <a href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
       </div>
     </div>
-            <div class="table-actions">
-              <div class="dropdown">
-                <a class="action-btn dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Table
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <a class="dropdown-item" @click="showToolBar('add-column')">Ajouter une colonne</a>
-                  <a class="dropdown-item" @click="showToolBar('add-data')">Ajouter une ligne</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Exporter</a>
-                </div>
-              </div>
-              <div class="dropdown">
-                <a class="action-btn dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Formulaires
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <router-link class="dropdown-item" :to="{ name: 'formulaire', params: { id: base._id, idTable: table._id }}">
-                   Créer un formulaire
-                  </router-link>
-                </div>
-              </div>
-              <div class="dropdown">
-                <a class="action-btn dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Developpement
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <a class="dropdown-item" @click="$bvModal.show('bv-modal-add-type')">Ajouter un type de colonne</a>
-                </div>
-              </div>
-            </div>
-            <div class="table-data-container">
-              <div class="table-datas">
-                <md-table>
-                  <md-table-toolbar v-if="dataSelected.length > 0" style="background-color: #ffdcdc;">
-                    <div class="md-toolbar-section-start">{{ getLabel(dataSelected.length) }}</div>
-                      <md-button class="md-icon-button" @click="deleteSelected">
-                        <md-icon>delete</md-icon>
-                      </md-button>
-                  </md-table-toolbar>
 
-                  <md-table-row>
-                    <md-table-head md-numeric>ID</md-table-head>
-                    <md-table-head v-for="c in table.columns" v-bind:key="c.id">
-                      {{ c.name }}
-                    </md-table-head>
-                  </md-table-row>
+   <div class="btnformtable">
 
-                  <md-table-row v-for="(l, index) in table.lines" v-bind:key="l.id" @click="onSelect(l)" :style="getClass(l)">
-                    <md-table-cell md-numeric>{{ index }}</md-table-cell>
-                    <md-table-cell v-for="c in table.columns" v-bind:key="c.id">
-                      <p v-for="d in l.data" v-bind:key="d.id">
-                        <span v-if="d.column == c._id">{{ d.value }}</span>
-                      </p>
-                    </md-table-cell>
-                  </md-table-row>
+        <router-link :to="{ name: 'table', params: { id: base._id, idTable: table._id }}">
+      <button> <i class="fa fa-arrow-left" aria-hidden="true"></i> Retour à la base </button> 
+        </router-link>
+     
+    </div>
 
-                  <md-table-row @click="showToolBar('add-data')">
-                    <md-table-cell md-numeric>+</md-table-cell>
-                    <md-table-cell v-for="c in table.columns" v-bind:key="c.id"></md-table-cell>
-                  </md-table-row>
-                </md-table>
-              </div>
+          <div>
+            <md-checkbox v-model="array" value="1">Array</md-checkbox>
+            <md-checkbox v-model="obj" :value="obj2"  v-for="c in table.columns" v-bind:key="c.id"> {{ c.name }} </md-checkbox>
+            <table>
+              <tr>
+                <th>Array</th>
+                <th>Object</th>
+              </tr>
 
-              <!-- BLOC CREATE COLUMN -->
-              <transition name="slide-fade">
-                <div class="table-bloc-settings" v-if="showAddColumn">
-                  <div class="table-settings-header">
-                    <a class="table-settings-close-btn" @click="showToolBar">x</a>
-                    <h3 class="table-settings-title">Ajouter une colonne</h3>
-                  </div>
-                  <div class="table-settings-content">
-                    <p>La colonne sera ajoutée dans la table <strong>{{ table.name }}</strong></p>
-                    <md-field>
-                      <label>Nom de la colonne</label>
-                      <md-input v-model="newColumn.name" md-counter="30"></md-input>
-                    </md-field>
-
-                    <md-field>
-                      <label for="type">Type de la colonne</label>
-                      <md-select v-model="newColumn.type" name="type" id="type-select" @input="getColumnSettings" md-dense>
-                        <md-option :value="type.realName" v-for="type in types" :key="type._id">{{ type.name }}</md-option>
-                      </md-select>
-                    </md-field>
-                    <div class="extra-type-settings">
-                      <div v-for="c in columnConstraints" :key="c.id">
-                        <md-field v-if="c.type != 'checkbox' && c.type != 'date'">
-                          <label>{{ c.title }}</label>
-                          <md-input v-if="c.type == 'text'" v-model="c.cible" :id="c.id" :ref="c.id" md-counter="30"></md-input>
-                          <md-input v-if="c.type == 'number'" v-model="c.cible" type="number" :id="c.id" :ref="c.id"></md-input>
-                          <md-select v-if="c.type == 'select'" v-model="c.cible" name="typeDate" :id="c.id" :ref="c.id" @input="c.input" md-dense>
-                            <md-option :value="opt.id" v-for="opt in c.options" :key="opt.id">{{ opt.name }}</md-option>
-                          </md-select>
-                          <span v-if="c.helper != null" class="md-helper-text">{{ c.helper }}</span>
-                        </md-field>
-                      </div>
-                      <div v-if="dateInterval">
-                        <md-datepicker id="date-start" ref="date-start" v-model="newColumn.dateStart">
-                          <label>Date minimum</label>
-                        </md-datepicker>
-                        <md-datepicker id="date-end" ref="date-end" v-model="newColumn.dateEnd">
-                          <label>Date maximum</label>
-                        </md-datepicker>
-                      </div>
-                      <md-checkbox v-if="nullableOption" class="md-primary" v-model="newColumn.nullable">Peut être vide</md-checkbox>
-                    </div>
-                    <md-button class="md-primary" @click="addColumn">Créer</md-button>
-                    <md-button @click="showAddColumn = !showAddColumn">Annuler</md-button>
-                  </div>
-                </div>
-              </transition>
-              <!-- END BLOC CREATE COLUMN -->
-
-              <!-- BLOC INSERT DATA -->
-              <transition name="slide-fade">
-                <div class="table-bloc-settings" v-if="showInsertData">
-                  <div class="table-settings-header">
-                    <a class="table-settings-close-btn" @click="showToolBar">x</a>
-                    <h3 class="table-settings-title">Ajouter une ligne</h3>
-                  </div>
-                  <div class="table-settings-content">
-                    <p>Les données seront ajoutées dans la table <strong>{{ table.name }}</strong></p>
-
-                    <div v-if="errorsAddData.length > 0" class="error-bloc">
-                      <p v-for="e in errorsAddData" v-bind:key="e.column"><strong>{{ e.column }}</strong> : {{ e.message }}</p>
-                    </div>
-
-                    <div v-for="(c, index) in table.columns" :key="c.id">
-                      <md-field v-if="c.type.realName != 'date'">
-                        <label>{{ c.name }}</label>
-                        <md-input v-if="c.type.realName == 'shorttext' || c.type.realName == 'longtext'" v-model="newDatas.datas[index].valueString" md-counter="30"></md-input>
-                        <md-input v-if="c.type.realName == 'number'" v-model="newDatas.datas[index].valueNumber" type="number"></md-input>
-                        <md-select v-if="c.type.realName == 'boolean'" v-model="newDatas.datas[index].valueBoolean" md-dense>
-                          <md-option value="1">Oui</md-option>
-                          <md-option value="0">Non</md-option>
-                        </md-select>
-                        <span v-if="c.helper != null" class="md-helper-text">{{ c.helper }}</span>
-                      </md-field>
-                      <md-datepicker v-if="c.type.realName == 'date'" v-model="newDatas.datas[index].valueDate">
-                        <label>{{ c.name }}</label>
-                      </md-datepicker>
-                    </div>
+              <tr>
+                <td>{{ array }}</td>
+                <td>{{ obj }}</td>
+              </tr>
+            </table>
+          </div>
 
 
-                    <md-button class="md-primary" @click="addData">Créer</md-button>
-                    <md-button @click="showAddColumn = !showAddColumn">Annuler</md-button>
-                  </div>
-                </div>
-              </transition>
-              <!-- END BLOC INSERT DATA -->
-              <!-- BLOC EDIT DATA -->
-              <transition name="slide-fade">
-                <div class="table-bloc-settings" v-if="showEditData">
-                  <div class="table-settings-header">
-                    <a class="table-settings-close-btn" @click="showToolBar">x</a>
-                    <h3 class="table-settings-title">Modifier une ligne</h3>
-                  </div>
-                  <div class="table-settings-content">
-                    <div v-if="errorsAddData.length > 0" class="error-bloc">
-                      <p v-for="e in errorsAddData" v-bind:key="e.column"><strong>{{ e.column }}</strong> : {{ e.message }}</p>
-                    </div>
 
-                    <div v-for="(d, index) in lineUpdate.datas" :key="d.id">
-                      <md-field v-if="d.column.type.realName != 'date'">
-                        <label>{{ d.column.name }}</label>
-                        <md-input v-if="d.column.type.realName == 'shorttext' || d.column.type.realName == 'longtext'" v-model="lineUpdate.datas[index].valueString" md-counter="30"></md-input>
-                        <md-input v-if="d.column.type.realName == 'number'" v-model="lineUpdate.datas[index].valueNumber" type="number"></md-input>
-                        <md-select v-if="d.column.type.realName == 'boolean'" v-model="lineUpdate.datas[index].valueBoolean" md-dense>
-                          <md-option value="1">Oui</md-option>
-                          <md-option value="0">Non</md-option>
-                        </md-select>
-                        <span v-if="d.helper != null" class="md-helper-text">{{ d.helper }}</span>
-                      </md-field>
-                      <md-datepicker v-if="d.column.type.realName == 'date'" v-model="lineUpdate.datas[index].valueDate">
-                        <label>{{ d.column.name }}</label>
-                      </md-datepicker>
-                    </div>
+          <div> 
+            <form>
+              <h2>selection des données</h2>
+              <b-form-group 
+                v-for="c in table.columns" v-bind:key="c.id"
+                v-model="selected">
+                  <b-form-checkbox-group
+                    id="checkbox-group"
+                    v-model="selected"
+                  >
+                  <b-form-checkbox> {{ c.name }} </b-form-checkbox>
+                  </b-form-checkbox-group>
+              </b-form-group>
+              <b-button type="reset" variant="danger">Reset</b-button>
+            </form>
 
-                    <md-button class="md-primary" @click="updateLine">Modifier</md-button>
-                    <md-button @click="showEditData = !showEditData">Annuler</md-button>
-                  </div>
-                </div>
-              </transition>
-              <!-- END BLOC EDIT DATA -->
-            </div>
+            <div>Selected: <strong>{{ selected }}</strong></div>
+
+            <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+              <h2>rempir les données</h2>
+              <b-form-group
+              v-for="c in table.columns" v-bind:key="c.id"
+              id="input-group"
+              label-for="input"
+              >
+                <p>{{ c.name }} :</p>
+                <!-- label="Email address:" -->
+                <!-- description="We'll never share your email with anyone else." -->
+                <b-form-input
+                  id="input"
+                  class="col-3"
+                  required=""       
+                >
+                </b-form-input>
+              </b-form-group>
+              <b-button type="submit" class="submit" variant="primary">Submit</b-button>
+              <b-button type="reset" variant="danger">Reset</b-button>
+            </b-form>
+          </div>
   </div>
 </template>
-
 
 <script>
 import format from 'date-fns/format';
