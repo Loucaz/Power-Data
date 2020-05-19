@@ -39,9 +39,10 @@
           Formulaires
         </a>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-          <a class="dropdown-item" href="#">Liste des formulaires</a>
-          <a class="dropdown-item" href="#">Créer un formulaire</a>
-        </div>
+          <router-link class="dropdown-item" :to="{ name: 'formulaire', params: { id: base._id, idTable: table._id }}">
+            Afficher le formulaire
+          </router-link>
+         </div>
       </div>
     </div>
     <div class="table-data-container">
