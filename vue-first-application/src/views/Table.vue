@@ -82,7 +82,7 @@
             <md-table-cell v-for="c in table.columns" v-bind:key="c.id">
               <p v-for="d in l.data" v-bind:key="d.id">
                 <span v-if="d.column == c._id && c.type.realName != 'relation'">{{ getDataLabel(d, c) }}</span>
-                <span v-if="d.column == c._id && c.type.realName == 'relation'"><span v-for="objId in d.valueObjectId" v-bind:key="objId">- {{ linesLabel[objId].label }}</span></span>
+                <span v-if="d.column == c._id && c.type.realName == 'relation'"><span v-for="objId in d.valueObjectId" v-bind:key="objId">- {{ linesLabel[objId].label }}<br></span></span>
               </p>
             </md-table-cell>
           </md-table-row>
@@ -139,7 +139,7 @@
               <md-checkbox v-if="nullableOption" class="md-primary" v-model="newColumn.nullable">Peut être vide</md-checkbox>
             </div>
             <md-button class="md-primary" @click="addColumn">Créer</md-button>
-            <md-button @click="showAddColumn = !showAddColumn">Annuler</md-button>
+            <md-button @click="showToolBar()">Annuler</md-button>
           </div>
         </div>
       </transition>
@@ -181,7 +181,7 @@
               </md-datepicker>
             </div>
             <md-button class="md-primary" @click="addData">Créer</md-button>
-            <md-button @click="showAddColumn = !showAddColumn">Annuler</md-button>
+            <md-button @click="showToolBar()">Annuler</md-button>
           </div>
         </div>
       </transition>
@@ -199,23 +199,29 @@
             </div>
 
             <div v-for="(d, index) in lineUpdate.datas" :key="d.id">
-              <md-field v-if="d.column.type.realName != 'date'">
+              <md-field v-if="d.column.type.realName !== 'date'">
                 <label>{{ d.column.name }}</label>
-                <md-input v-if="d.column.type.realName == 'shorttext' || d.column.type.realName == 'longtext'" v-model="lineUpdate.datas[index].valueString" md-counter="30"></md-input>
-                <md-input v-if="d.column.type.realName == 'number'" v-model="lineUpdate.datas[index].valueNumber" type="number"></md-input>
-                <md-select v-if="d.column.type.realName == 'boolean'" v-model="lineUpdate.datas[index].valueBoolean" md-dense>
+                <md-input v-if="d.column.type.realName === 'shorttext' || d.column.type.realName === 'longtext'" v-model="lineUpdate.datas[index].valueString" md-counter="30"></md-input>
+                <md-input v-if="d.column.type.realName === 'number'" v-model="lineUpdate.datas[index].valueNumber" type="number"></md-input>
+                <md-select v-if="d.column.type.realName === 'boolean'" v-model="lineUpdate.datas[index].valueBoolean" md-dense>
                   <md-option value="1">Oui</md-option>
                   <md-option value="0">Non</md-option>
                 </md-select>
+                <md-select v-if="d.column.type.realName === 'relation' && d.column.relationType === 'one-to-many'" v-model="lineUpdate.datas[index].valueObjectId" md-dense multiple>
+                  <md-option v-for="ds in dataSelectors[d.column._id]" :value="ds.id" v-bind:key="ds.id">{{ ds.label }}</md-option>
+                </md-select>
+                <md-select v-if="d.column.type.realName === 'relation' && d.column.relationType === 'one-to-one'" v-model="lineUpdate.datas[index].valueObjectId" md-dense>
+                  <md-option v-for="ds in dataSelectors[d.column._id]" :value="ds.id" v-bind:key="ds.id">{{ ds.label }}</md-option>
+                </md-select>
                 <span v-if="d.helper != null" class="md-helper-text">{{ d.helper }}</span>
               </md-field>
-              <md-datepicker v-if="d.column.type.realName == 'date'" v-model="lineUpdate.datas[index].valueDate">
+              <md-datepicker v-if="d.column.type.realName === 'date'" v-model="lineUpdate.datas[index].valueDate">
                 <label>{{ d.column.name }}</label>
               </md-datepicker>
             </div>
 
             <md-button class="md-primary" @click="updateLine">Modifier</md-button>
-            <md-button @click="showEditData = !showEditData">Annuler</md-button>
+            <md-button @click="showToolBar()">Annuler</md-button>
           </div>
         </div>
       </transition>
@@ -292,6 +298,7 @@ export default {
           valueString: String,
           valueNumber: Number,
           valueBoolean: Boolean,
+          valueObjectId: [],
           valueDate: Date,
           line: Number,
           Column: String,
@@ -627,6 +634,7 @@ export default {
             valueNumber: null,
             valueBoolean: null,
             valueDate: null,
+            valueObjectId: [],
             line: line.number,
             column: this.table.columns[i],
           };
@@ -642,6 +650,7 @@ export default {
             valueString: line.data[x].valueString,
             valueNumber: line.data[x].valueNumber,
             valueBoolean: line.data[x].valueBoolean,
+            valueObjectId: line.data[x].valueObjectId,
             valueDate: vDate,
             _id: line.data[x]._id,
             line: line.number,
@@ -705,7 +714,13 @@ export default {
           (e.valueDate != null) ? e.valueDate :
             (e.valueString != null) ? e.valueString :
               (e.valueNumber != null) ? e.valueNumber :
-                (e.valueBoolean != null) ? e.valueBoolean : null;
+                (e.valueBoolean != null) ? e.valueBoolean :
+                  (e.valueObjectId != null) ? e.valueObjectId.toString() : null;
+
+        if((e.valueObjectId !== null && e.valueObjectId !== undefined) && !Array.isArray(e.valueObjectId)) {
+          e.valueObjectId = [e.valueObjectId];
+        } else if(!Array.isArray(e.valueObjectId)) e.valueObjectId = [];
+
         if(e.valueBoolean === '0') e.valueBoolean = false;
         if(e.valueBoolean === '1') e.valueBoolean = true;
       });

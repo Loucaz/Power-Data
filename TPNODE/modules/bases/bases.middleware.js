@@ -212,16 +212,29 @@ module.exports = {
     },
 
     lineIdParam: function (req, res, next, id) {
-        Line.findOne({"_id": id}).populate('data').exec(function(err, line) {
-            if (err) {
-                return next({
-                    status: 404,
-                    message: "Ligne introuvable."
-                });
-            }
-            req.data.line = line;
-            next();
-        });
+        Line
+            .findOne({"_id": id})
+            .populate({
+                path: 'data',
+                populate: {
+                    path: 'column',
+                    model: 'Column',
+                    populate: {
+                        path: 'type',
+                        model: 'Type',
+                    }
+                }
+            })
+            .exec(function(err, line) {
+                if (err || line === null || line === undefined) {
+                    return next({
+                        status: 500,
+                        message: ["Ligne introuvable."]
+                    });
+                }
+                req.data.line = line;
+                next();
+            });
     },
 
     columnIdParam: function (req, res, next, id) {
@@ -419,8 +432,59 @@ module.exports = {
                     let line = req.data.line;
                     var index = 0;
                     if (line.data.length === 0) resolve();
-                    line.data.forEach(function (d) {
-                        console.log("Suppression data : " + d.value);
+
+                    console.log("Recherche de references.. ");
+                    Data
+                        .find({})
+                        .populate({
+                            path: 'columns',
+                            populate: {
+                                path: 'type',
+                                model: 'Type'
+                            }
+                        })
+                        .exec(function(err, datas) {
+                            var asyncDataEdit = function asyncForeach(req, res) {
+                                return new Promise(function (resolve, reject) {
+                                    var index = 0;
+                                    datas.forEach(function (data) {
+                                        if (data.valueObjectId !== null && data.valueObjectId !== undefined && data.valueObjectId.indexOf(req.data.line._id) > -1) {
+                                            data.valueObjectId.splice(data.valueObjectId.indexOf(req.data.line._id), 1);
+                                            data.save(function (err, dataSave) {
+                                                if (err) {
+                                                    return next({
+                                                        message: "Impossible de supprimer les references."
+                                                    });
+                                                }
+                                                index++;
+                                                if (index >= datas.length) resolve();
+                                            });
+                                        } else index++;
+                                        if (index >= datas.length) resolve();
+                                    });
+                                });
+                            };
+
+                            asyncDataEdit(req, res).then(function () {
+                                console.log('references supprimées');
+                                var i = 0;
+                                req.data.line.data.forEach(function(d) {
+                                    Data.deleteOne({_id: d._id}, function(err) {
+                                        if(err) {
+                                            console.log("Suppression impossible : " + d.value);
+                                            return next({
+                                                message: "Une donnée na pas pu être supprimée."
+                                            });
+                                        }
+                                        console.log("Suppression réussie : " + d.value);
+                                        i++;
+                                        if (i >= line.data.length) resolve();
+                                    })
+                                })
+                            });
+                        });
+
+                        /*
                         Data.deleteOne({_id: d._id}, function(err) {
                             if(err) {
                                 console.log("Suppression impossible : " + d.value);
@@ -432,7 +496,7 @@ module.exports = {
                             index++;
                             if (index >= line.data.length) resolve();
                         })
-                    })
+                         */
                 })
             };
 
@@ -779,6 +843,7 @@ module.exports = {
                         .findOne({_id: d.column})
                         .exec(function (err, column) {
                             if (err) {
+                                console.log("Error")
                                 return next({
                                     status: 500,
                                     message: "Colonne liée introuvable."
@@ -793,9 +858,18 @@ module.exports = {
         }
 
         asyncForeach(req, res, next).then(function(dataLabels) {
-            let label = '';
-            dataLabels.forEach(function(d) {
-                label += d.value + ' ';
+            console.log("ASYNK OK, next")
+            let label;
+            if(dataLabels.length <= 0) label = req.data.line._id;
+            else {
+                label = '';
+                dataLabels.forEach(function(d) {
+                    label += d.value + ' ';
+                });
+            }
+            console.log({
+                _id: req.data.line._id,
+                label: label
             });
             return res.send({
                 _id: req.data.line._id,
