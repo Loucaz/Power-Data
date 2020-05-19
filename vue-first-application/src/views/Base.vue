@@ -67,7 +67,7 @@ export default {
     };
   },
   created() {
-    const url = `http://localhost:3000/bases/${this.$route.params.id}`;
+    const url = this.$adresse+`/bases/${this.$route.params.id}`;
     fetch(url)
       .then(res => res.json())
       .then((rep) => {
@@ -83,7 +83,7 @@ export default {
   methods: {
     addTable: function addTable() {
       if (this.newTable.name.length > 0) {
-        const url = `http://localhost:3000/bases/${this.base._id}/table`;
+        const url = this.$adresse+`/bases/${this.base._id}/table`;
         fetch(url, {
           method: 'POST',
           headers: {
@@ -104,7 +104,7 @@ export default {
       this.base = null;
       this.loading = true;
       // replace `getPost` with your data fetching util / API wrapper
-      const url = `http://localhost:3000/bases/${this.$route.params.id}`;
+      const url = this.$adresse+`/bases/${this.$route.params.id}`;
       fetch(url)
         .then(res => res.json())
         .then((rep) => {
@@ -113,7 +113,7 @@ export default {
         });
     },
     deleteTable: function deleteTable() {
-      const url = `http://localhost:3000/bases/${this.base._id}`;
+      const url = this.$adresse+`/bases/${this.base._id}`;
       fetch(url, { method: 'DELETE' })
         .then(console.log);
       this.$router.push({ name: 'home' });

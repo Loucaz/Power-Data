@@ -25,9 +25,9 @@
    <div class="btnformtable">
 
         <router-link :to="{ name: 'table', params: { id: base._id, idTable: table._id }}">
-      <button> <i class="fa fa-arrow-left" aria-hidden="true"></i> Retour à la base </button> 
+      <button> <i class="fa fa-arrow-left" aria-hidden="true"></i> Retour à la base </button>
         </router-link>
-     
+
     </div>
 
           <div>
@@ -48,10 +48,10 @@
 
 
 
-          <div> 
+          <div>
             <form>
               <h2>selection des données</h2>
-              <b-form-group 
+              <b-form-group
                 v-for="c in table.columns" v-bind:key="c.id"
                 v-model="selected">
                   <b-form-checkbox-group
@@ -79,7 +79,7 @@
                 <b-form-input
                   id="input"
                   class="col-3"
-                  required=""       
+                  required=""
                 >
                 </b-form-input>
               </b-form-group>
@@ -181,7 +181,7 @@ export default {
     };
   },
   created() {
-    const url = `http://localhost:3000/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
+    const url = this.$adresse+`/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
     fetch(url)
       .then(res => res.json())
       .then((rep) => {
@@ -190,7 +190,7 @@ export default {
         this.initArrayData();
       });
 
-    const urlTypes = 'http://localhost:3000/types';
+    const urlTypes = this.$adresse+'/types';
     fetch(urlTypes)
       .then(res => res.json())
       .then((rep) => {
@@ -236,7 +236,7 @@ export default {
     },
 
     reloadTable: function reloadTable() {
-      const url = `http://localhost:3000/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
+      const url = this.$adresse+`/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
       fetch(url)
         .then(res => res.json())
         .then((rep) => {
@@ -286,7 +286,7 @@ export default {
         var table = this.table;
 
         this.dataSelected.forEach(function(i) {
-          const url = `http://localhost:3000/bases/${base._id}/${table._id}/data/line/${i._id}`;
+          const url = this.$adresse+`/bases/${base._id}/${table._id}/data/line/${i._id}`;
           fetch(url, { method: 'DELETE' });
           let index = table.lines.indexOf(i);
           if (index > -1) {
@@ -305,7 +305,7 @@ export default {
     },
 
     deleteTable: function deleteTable() {
-      const url = `http://localhost:3000/bases/${this.base._id}`;
+      const url = this.$adresse+`/bases/${this.base._id}`;
       fetch(url, { method: 'DELETE' });
       this.$router.push({ name: 'home' });
     },
@@ -381,7 +381,7 @@ export default {
 
       console.log("FUNCTION ADD DATA");
 
-      const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line`;
+      const url = this.$adresse+`/bases/${this.base._id}/${this.table._id}/data/line`;
       fetch(url, {
           method: 'POST',
           headers: {
@@ -414,7 +414,7 @@ export default {
       });
       console.log("FUNCTION UPDATE LINE");
       var index = this.table.lines.indexOf(this.dataSelected[0]);
-      const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line/${this.dataSelected[0]._id}`;
+      const url = this.$adresse+`/bases/${this.base._id}/${this.table._id}/data/line/${this.dataSelected[0]._id}`;
       fetch(url, {
         method: 'PUT',
         headers: {
@@ -439,7 +439,7 @@ export default {
 
     addType: function addType() {
       if (this.newType.name.length > 0 && this.newType.realName.length > 0 && this.newType.description.length > 0) {
-        const url = 'http://localhost:3000/types';
+        const url = this.$adresse+'/types';
         fetch(url, {
           method: 'POST',
           headers: {
@@ -497,7 +497,7 @@ export default {
       if(this.$refs['default-text'] !== undefined) this.newColumn.defaultStringValue = this.$refs['default-text'][0].value;
 
       if (this.newColumn.name.length > 0 && this.newColumn.type.length > 0) {
-        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/column`;
+        const url = this.$adresse+`/bases/${this.base._id}/${this.table._id}/column`;
         fetch(url, {
           method: 'POST',
           headers: {

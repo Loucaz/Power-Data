@@ -15,6 +15,9 @@ Vue.config.productionTip = false;
 Vue.use(BootstrapVue);
 Vue.use(VueMaterial);
 
+//Vue.prototype.$adresse = "http://localhost:3000";
+Vue.prototype.$adresse = "http://iutabgdinlpvm-10.iutbourg.univ-lyon1.fr:3000/";
+
 new Vue({
   router,
   render: h => h(App),

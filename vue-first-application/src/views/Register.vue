@@ -42,7 +42,7 @@
 
         if (this.password === this.password_confirmation && this.password.length > 0)
         {
-          fetch('http://localhost:3000/users/register', {
+          fetch(this.$adresse+'/users/register', {
             method: 'POST',
             headers: {
               'content-type': 'application/json',
