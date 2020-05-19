@@ -640,4 +640,17 @@ form input{
     font-size: 0.8em;
 }
 
+/* Page formulaire */
+
+.formformulaire{
+    margin: 0;
+}
+
+.formformulaire .md-field{
+    width: 50vw;
+}
+.envoyer-form{
+    color:#fff !important;
+}
+
 

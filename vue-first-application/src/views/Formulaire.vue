@@ -22,72 +22,51 @@
       </div>
     </div>
 
-   <div class="btnformtable">
-
+    <div class="btnformtable">
         <router-link :to="{ name: 'table', params: { id: base._id, idTable: table._id }}">
       <button> <i class="fa fa-arrow-left" aria-hidden="true"></i> Retour à la base </button> 
         </router-link>
-     
     </div>
+    <!-- BLOC INSERT DATA -->
+    <div class="table-settings-content">
+      <p>Les données seront ajoutées dans la table <strong>{{ table.name }}</strong></p>
+      <div v-if="errorsAddData.length > 0" class="error-bloc">
+        <p v-for="e in errorsAddData" v-bind:key="e.column"><strong>{{ e.column }}</strong> : {{ e.message }}</p>
+      </div>
 
-          <div>
-            <md-checkbox v-model="array" value="1">Array</md-checkbox>
-            <md-checkbox v-model="obj" :value="obj2"  v-for="c in table.columns" v-bind:key="c.id"> {{ c.name }} </md-checkbox>
-            <table>
-              <tr>
-                <th>Array</th>
-                <th>Object</th>
-              </tr>
-
-              <tr>
-                <td>{{ array }}</td>
-                <td>{{ obj }}</td>
-              </tr>
-            </table>
-          </div>
-
-
-
-          <div> 
-            <form>
-              <h2>selection des données</h2>
-              <b-form-group 
-                v-for="c in table.columns" v-bind:key="c.id"
-                v-model="selected">
-                  <b-form-checkbox-group
-                    id="checkbox-group"
-                    v-model="selected"
-                  >
-                  <b-form-checkbox> {{ c.name }} </b-form-checkbox>
-                  </b-form-checkbox-group>
-              </b-form-group>
-              <b-button type="reset" variant="danger">Reset</b-button>
-            </form>
-
-            <div>Selected: <strong>{{ selected }}</strong></div>
-
-            <b-form @submit="onSubmit" @reset="onReset" v-if="show">
-              <h2>rempir les données</h2>
-              <b-form-group
-              v-for="c in table.columns" v-bind:key="c.id"
-              id="input-group"
-              label-for="input"
-              >
-                <p>{{ c.name }} :</p>
-                <!-- label="Email address:" -->
-                <!-- description="We'll never share your email with anyone else." -->
-                <b-form-input
-                  id="input"
-                  class="col-3"
-                  required=""       
-                >
-                </b-form-input>
-              </b-form-group>
-              <b-button type="submit" class="submit" variant="primary">Submit</b-button>
-              <b-button type="reset" variant="danger">Reset</b-button>
-            </b-form>
-          </div>
-  </div>
+      <form class="formformulaire">
+        <div v-for="(c, index) in table.columns" :key="c.id">
+          <md-field v-if="c.type.realName != 'date'">
+            <label>{{ c.name }}</label>
+            <md-input v-if="c.type.realName == 'shorttext' || c.type.realName == 'longtext'" v-model="newDatas.datas[index].valueString" md-counter="30"></md-input>
+            <md-input v-if="c.type.realName == 'number'" v-model="newDatas.datas[index].valueNumber" type="number"></md-input>
+            <md-select v-if="c.type.realName == 'boolean'" v-model="newDatas.datas[index].valueBoolean" md-dense>
+              <md-option value="1">Oui</md-option>
+              <md-option value="0">Non</md-option>
+            </md-select>
+            <span v-if="c.helper != null" class="md-helper-text">{{ c.helper }}</span>
+          </md-field>
+          <md-datepicker v-if="c.type.realName == 'date'" v-model="newDatas.datas[index].valueDate">
+            <label>{{ c.name }}</label>
+          </md-datepicker>
+        </div>
+            <md-button type="reset" class="md-raised md-primary" @click="addData">
+              <a class="envoyer-form" @click="$bvModal.show('bv-modal-comfirm-add-line')">
+                Envoyer
+              </a>
+              </md-button>
+            <md-button type="reset"> Reset</md-button>
+          </form>       
+      </div>  
+      <b-modal id="bv-modal-comfirm-add-line" hide-footer>
+        <template v-slot:modal-title>
+          Comfirmation
+        </template>
+        <p>Les données ont bien été ajoutées dans la table <strong>{{ table.name }}</strong></p>
+        <md-button class="md-raised md-primary" @click="$bvModal.hide('bv-modal-comfirm-add-line')">Continuer</md-button>
+      </b-modal>    
+      <!-- END BLOC INSERT DATA -->       
+    </div>
 </template>
 
 <script>
@@ -96,6 +75,7 @@ import format from 'date-fns/format';
 export default {
   name: 'RegularCheckboxes',
   name: 'table',
+  name: 'Base',
   data: function data() {
     const dateFormat = 'yyyy-MM-dd';
     const now = new Date();
