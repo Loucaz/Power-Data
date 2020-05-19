@@ -22,7 +22,6 @@
       </div>
     </div>
 
-
     <div class="table-actions">
       <div class="dropdown">
         <a class="action-btn dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -126,14 +125,6 @@
                   </md-select>
                   <span v-if="c.helper != null" class="md-helper-text">{{ c.helper }}</span>
                 </md-field>
-              </div>
-              <div v-if="dateInterval">
-                <md-datepicker id="date-start" ref="date-start" v-model="newColumn.dateStart">
-                  <label>Date minimum</label>
-                </md-datepicker>
-                <md-datepicker id="date-end" ref="date-end" v-model="newColumn.dateEnd">
-                  <label>Date maximum</label>
-                </md-datepicker>
               </div>
               <div v-if="tableChoice != null && tableChoice !== undefined">
                 <div class="choice-relation-bloc">

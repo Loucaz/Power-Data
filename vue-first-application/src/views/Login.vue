@@ -12,7 +12,7 @@
       <button class="registerbtn" type="submit" @click="handleSubmit">
         Login
       </button>
-      <p>vous n'avez pas de compte? <br>  <router-link to="/register"> créer vous un compte </router-link> </p>
+      <p>vous n'avez pas de comptev? <br>  <router-link to="/register"> créer vous un compte </router-link> </p>
       <p class="error" v-if="error">{{ error }}</p>
     </form>
   </div>
