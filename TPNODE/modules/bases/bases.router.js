@@ -5,6 +5,7 @@ var router = express.Router();
 router.param("baseId", BM.baseIdParam);
 router.param("tableId", BM.tableIdParam);
 router.param("lineId", BM.lineIdParam);
+router.param("columnId", BM.columnIdParam);
 
 router.route("/")
     .get(BM.getBases)
@@ -21,8 +22,14 @@ router.route('/:baseId/table')
 router.route('/:baseId/:tableId')
     .get(BM.getTable);
 
+router.route('/:baseId/:tableId/data-selectors')
+    .get(BM.getDataSelectors);
+
 router.route('/:baseId/:tableId/column')
     .post(BM.addColumn);
+
+router.route('/:baseId/:tableId/column/:columnId')
+    .put(BM.updateColumn);
 
 router.route('/:baseId/:tableId/data')
     .get(BM.getData);
@@ -33,5 +40,8 @@ router.route('/:baseId/:tableId/data/line')
 router.route('/:baseId/:tableId/data/line/:lineId')
     .put(BM.testValidity, BM.updateLine)
     .delete(BM.deleteLine);
+
+router.route('/line/:lineId/label')
+    .get(BM.getLabelRelation);
 
 module.exports = router;

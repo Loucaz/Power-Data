@@ -44,18 +44,10 @@
           <a class="dropdown-item" href="#">Créer un formulaire</a>
         </div>
       </div>
-      <div class="dropdown">
-        <a class="action-btn dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Developpement
-        </a>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-          <a class="dropdown-item" @click="$bvModal.show('bv-modal-add-type')">Ajouter un type de colonne</a>
-        </div>
-      </div>
     </div>
     <div class="table-data-container">
       <div class="table-datas">
-        <md-table>
+        <md-table v-if="!loadingLabels && !loadingArray">
           <md-table-toolbar v-if="dataSelected.length > 0" style="background-color: #ffdcdc;">
             <div class="md-toolbar-section-start">{{ getLabel(dataSelected.length) }}</div>
               <md-button class="md-icon-button" @click="deleteSelected">
@@ -63,23 +55,40 @@
               </md-button>
           </md-table-toolbar>
 
-          <md-table-row>
-            <md-table-head md-numeric>ID</md-table-head>
-            <md-table-head v-for="c in table.columns" v-bind:key="c.id">
-              {{ c.name }}
-            </md-table-head>
-          </md-table-row>
+          <tr class="md-table-row">
+            <th class="md-table-head md-numeric">
+              <div class="md-table-head-container">
+                <div class="md-table-head-label">ID</div>
+              </div>
+            </th>
+            <th class="md-table-head" v-for="c in table.columns" v-bind:key="c.id" @click="changeIsLabel(c)">
+              <div class="md-table-head-container">
+                <div class="md-table-head-label">
+                  <md-icon v-if="c.type.realName !== 'relation' && (c.isLabel === null ||c.isLabel === undefined || !c.isLabel)">
+                    star_outline
+                    <md-tooltip md-direction="bottom">Définir comme label de la table</md-tooltip>
+                  </md-icon>
+                  <md-icon v-if="c.type.realName !== 'relation' && c.isLabel">
+                    star
+                    <md-tooltip md-direction="bottom">Ne plus définir comme label de la table</md-tooltip>
+                  </md-icon>
+                  {{ c.name }}
+                </div>
+              </div>
+            </th>
+          </tr>
 
           <md-table-row v-for="(l, index) in table.lines" v-bind:key="l.id" @click="onSelect(l)" :style="getClass(l)">
             <md-table-cell md-numeric>{{ index }}</md-table-cell>
             <md-table-cell v-for="c in table.columns" v-bind:key="c.id">
               <p v-for="d in l.data" v-bind:key="d.id">
-                <span v-if="d.column == c._id">{{ d.value }}</span>
+                <span v-if="d.column == c._id && c.type.realName != 'relation'">{{ getDataLabel(d, c) }}</span>
+                <span v-if="d.column == c._id && c.type.realName == 'relation'"><span v-for="objId in d.valueObjectId" v-bind:key="objId">- {{ linesLabel[objId].label }}</span></span>
               </p>
             </md-table-cell>
           </md-table-row>
 
-          <md-table-row @click="showToolBar('add-data')">
+          <md-table-row @click="showToolBar('add-data')" style="cursor: pointer;">
             <md-table-cell md-numeric>+</md-table-cell>
             <md-table-cell v-for="c in table.columns" v-bind:key="c.id"></md-table-cell>
           </md-table-row>
@@ -108,11 +117,11 @@
             </md-field>
             <div class="extra-type-settings">
               <div v-for="c in columnConstraints" :key="c.id">
-                <md-field v-if="c.type != 'checkbox' && c.type != 'date'">
+                <md-field v-if="c.type !== 'checkbox' && c.type !== 'date'">
                   <label>{{ c.title }}</label>
-                  <md-input v-if="c.type == 'text'" v-model="c.cible" :id="c.id" :ref="c.id" md-counter="30"></md-input>
-                  <md-input v-if="c.type == 'number'" v-model="c.cible" type="number" :id="c.id" :ref="c.id"></md-input>
-                  <md-select v-if="c.type == 'select'" v-model="c.cible" name="typeDate" :id="c.id" :ref="c.id" @input="c.input" md-dense>
+                  <md-input v-if="c.type === 'text'" v-model="c.cible" :id="c.id" :ref="c.id" md-counter="30"></md-input>
+                  <md-input v-if="c.type === 'number'" v-model="c.cible" type="number" :id="c.id" :ref="c.id"></md-input>
+                  <md-select v-if="c.type === 'select'" v-model="c.cible" name="typeDate" :id="c.id" :ref="c.id" @input="c.input" md-dense>
                     <md-option :value="opt.id" v-for="opt in c.options" :key="opt.id">{{ opt.name }}</md-option>
                   </md-select>
                   <span v-if="c.helper != null" class="md-helper-text">{{ c.helper }}</span>
@@ -125,6 +134,16 @@
                 <md-datepicker id="date-end" ref="date-end" v-model="newColumn.dateEnd">
                   <label>Date maximum</label>
                 </md-datepicker>
+              </div>
+              <div v-if="tableChoice != null && tableChoice !== undefined">
+                <div class="choice-relation-bloc">
+                  <md-radio v-model="newColumn.relationType" value="one-to-one" class="md-primary">Relation "Un pour un"</md-radio>
+                  <span class="md-helper-text">1 ligne de "{{ table.name }}" pourra être liée au plus à une seule ligne de "{{ tableChoice.name }}"</span>
+                </div>
+                <div class="choice-relation-bloc">
+                  <md-radio v-model="newColumn.relationType" value="one-to-many" class="md-primary">Relation "Un pour plusieurs"</md-radio>
+                  <span class="md-helper-text">1 ligne de "{{ table.name }}" pourra être liée à plusieurs lignes de "{{ tableChoice.name }}"</span>
+                </div>
               </div>
               <md-checkbox v-if="nullableOption" class="md-primary" v-model="newColumn.nullable">Peut être vide</md-checkbox>
             </div>
@@ -158,14 +177,18 @@
                   <md-option value="1">Oui</md-option>
                   <md-option value="0">Non</md-option>
                 </md-select>
+                <md-select v-if="c.type.realName === 'relation' && c.relationType === 'one-to-many'" v-model="newDatas.datas[index].valueObjectId" md-dense multiple>
+                  <md-option v-for="ds in dataSelectors[c._id]" :value="ds.id" v-bind:key="ds.id">{{ ds.label }}</md-option>
+                </md-select>
+                <md-select v-if="c.type.realName === 'relation' && c.relationType === 'one-to-one'" v-model="newDatas.datas[index].valueObjectId" md-dense>
+                  <md-option v-for="ds in dataSelectors[c._id]" :value="ds.id" v-bind:key="ds.id">{{ ds.label }}</md-option>
+                </md-select>
                 <span v-if="c.helper != null" class="md-helper-text">{{ c.helper }}</span>
               </md-field>
               <md-datepicker v-if="c.type.realName == 'date'" v-model="newDatas.datas[index].valueDate">
                 <label>{{ c.name }}</label>
               </md-datepicker>
             </div>
-
-
             <md-button class="md-primary" @click="addData">Créer</md-button>
             <md-button @click="showAddColumn = !showAddColumn">Annuler</md-button>
           </div>
@@ -255,6 +278,9 @@ export default {
         dateIsFree: false,
         dateStart: format(now, dateFormat),
         dateEnd: format(now, dateFormat),
+        relationType: String,
+        tableReference: String,
+        isLabel: false,
       },
       dataSelected: [],
       newDatas: {
@@ -264,6 +290,7 @@ export default {
           valueNumber: Number,
           valueBoolean: Boolean,
           valueDate: Date,
+          valueObjectId: Array,
           line: Number,
           Column: String,
         }]
@@ -296,9 +323,14 @@ export default {
         description: String,
       },
       loading: true,
+      loadingArray: true,
+      loadingLabels: true,
       showAddColumn: false,
       showInsertData: false,
       showEditData: false,
+      tableChoice: null,
+      dataSelectors: [],
+      linesLabel: [],
     };
   },
   created() {
@@ -306,9 +338,12 @@ export default {
     fetch(url)
       .then(res => res.json())
       .then((rep) => {
+        this.loading = false;
         this.base = rep.base;
         this.table = rep.table;
         this.initArrayData();
+        this.initLabelsReferences();
+        this.getDataSelectors();
       });
 
     const urlTypes = 'http://localhost:3000/types';
@@ -365,6 +400,58 @@ export default {
           this.table = rep.table;
           this.initArrayData();
         });
+    },
+
+    getDataSelectors: function getDataSelectors() {
+      var baseId = this.base._id;
+      var dataSelectors = [];
+      this.table.columns.forEach(function(e) {
+        if(e.type.realName === 'relation') {
+          const url = `http://localhost:3000/bases/${baseId}/${e.tableReference}/data-selectors`;
+          fetch(url)
+            .then(res => res.json())
+            .then((rep) => {
+              dataSelectors[e._id] = rep;
+            });
+        }
+      });
+      this.dataSelectors = dataSelectors;
+    },
+
+    getDataLabel: function getDataLabel(data, column)
+    {
+      if((column !== undefined && column !== null) &&
+          (column.type !== undefined && column.type !== null) &&
+            (column.type.realName !== undefined && column.type.realName !== null)) {
+
+        let label = '';
+        switch(column.type.realName) {
+          case 'date':
+            let date = new Date(data.valueDate);
+            return date.getDate() +'/'+ date.getMonth() +'/'+ date.getFullYear();
+            break;
+          default:
+            return data.value;
+            break;
+        }
+      } else return '';
+    },
+
+    changeIsLabel: function changeIsLabel(column) {
+      if(column.type.realName !== 'relation') {
+        column.isLabel = (null === column.isLabel || undefined === column.isLabel) ? false : !column.isLabel;
+        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/column/${column._id}`;
+        fetch(url, {
+          method: 'PUT',
+          headers: {
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify(column),
+        })
+          .then(res => res.json())
+          .then((rep) => {
+          });
+      }
     },
 
     onSelect: function onSelect(item) {
@@ -439,11 +526,103 @@ export default {
           valueString: null,
           valueNumber: null,
           valueBoolean: null,
+          valueObjectId: null,
           valueDate: null,
           line: null,
           column: this.table.columns[i],
         };
       }
+      this.loadingArray = false;
+    },
+
+    initLabelsReferences: function initLabelsReferences() {
+      console.log('START LABEL MODIFICATIONS');
+      var table = this.table;
+      var linesLabel = this.linesLabel;
+      var columnsRelation = [];
+
+      table.columns.forEach(function(c) {
+        if(c.type.realName === 'relation') columnsRelation.push(c._id);
+      });
+
+      var dataRelation = [];
+      table.lines.forEach(function (line) {
+        line.data.forEach(function (data) {
+          if (columnsRelation.includes(data.column)) {
+            data.valueObjectId.forEach((objectId) => dataRelation.push(objectId));
+          }
+        })
+      });
+
+      var index = 0;
+      if(dataRelation.length <= 0) this.loadingLabels = false;
+      dataRelation.forEach(function(obj) {
+        if(linesLabel[obj] === null || linesLabel[obj] === undefined) {
+          const url = `http://localhost:3000/bases/line/${obj}/label`;
+          fetch(url)
+            .then(res => res.json())
+            .then((rep) => {
+              linesLabel[obj] = rep
+              index++;
+              if(index >= dataRelation.length) {
+                this.linesLabel = linesLabel;
+                this.loadingLabels = false;
+              }
+            });
+        } else {
+          index++;
+          if(index >= dataRelation.length) {
+            this.linesLabel = linesLabel;
+            this.loadingLabels = false;
+          }
+        }
+      }, this);
+
+      /*
+      var index = 0;
+
+      table.lines.forEach(function(l) {
+        index++;
+        console.log('check line ');
+        table.columns.forEach(function(c) {
+          console.log('check colunm ' + c.name);
+          l.data.forEach(function(d) {
+            console.log('check data ' + d.value);
+            if(d.column === c._id && c.type.realName === 'relation') {
+              console.log('Column relation ' + c.name);
+              if(d.valueObjectId !== undefined && d.valueObjectId !== null && Array.isArray(d.valueObjectId)) {
+                console.log('Data contain object id');
+                var i = 0;
+                d.valueObjectId.forEach(function(objId) {
+                  i++;
+                  console.log('check data ' + objId);
+                  if(linesLabel[objId] === null || linesLabel[objId] === undefined) {
+                    const url = `http://localhost:3000/bases/line/${objId}/label`;
+                    fetch(url)
+                      .then(res => res.json())
+                      .then((rep) => {
+                        linesLabel[objId] = rep
+                        if(index >= table.lines.length && i >= d.valueObjectId.length) {
+                          this.linesLabel = linesLabel;
+                          console.log(this.linesLabel);
+                        }
+                        console.log('ID: ' + objId + ', LABEL: ' + rep.label);
+                        console.log(this.linesLabel[objId]);
+                      }, this);
+                  }
+                }, this)
+              }
+            }
+          }, this);
+        }, this);
+        if(index >= table.lines.length) {
+          this.linesLabel = linesLabel;
+          console.log(this.linesLabel);
+        }
+      }, this);
+
+       */
+
     },
 
     initArrayUpdateLine: function initArrayUpdateLine(line) {
@@ -479,7 +658,6 @@ export default {
           }
         }
       }
-      console.log(this.lineUpdate)
     },
 
     debug: function debug(x) {
@@ -494,13 +672,18 @@ export default {
           (e.valueDate != null) ? e.valueDate :
             (e.valueString != null) ? e.valueString :
               (e.valueNumber != null) ? e.valueNumber :
-                (e.valueBoolean != null) ? e.valueBoolean : null;
+                (e.valueBoolean != null) ? e.valueBoolean :
+                  (e.valueObjectId != null) ? e.valueObjectId.toString() : null;
+
         if(e.line == null) e.line = -1;
         if(e.valueBoolean === '0') e.valueBoolean = false;
         if(e.valueBoolean === '1') e.valueBoolean = true;
+        if(e.column.type.realName === 'relation') {
+          if((e.valueObjectId !== null && e.valueObjectId !== undefined) && !Array.isArray(e.valueObjectId)) {
+            e.valueObjectId = [e.valueObjectId];
+          } else if(!Array.isArray(e.valueObjectId)) e.valueObjectId = [];
+        }
       });
-
-      console.log("FUNCTION ADD DATA");
 
       const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line`;
       fetch(url, {
@@ -515,9 +698,11 @@ export default {
           if(Array.isArray(rep)) {
             this.errorsAddData = rep;
             console.log('ERRORS :' + rep);
-          }
-          else {
+          } else {
+            console.log(rep);
             this.table = rep;
+            this.loadingLabels = true;
+            this.initLabelsReferences();
           }
         });
     },
@@ -533,7 +718,6 @@ export default {
         if(e.valueBoolean === '0') e.valueBoolean = false;
         if(e.valueBoolean === '1') e.valueBoolean = true;
       });
-      console.log("FUNCTION UPDATE LINE");
       var index = this.table.lines.indexOf(this.dataSelected[0]);
       const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line/${this.dataSelected[0]._id}`;
       fetch(url, {
@@ -553,29 +737,8 @@ export default {
             this.dataSelected = [];
             this.showToolBar();
             this.table.lines.splice(index, 1, rep);
-            console.log(this.table.lines);
           }
         });
-    },
-
-    addType: function addType() {
-      if (this.newType.name.length > 0 && this.newType.realName.length > 0 && this.newType.description.length > 0) {
-        const url = 'http://localhost:3000/types';
-        fetch(url, {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-          },
-          body: JSON.stringify(this.newType),
-        })
-          .then(res => res.json())
-          .then((res) => {
-            console.log(res);
-          });
-        this.newType.name = '';
-        this.newType.realName = '';
-        this.newType.description = '';
-      }
     },
 
     showToolBar: function showToolBar(name) {
@@ -613,9 +776,9 @@ export default {
     addColumn: function addColumn() {
 
       if(this.$refs['newcolumn-min'] !== undefined && this.$refs['newcolumn-min'][0] !== undefined) this.newColumn.min = this.$refs['newcolumn-min'][0].value;
-      if(this.$refs['newcolumn-max'] !== undefined) this.newColumn.max = this.$refs['newcolumn-max'][0].value;
-      if(this.$refs['step-value'] !== undefined) this.newColumn.numberStepValue = this.$refs['step-value'][0].value;
-      if(this.$refs['default-text'] !== undefined) this.newColumn.defaultStringValue = this.$refs['default-text'][0].value;
+      if(this.$refs['newcolumn-max'] !== undefined && this.$refs['newcolumn-max'][0] !== undefined) this.newColumn.max = this.$refs['newcolumn-max'][0].value;
+      if(this.$refs['step-value'] !== undefined && this.$refs['step-value'][0] !== undefined) this.newColumn.numberStepValue = this.$refs['step-value'][0].value;
+      if(this.$refs['default-text'] !== undefined && this.$refs['default-text'][0] !== undefined) this.newColumn.defaultStringValue = this.$refs['default-text'][0].value;
 
       if (this.newColumn.name.length > 0 && this.newColumn.type.length > 0) {
         const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/column`;
@@ -626,12 +789,14 @@ export default {
           },
           body: JSON.stringify(this.newColumn),
         })
-          .then(res => res.json())
+          .then(rep => rep.json())
           .then((res) => {
             const tmp = this.table;
             tmp.columns.push(res);
             this.table = tmp;
             this.initArrayData();
+            this.getDataSelectors();
+            this.tableChoice = null;
             this.newColumn = {
               name: '',
               type: String,
@@ -642,6 +807,8 @@ export default {
               numberStepValue: Number,
               dateIsToday: false,
               dateIsFree: false,
+              relationType: null,
+              tableReference: String,
             };
           });
       }
@@ -670,6 +837,16 @@ export default {
         default:
           break;
       }
+    },
+    getRelationSettings: function getRelationSettings(tableId) {
+      var table = null;
+      this.base.tables.forEach(function(e) {
+        if(e._id === tableId) {
+          table = e;
+        }
+      });
+      this.newColumn.tableReference = (table !== null && table !== undefined) ? table._id : null;
+      this.tableChoice = table;
     },
     getColumnSettings: function getColumnSettings(typeRealname) {
       this.dateInterval = false;
@@ -705,6 +882,7 @@ export default {
           this.nullableOption = true;
           this.newColumn.min = 0;
           this.newColumn.max = 20;
+          this.newColumn.defaultStringValue = '';
           this.columnConstraints = [
             {
               id: 'default-text',
@@ -730,6 +908,7 @@ export default {
           this.newColumn.min = 0;
           this.newColumn.max = 250;
           this.nullableOption = true;
+          this.newColumn.defaultStringValue = '';
           this.columnConstraints = [
             {
               id: 'default-text',
@@ -765,6 +944,28 @@ export default {
                 { name: 'Date du jour', id: '3' },
               ],
               input: this.getDateSettings,
+            },
+          ];
+          break;
+        case 'relation':
+          this.nullableOption = true;
+          this.tableChoice = null;
+          var options = [];
+          var tableId = this.table._id;
+          this.base.tables.forEach(function(e) {
+            if(tableId !== e._id) {
+              let obj = { name: e.name, id: e._id };
+              options.push(obj);
+            }
+          });
+          this.columnConstraints = [
+            {
+              id: 'select-relation-table',
+              title: 'Table ciblée',
+              cible: this.typeDate,
+              type: 'select',
+              options: options,
+              input: this.getRelationSettings,
             },
           ];
           break;

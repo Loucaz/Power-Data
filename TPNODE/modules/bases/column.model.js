@@ -13,6 +13,11 @@ let ColumnSchema = new Schema({
       ref: "Type",
     },
 
+    isLabel: {
+      type: Boolean,
+      required: false,
+    },
+
     min: {
         type: Number,
         required: false,
@@ -69,6 +74,18 @@ let ColumnSchema = new Schema({
         required: false,
     },
 
+    // RELATION
+
+    relationType: {
+        type: String,
+        required: false,
+    },
+
+    tableReference: {
+        type: Schema.Types.ObjectId,
+        ref: "Table",
+        required: false,
+    },
 
 });
 
