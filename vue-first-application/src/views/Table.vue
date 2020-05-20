@@ -478,11 +478,11 @@ export default {
           }
         }
       }
-      console.log(this.lineUpdate)
+      //console.log(this.lineUpdate)
     },
 
     debug: function debug(x) {
-      console.log(x);
+      //console.log(x);
     },
 
     addData: function addData() {
@@ -499,7 +499,7 @@ export default {
         if(e.valueBoolean === '1') e.valueBoolean = true;
       });
 
-      console.log("FUNCTION ADD DATA");
+      //console.log("FUNCTION ADD DATA");
 
       const url = this.$adresse+`/bases/${this.base._id}/${this.table._id}/data/line`;
       fetch(url, {
@@ -513,7 +513,7 @@ export default {
         .then((rep) => {
           if(Array.isArray(rep)) {
             this.errorsAddData = rep;
-            console.log('ERRORS :' + rep);
+            //console.log('ERRORS :' + rep);
           }
           else {
             this.table = rep;
@@ -532,7 +532,7 @@ export default {
         if(e.valueBoolean === '0') e.valueBoolean = false;
         if(e.valueBoolean === '1') e.valueBoolean = true;
       });
-      console.log("FUNCTION UPDATE LINE");
+      //console.log("FUNCTION UPDATE LINE");
       var index = this.table.lines.indexOf(this.dataSelected[0]);
       const url = this.$adresse+`/bases/${this.base._id}/${this.table._id}/data/line/${this.dataSelected[0]._id}`;
       fetch(url, {
@@ -546,13 +546,13 @@ export default {
         .then((rep) => {
           if(Array.isArray(rep)) {
             this.errorsAddData = rep;
-            console.log('ERRORS :' + rep);
+            //console.log('ERRORS :' + rep);
           } else {
             this.reloadTable();
             this.dataSelected = [];
             this.showToolBar();
             this.table.lines.splice(index, 1, rep);
-            console.log(this.table.lines);
+            //console.log(this.table.lines);
           }
         });
     },
@@ -569,7 +569,7 @@ export default {
         })
           .then(res => res.json())
           .then((res) => {
-            console.log(res);
+           // console.log(res);
           });
         this.newType.name = '';
         this.newType.realName = '';
