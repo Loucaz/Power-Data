@@ -134,7 +134,9 @@
               }
               this.bases = res.user.bases;
               this.loading = false;
-            });
+            }).catch((error) => {
+            return this.Logout();
+          });
           this.username = localStorage.getItem('username');
         }else{
           this.Logout();

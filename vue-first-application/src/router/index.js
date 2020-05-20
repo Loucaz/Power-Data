@@ -64,9 +64,6 @@ const routes = [
     path: '/bases/:id/:idTable/form',
     name: 'formulaire',
     component: () => import('../views/Formulaire.vue'),
-    meta: {
-      requiresAuth: true
-    }
   },
   {
     path: '/login',

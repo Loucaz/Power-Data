@@ -1,18 +1,20 @@
 <template>
-<div class="fondbleu">
+  <div class="fondbleu">
     <form class="formregister">
       <h4 class="formtitle">Login</h4>
 
-      <label for="email" >E-Mail Address</label> <br>
+      <label for="email">E-Mail Address</label> <br>
       <input id="email" type="email" v-model="email" required autofocus>
       <br>
-      <label for="password" >Password</label> <br>
+      <label for="password">Password</label> <br>
       <input id="password" type="password" v-model="password" required>
       <br>
       <button class="registerbtn" type="submit" @click="handleSubmit">
         Login
       </button>
-      <p>vous n'avez pas de comptev? <br>  <router-link to="/register"> créer vous un compte </router-link> </p>
+      <p>vous n'avez pas de comptev? <br>
+        <router-link to="/register"> créer vous un compte</router-link>
+      </p>
       <p class="error" v-if="error">{{ error }}</p>
     </form>
   </div>
@@ -20,18 +22,18 @@
 
 <script>
   export default {
-    data(){
+    data() {
       return {
-        email : "",
-        password : "",
+        email: "",
+        password: "",
         error: "",
       }
     },
-    methods : {
-      handleSubmit(e){
+    methods: {
+      handleSubmit(e) {
         e.preventDefault()
         if (this.password.length > 0) {
-          fetch(this.$adresse+'/users/login', {
+          fetch(this.$adresse + '/users/login', {
             method: 'POST',
             headers: {
               'content-type': 'application/json',
@@ -43,10 +45,10 @@
           })
             .then(res => res.json())
             .then((response) => {
-              if(response.error != null){
-                console.log(response);
-                this.error=response.error;
-              }else {
+              if (response.error != null) {
+                //console.log(response);
+                this.error = response.error;
+              } else {
                 localStorage.setItem('user', response.userId);
                 localStorage.setItem('jwt', response.token);
                 localStorage.setItem('username', response.username);
@@ -55,13 +57,13 @@
                   if (this.$route.params.nextUrl != null) {
                     this.$router.push(this.$route.params.nextUrl)
                   } else {
-                      this.$router.push('/')
+                    this.$router.push('/')
                   }
                 }
               }
             })
             .catch(error => {
-              console.error(error)
+              //console.error(error)
             });
         }
       }
