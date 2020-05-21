@@ -28,11 +28,6 @@ let DataSchema = new Schema({
         required: false
     },
 
-    valueObjectId: [{
-        type: Schema.Types.ObjectId,
-        required: false
-    }],
-
     column: {
         type: Schema.Types.ObjectId,
         ref: "Column",

@@ -40,7 +40,7 @@ export default {
     };
   },
   created() {
-    fetch('http://localhost:3000/bases')
+    fetch(this.$adresse+'/bases')
       .then(res => res.json())
       .then((bases) => {
         this.bases = bases;
@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     addBase: function addBase() {
-      fetch('http://localhost:3000/bases', {
+      fetch(this.$adresse+'/bases', {
         method: 'POST',
         headers: {
           'content-type': 'application/json',

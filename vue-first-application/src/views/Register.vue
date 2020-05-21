@@ -28,29 +28,29 @@
       <md-button class="md-dense md-raised md-primary" @click="handleSubmit">inscription</md-button>
 
       <p>Déjà un compte ? <br>  <router-link to="/login"> Se connecter </router-link> </p>
+
     </form>
   </div>
 </template>
 
 <script>
   export default {
-    props : ["nextUrl"],
-    data(){
+    props: ["nextUrl"],
+    data() {
       return {
-        name : "",
-        email : "",
-        password : "",
-        password_confirmation : "",
-        error : "",
+        name: "",
+        email: "",
+        password: "",
+        password_confirmation: "",
+        error: "",
       }
     },
-    methods : {
+    methods: {
       handleSubmit(e) {
         e.preventDefault()
 
-        if (this.password === this.password_confirmation && this.password.length > 0)
-        {
-          fetch('http://localhost:3000/users/register', {
+        if (this.password === this.password_confirmation && this.password.length > 0) {
+          fetch(this.$adresse + '/users/register', {
             method: 'POST',
             headers: {
               'content-type': 'application/json',
@@ -63,10 +63,10 @@
           })
             .then(res => res.json())
             .then((response) => {
-              if(response.error != null){
-                console.log(response);
-                this.error=response.error;
-              }else {
+              if (response.error != null) {
+                // console.log(response);
+                this.error = response.error;
+              } else {
 
                 if (response.userId != null) {
                   this.$emit('loggedIn')
@@ -79,13 +79,13 @@
               }
             })
             .catch(error => {
-              console.error(error)
+              // console.error(error)
             });
         } else {
-          this.password = ""
-          this.passwordConfirm = ""
+          this.password = "";
+          this.password_confirmation = "";
 
-          return alert("Passwords do not match")
+          this.error = "Le mot de passe ne correspond pas";
         }
       }
     }

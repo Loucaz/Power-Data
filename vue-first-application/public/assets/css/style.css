@@ -223,11 +223,6 @@ p a {
     margin-right: 1rem;
 }
 
-.item-list-relation {
-    display: flex;
-    flex-direction: column;
-}
-
 .base-tables {
     width: 100%;
     font-family: 'Work Sans', sans-serif;
@@ -633,30 +628,6 @@ p a {
     box-shadow: 0 1px 10px rgba(0,0,0,.1);
 }
 
-th .md-icon {
-    font-size: 0.8rem !important;
-    cursor: pointer;
-}
-
-.choice-relation-bloc {
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: column;
-}
-
-.choice-relation-bloc:not(:last-child) {
-    margin-bottom: 1.5rem;
-}
-
-.choice-relation-bloc .md-helper-text {
-    color: rgba(0,0,0,0.54);
-    font-size: 0.8rem;
-}
-
-.choice-relation-bloc .md-radio {
-    margin: 0;
-}
-
 .table-bloc-settings {
     background-color: #fbfbfb;
     border-left: 1px solid #eee;
@@ -839,6 +810,21 @@ form input{
     width:300px;
 }
 
+.choice-relation-bloc {
+    display: flex;
+    flex-direction: column;
+}
+
+.choice-relation-bloc .md-radio {
+    margin: 1rem 0 0;
+}
+
+.choice-relation-bloc .md-helper-text {
+    color: #b0b0b0;
+    font-weight: 300;
+    font-size: 0.8rem;
+}
+
 .formregister .registerbtn{
     border: none;
     border-radius: 2px;
@@ -871,4 +857,7 @@ form input{
     color:#fff !important;
 }
 
+.md-table-head-label i {
+    font-size: 1rem !important;
+}
 

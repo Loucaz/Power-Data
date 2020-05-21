@@ -94,7 +94,7 @@
     },
     methods: {
       addBase: function addBase() {
-        fetch('http://localhost:3000/bases', {
+        fetch(this.$adresse+'/bases', {
           method: 'POST',
           headers: {
             'content-type': 'application/json',
@@ -107,7 +107,7 @@
           .then((base) => {
             this.bases.push(base);
             this.newBase.name = '';
-            fetch(`http://localhost:3000/users/${localStorage.getItem('user')}`, {
+            fetch(this.$adresse+`/users/${localStorage.getItem('user')}`, {
               method: 'PUT',
               headers: {
                 'content-type': 'application/json',
@@ -125,7 +125,7 @@
       },
       fetchData() {
         if (localStorage.getItem('user') != null) {
-          fetch(`http://localhost:3000/users/${localStorage.getItem('user')}`, {
+          fetch(this.$adresse+`/users/${localStorage.getItem('user')}`, {
             method: 'GET',
             headers: {
               'content-type': 'application/x-www-form-urlencoded',
@@ -139,7 +139,9 @@
               }
               this.bases = res.user.bases;
               this.loading = false;
-            });
+            }).catch((error) => {
+            return this.Logout();
+          });
           this.username = localStorage.getItem('username');
         }else{
           this.Logout();
@@ -147,7 +149,7 @@
       },
       Logout() {
         this.username = null;
-        this.bases = null;
+        this  .bases = null;
         localStorage.clear();
       }
     },

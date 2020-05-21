@@ -67,7 +67,7 @@ export default {
     };
   },
   created() {
-    fetch('http://localhost:3000/posts')
+    fetch(this.$adresse+'/posts')
       .then(res => res.json())
       .then((posts) => {
         this.posts = posts;
@@ -81,7 +81,7 @@ export default {
     },
     addPost: function addPost() {
       console.log(this.newPost);
-      fetch('http://localhost:3000/posts', {
+      fetch(this.$adresse+'/posts', {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
@@ -103,7 +103,7 @@ export default {
       this.$bvModal.show('modal-2');
     },
     updatePost: function updatePost() {
-      const url = `http://localhost:3000/posts/${this.updatePostObject._id}`;
+      const url = this.$adresse+`/posts/${this.updatePostObject._id}`;
       fetch(url, {
         method: 'PUT',
         headers: {

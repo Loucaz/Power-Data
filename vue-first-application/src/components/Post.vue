@@ -14,7 +14,7 @@ export default {
   },
   methods: {
     updatePost: function updatePost() {
-      const url = `http://localhost:3000/posts/${this.data._id}`;
+      const url = this.$adresse+`/posts/${this.data._id}`;
       fetch(url, {
         method: 'PUT',
         headers: {
@@ -28,7 +28,7 @@ export default {
         .then(res => res.json());
     },
     deletePost: function deletePost() {
-      const url = `http://localhost:3000/posts/${this.data._id}`;
+      const url = this.$adresse+`/posts/${this.data._id}`;
       fetch(url, { method: 'DELETE' })
         .then(res => res.json())
         .then(this.$emit('updateTable', this.data._id));

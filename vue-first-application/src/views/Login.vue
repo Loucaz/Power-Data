@@ -1,6 +1,7 @@
 <template>
   <div class="login-bloc">
     <form class="formregister">
+
       <h4 class="formtitle">Connexion</h4>
 
       <p class="error" v-if="error">{{ error }}</p>
@@ -24,18 +25,18 @@
 
 <script>
   export default {
-    data(){
+    data() {
       return {
-        email : "",
-        password : "",
+        email: "",
+        password: "",
         error: "",
       }
     },
-    methods : {
-      handleSubmit(e){
+    methods: {
+      handleSubmit(e) {
         e.preventDefault()
         if (this.password.length > 0) {
-          fetch('http://localhost:3000/users/login', {
+          fetch(this.$adresse + '/users/login', {
             method: 'POST',
             headers: {
               'content-type': 'application/json',
@@ -47,10 +48,10 @@
           })
             .then(res => res.json())
             .then((response) => {
-              if(response.error != null){
-                console.log(response);
-                this.error=response.error;
-              }else {
+              if (response.error != null) {
+                //console.log(response);
+                this.error = response.error;
+              } else {
                 localStorage.setItem('user', response.userId);
                 localStorage.setItem('jwt', response.token);
                 localStorage.setItem('username', response.username);
@@ -59,13 +60,13 @@
                   if (this.$route.params.nextUrl != null) {
                     this.$router.push(this.$route.params.nextUrl)
                   } else {
-                      this.$router.push('/')
+                    this.$router.push('/')
                   }
                 }
               }
             })
             .catch(error => {
-              console.error(error)
+              //console.error(error)
             });
         }
       }

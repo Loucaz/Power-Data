@@ -23,14 +23,8 @@ router.route('/:baseId/:tableId')
     .get(BM.getTable)
     .delete(BM.deleteTable);
 
-router.route('/:baseId/:tableId/data-selectors')
-    .get(BM.getDataSelectors);
-
 router.route('/:baseId/:tableId/column')
     .post(BM.addColumn);
-
-router.route('/:baseId/:tableId/column/:columnId')
-    .put(BM.updateColumn);
 
 router.route('/:baseId/:tableId/data')
     .get(BM.getData);
@@ -44,8 +38,5 @@ router.route('/:baseId/:tableId/data/line')
 router.route('/:baseId/:tableId/data/line/:lineId')
     .put(BM.testValidity, BM.updateLine)
     .delete(BM.deleteLine);
-
-router.route('/line/:lineId/label')
-    .get(BM.getLabelRelation);
 
 module.exports = router;

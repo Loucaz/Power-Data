@@ -40,7 +40,7 @@
           <router-link class="dropdown-item" :to="{ name: 'formulaire', params: { id: base._id, idTable: table._id }}">
             Afficher le formulaire
           </router-link>
-         </div>
+        </div>
       </div>
     </div>
     <div class="table-data-container">
@@ -48,9 +48,9 @@
         <md-table v-if="!loadingLabels && !loadingArray">
           <md-table-toolbar v-if="dataSelected.length > 0" style="background-color: #ffdcdc;">
             <div class="md-toolbar-section-start">{{ getLabel(dataSelected.length) }}</div>
-              <md-button class="md-icon-button" @click="deleteSelected">
-                <md-icon>delete</md-icon>
-              </md-button>
+            <md-button class="md-icon-button" @click="deleteSelected">
+              <md-icon>delete</md-icon>
+            </md-button>
           </md-table-toolbar>
 
           <tr class="md-table-row">
@@ -262,770 +262,770 @@
 
 
 <script>
-import format from 'date-fns/format';
+  import format from 'date-fns/format';
 
-export default {
-  name: 'RegularCheckboxes',
-  name: 'table',
-  data: function data() {
-    const dateFormat = 'yyyy-MM-dd';
-    const now = new Date();
-    return {
-      weekday: 1,
-      array: [],
-      obj2: {name: 'obj1'},
-      obj: null,
-      form: {
+  export default {
+    name: 'RegularCheckboxes',
+    name: 'table',
+    data: function data() {
+      const dateFormat = 'yyyy-MM-dd';
+      const now = new Date();
+      return {
+        weekday: 1,
+        array: [],
+        obj2: {name: 'obj1'},
+        obj: null,
+        form: {
           email: '',
           name: '',
           food: null,
           checked: []
         },
         show: true,
-      base: {
-        name: String,
-        _id: String,
-        tables: [],
-      },
-      table: {
-        columns: [],
-        name: String,
-        _id: String,
-        lines: [],
-      },
-      newColumn: {
-        name: String,
-        type: String,
-        nullable: true,
-        min: Number,
-        max: Number,
-        defaultStringValue: String,
-        numberStepValue: Number,
-        dateIsToday: false,
-        dateIsFree: false,
-        dateStart: format(now, dateFormat),
-        dateEnd: format(now, dateFormat),
-        relationType: String,
-        tableReference: String,
-        isLabel: false,
-      },
-      dataSelected: [],
-      newDatas: {
-        datas : [{
-          value: String,
-          valueString: String,
-          valueNumber: Number,
-          valueBoolean: Boolean,
-          valueDate: Date,
-          valueObjectId: Array,
-          line: Number,
-          Column: String,
-        }]
-      },
-      lineUpdate: {
-        datas : [{
-          value: String,
-          valueString: String,
-          valueNumber: Number,
-          valueBoolean: Boolean,
-          valueObjectId: [],
-          valueDate: Date,
-          line: Number,
-          Column: String,
+        base: {
+          name: String,
           _id: String,
-        }]
-      },
-      columnToDelete: String,
-      typeDate: Number,
-      dateInterval: false,
-      nullableOption: true,
-      columnConstraints: [],
-      c: String,
-      constraint: {
-        label: String,
-      },
-      errorsAddData: [],
-      types: [],
-      newType: {
-        name: String,
-        realName: String,
-        description: String,
-      },
-      loading: true,
-      loadingArray: true,
-      loadingLabels: true,
-      showAddColumn: false,
-      showInsertData: false,
-      showDeleteColumn: false,
-      showEditData: false,
-      tableChoice: null,
-      dataSelectors: [],
-      linesLabel: [],
-    };
-  },
-  created() {
-    const url = `http://localhost:3000/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
-    fetch(url)
-      .then(res => res.json())
-      .then((rep) => {
-        this.loading = false;
-        this.base = rep.base;
-        this.table = rep.table;
-        this.initArrayData();
-        this.initLabelsReferences();
-        this.getDataSelectors();
-      });
-
-    const urlTypes = 'http://localhost:3000/types';
-    fetch(urlTypes)
-      .then(res => res.json())
-      .then((rep) => {
-        this.types = rep;
-        this.loading = false;
-      });
-
-    this.newColumn.name = '';
-    this.newColumn.nullable = true;
-    this.newColumn.min = null;
-    this.newColumn.max = null;
-    this.newColumn.defaultStringValue = null;
-
-    this.newType.name = '';
-    this.newType.realName = '';
-    this.newType.description = '';
-
-  },
-  methods: {
-
-    onSubmit(evt) {
-      evt.preventDefault()
-      alert(JSON.stringify(this.form))
+          tables: [],
+        },
+        table: {
+          columns: [],
+          name: String,
+          _id: String,
+          lines: [],
+        },
+        newColumn: {
+          name: String,
+          type: String,
+          nullable: true,
+          min: Number,
+          max: Number,
+          defaultStringValue: String,
+          numberStepValue: Number,
+          dateIsToday: false,
+          dateIsFree: false,
+          dateStart: format(now, dateFormat),
+          dateEnd: format(now, dateFormat),
+          relationType: String,
+          tableReference: String,
+          isLabel: false,
+        },
+        dataSelected: [],
+        newDatas: {
+          datas : [{
+            value: String,
+            valueString: String,
+            valueNumber: Number,
+            valueBoolean: Boolean,
+            valueDate: Date,
+            valueObjectId: Array,
+            line: Number,
+            Column: String,
+          }]
+        },
+        lineUpdate: {
+          datas : [{
+            value: String,
+            valueString: String,
+            valueNumber: Number,
+            valueBoolean: Boolean,
+            valueObjectId: [],
+            valueDate: Date,
+            line: Number,
+            Column: String,
+            _id: String,
+          }]
+        },
+        columnToDelete: String,
+        typeDate: Number,
+        dateInterval: false,
+        nullableOption: true,
+        columnConstraints: [],
+        c: String,
+        constraint: {
+          label: String,
+        },
+        errorsAddData: [],
+        types: [],
+        newType: {
+          name: String,
+          realName: String,
+          description: String,
+        },
+        loading: true,
+        loadingArray: true,
+        loadingLabels: true,
+        showAddColumn: false,
+        showInsertData: false,
+        showDeleteColumn: false,
+        showEditData: false,
+        tableChoice: null,
+        dataSelectors: [],
+        linesLabel: [],
+      };
     },
-
-    onReset(evt) {
-      evt.preventDefault()
-      // Reset our form values
-      this.form.email = ''
-      this.form.name = ''
-      this.form.food = null
-      this.form.checked = []
-      // Trick to reset/clear native browser form validation state
-      this.show = false
-      this.$nextTick(() => {
-        this.show = true
-      })
-    },
-
-    getLabel: function getLabel(count) {
-      if(count > 1) return `${count} lignes selectionnées`;
-      else return `${count} ligne selectionnée`;
-    },
-
-    reloadTable: function reloadTable() {
-      this.loadingLabels = true;
-      this.loadingArray = true;
+    created() {
       const url = `http://localhost:3000/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
       fetch(url)
         .then(res => res.json())
         .then((rep) => {
+          this.loading = false;
           this.base = rep.base;
           this.table = rep.table;
           this.initArrayData();
           this.initLabelsReferences();
+          this.getDataSelectors();
         });
-    },
 
-    getDataSelectors: function getDataSelectors() {
-      var baseId = this.base._id;
-      var dataSelectors = [];
-      this.table.columns.forEach(function(e) {
-        if(e.type.realName === 'relation') {
-          const url = `http://localhost:3000/bases/${baseId}/${e.tableReference}/data-selectors`;
-          fetch(url)
-            .then(res => res.json())
-            .then((rep) => {
-              dataSelectors[e._id] = rep;
-            });
-        }
-      });
-      this.dataSelectors = dataSelectors;
-    },
-
-    getDataLabel: function getDataLabel(data, column)
-    {
-      if((column !== undefined && column !== null) &&
-          (column.type !== undefined && column.type !== null) &&
-            (column.type.realName !== undefined && column.type.realName !== null)) {
-
-        switch(column.type.realName) {
-          case 'date':
-            let date = new Date(data.valueDate);
-            return date.getDate() +'/'+ date.getMonth() +'/'+ date.getFullYear();
-            break;
-          default:
-            return data.value;
-            break;
-        }
-      } else return '';
-    },
-
-    changeIsLabel: function changeIsLabel(column) {
-      if(column.type.realName !== 'relation') {
-        column.isLabel = (null === column.isLabel || undefined === column.isLabel) ? false : !column.isLabel;
-        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/column/${column._id}`;
-        fetch(url, {
-          method: 'PUT',
-          headers: {
-            'content-type': 'application/json',
-          },
-          body: JSON.stringify(column),
-        })
-          .then(res => res.json())
-          .then((rep) => {
-          });
-      }
-    },
-
-    onSelect: function onSelect(item) {
-      if(this.dataSelected.includes(item)) {
-        let index = this.dataSelected.indexOf(item);
-        if (index > -1) {
-          this.dataSelected.splice(index, 1);
-        }
-        item.selected = false;
-      } else {
-        this.dataSelected.push(item)
-        item.selected = true;
-      }
-
-      if(this.dataSelected.length === 1) this.showToolBar('edit-data');
-      else this.showToolBar();
-    },
-
-    deleteSelected: function deleteSelected() {
-      if(this.dataSelected.length > 0) {
-        var base = this.base;
-        var table = this.table;
-
-        this.dataSelected.forEach(function(i) {
-          const url = `http://localhost:3000/bases/${base._id}/${table._id}/data/line/${i._id}`;
-          fetch(url, { method: 'DELETE' });
-          let index = table.lines.indexOf(i);
-          if (index > -1) {
-            table.lines.splice(index, 1);
-          }
-        })
-        this.table = table;
-        this.dataSelected = [];
-        this.showToolBar();
-      }
-    },
-
-    deleteColumn: function deleteColumn() {
-      if(this.columnToDelete !== null && this.columnToDelete !== undefined) {
-        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/${this.columnToDelete}`;
-        fetch(url, {
-            method: 'DELETE'
-          })
-          .then(res => res.json())
-          .then((rep) => {
-            console.log(rep);
-            this.table = rep;
-          })
-      }
-    },
-
-    getClass: function getStyle(l) {
-      if(l.selected) return 'cursor: pointer; background-color: #448aff; color: #fff;';
-      else return 'cursor: pointer;';
-    },
-
-    deleteTable: function deleteTable() {
-      const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}`;
-      fetch(url, { method: 'DELETE' })
+      const urlTypes = 'http://localhost:3000/types';
+      fetch(urlTypes)
         .then(res => res.json())
         .then((rep) => {
-          this.$router.push({ name: 'base', params: { id: this.base._id } });
+          this.types = rep;
+          this.loading = false;
         });
+
+      this.newColumn.name = '';
+      this.newColumn.nullable = true;
+      this.newColumn.min = null;
+      this.newColumn.max = null;
+      this.newColumn.defaultStringValue = null;
+
+      this.newType.name = '';
+      this.newType.realName = '';
+      this.newType.description = '';
+
     },
+    methods: {
 
-    initArrayData: function initArrayData() {
-      for(let i = 0; i<this.table.columns.length; i++)
-      {
-        this.newDatas.datas[i] = {
-          value: null,
-          valueString: null,
-          valueNumber: null,
-          valueBoolean: null,
-          valueObjectId: null,
-          valueDate: null,
-          line: null,
-          column: this.table.columns[i],
-        };
-      }
-      this.loadingArray = false;
-    },
+      onSubmit(evt) {
+        evt.preventDefault()
+        alert(JSON.stringify(this.form))
+      },
 
-    initLabelsReferences: function initLabelsReferences() {
-      var table = this.table;
-      var linesLabel = this.linesLabel;
-      var columnsRelation = [];
-
-      table.columns.forEach(function(c) {
-        if(c.type.realName === 'relation') columnsRelation.push(c._id);
-      });
-
-      var dataRelation = [];
-      table.lines.forEach(function (line) {
-        line.data.forEach(function (data) {
-          if (columnsRelation.includes(data.column)) {
-            data.valueObjectId.forEach((objectId) => dataRelation.push(objectId));
-          }
+      onReset(evt) {
+        evt.preventDefault()
+        // Reset our form values
+        this.form.email = ''
+        this.form.name = ''
+        this.form.food = null
+        this.form.checked = []
+        // Trick to reset/clear native browser form validation state
+        this.show = false
+        this.$nextTick(() => {
+          this.show = true
         })
-      });
+      },
 
-      var index = 0;
-      if(dataRelation.length <= 0) this.loadingLabels = false;
-      dataRelation.forEach(function(obj) {
-        if(linesLabel[obj] === null || linesLabel[obj] === undefined) {
-          const url = `http://localhost:3000/bases/line/${obj}/label`;
-          fetch(url)
+      getLabel: function getLabel(count) {
+        if(count > 1) return `${count} lignes selectionnées`;
+        else return `${count} ligne selectionnée`;
+      },
+
+      reloadTable: function reloadTable() {
+        this.loadingLabels = true;
+        this.loadingArray = true;
+        const url = `http://localhost:3000/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
+        fetch(url)
+          .then(res => res.json())
+          .then((rep) => {
+            this.base = rep.base;
+            this.table = rep.table;
+            this.initArrayData();
+            this.initLabelsReferences();
+          });
+      },
+
+      getDataSelectors: function getDataSelectors() {
+        var baseId = this.base._id;
+        var dataSelectors = [];
+        this.table.columns.forEach(function(e) {
+          if(e.type.realName === 'relation') {
+            const url = `http://localhost:3000/bases/${baseId}/${e.tableReference}/data-selectors`;
+            fetch(url)
+              .then(res => res.json())
+              .then((rep) => {
+                dataSelectors[e._id] = rep;
+              });
+          }
+        });
+        this.dataSelectors = dataSelectors;
+      },
+
+      getDataLabel: function getDataLabel(data, column)
+      {
+        if((column !== undefined && column !== null) &&
+          (column.type !== undefined && column.type !== null) &&
+          (column.type.realName !== undefined && column.type.realName !== null)) {
+
+          switch(column.type.realName) {
+            case 'date':
+              let date = new Date(data.valueDate);
+              return date.getDate() +'/'+ date.getMonth() +'/'+ date.getFullYear();
+              break;
+            default:
+              return data.value;
+              break;
+          }
+        } else return '';
+      },
+
+      changeIsLabel: function changeIsLabel(column) {
+        if(column.type.realName !== 'relation') {
+          column.isLabel = (null === column.isLabel || undefined === column.isLabel) ? false : !column.isLabel;
+          const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/column/${column._id}`;
+          fetch(url, {
+            method: 'PUT',
+            headers: {
+              'content-type': 'application/json',
+            },
+            body: JSON.stringify(column),
+          })
             .then(res => res.json())
             .then((rep) => {
-              linesLabel[obj] = rep
-              index++;
-              if(index >= dataRelation.length) {
-                this.linesLabel = linesLabel;
-                this.loadingLabels = false;
-              }
             });
-        } else {
-          index++;
-          if(index >= dataRelation.length) {
-            this.linesLabel = linesLabel;
-            this.loadingLabels = false;
+        }
+      },
+
+      onSelect: function onSelect(item) {
+        if(this.dataSelected.includes(item)) {
+          let index = this.dataSelected.indexOf(item);
+          if (index > -1) {
+            this.dataSelected.splice(index, 1);
           }
+          item.selected = false;
+        } else {
+          this.dataSelected.push(item)
+          item.selected = true;
         }
-      }, this);
 
-      /*
-      var index = 0;
+        if(this.dataSelected.length === 1) this.showToolBar('edit-data');
+        else this.showToolBar();
+      },
 
-      table.lines.forEach(function(l) {
-        index++;
-        console.log('check line ');
-        table.columns.forEach(function(c) {
-          console.log('check colunm ' + c.name);
-          l.data.forEach(function(d) {
-            console.log('check data ' + d.value);
-            if(d.column === c._id && c.type.realName === 'relation') {
-              console.log('Column relation ' + c.name);
-              if(d.valueObjectId !== undefined && d.valueObjectId !== null && Array.isArray(d.valueObjectId)) {
-                console.log('Data contain object id');
-                var i = 0;
-                d.valueObjectId.forEach(function(objId) {
-                  i++;
-                  console.log('check data ' + objId);
-                  if(linesLabel[objId] === null || linesLabel[objId] === undefined) {
-                    const url = `http://localhost:3000/bases/line/${objId}/label`;
-                    fetch(url)
-                      .then(res => res.json())
-                      .then((rep) => {
-                        linesLabel[objId] = rep
-                        if(index >= table.lines.length && i >= d.valueObjectId.length) {
-                          this.linesLabel = linesLabel;
-                          console.log(this.linesLabel);
-                        }
-                        console.log('ID: ' + objId + ', LABEL: ' + rep.label);
-                        console.log(this.linesLabel[objId]);
-                      }, this);
-                  }
-                }, this)
-              }
+      deleteSelected: function deleteSelected() {
+        if(this.dataSelected.length > 0) {
+          var base = this.base;
+          var table = this.table;
+
+          this.dataSelected.forEach(function(i) {
+            const url = `http://localhost:3000/bases/${base._id}/${table._id}/data/line/${i._id}`;
+            fetch(url, { method: 'DELETE' });
+            let index = table.lines.indexOf(i);
+            if (index > -1) {
+              table.lines.splice(index, 1);
             }
-          }, this);
-        }, this);
-        if(index >= table.lines.length) {
-          this.linesLabel = linesLabel;
-          console.log(this.linesLabel);
+          })
+          this.table = table;
+          this.dataSelected = [];
+          this.showToolBar();
         }
-      }, this);
+      },
 
-       */
+      deleteColumn: function deleteColumn() {
+        if(this.columnToDelete !== null && this.columnToDelete !== undefined) {
+          const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/${this.columnToDelete}`;
+          fetch(url, {
+            method: 'DELETE'
+          })
+            .then(res => res.json())
+            .then((rep) => {
+              console.log(rep);
+              this.table = rep;
+            })
+        }
+      },
 
-    },
+      getClass: function getStyle(l) {
+        if(l.selected) return 'cursor: pointer; background-color: #448aff; color: #fff;';
+        else return 'cursor: pointer;';
+      },
 
-    initArrayUpdateLine: function initArrayUpdateLine(line) {
-      for (let i = 0; i < this.table.columns.length; i++) {
-        let x = 0
-        while (x < line.data.length && line.data[x].column !== this.table.columns[i]._id) x++;
-        if (x >= line.data.length) {
-          this.lineUpdate.datas[i] = {
+      deleteTable: function deleteTable() {
+        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}`;
+        fetch(url, { method: 'DELETE' })
+          .then(res => res.json())
+          .then((rep) => {
+            this.$router.push({ name: 'base', params: { id: this.base._id } });
+          });
+      },
+
+      initArrayData: function initArrayData() {
+        for(let i = 0; i<this.table.columns.length; i++)
+        {
+          this.newDatas.datas[i] = {
             value: null,
             valueString: null,
             valueNumber: null,
             valueBoolean: null,
+            valueObjectId: null,
             valueDate: null,
-            valueObjectId: [],
-            line: line.number,
+            line: null,
             column: this.table.columns[i],
           };
-        } else {
-          let dateFormat = 'yyyy-MM-dd';
+        }
+        this.loadingArray = false;
+      },
 
-          let vDate;
-          if(this.table.columns[i].type.realName === 'date') vDate = format(new Date(line.data[x].valueDate), dateFormat);
-          else vDate = null;
+      initLabelsReferences: function initLabelsReferences() {
+        var table = this.table;
+        var linesLabel = this.linesLabel;
+        var columnsRelation = [];
 
-          this.lineUpdate.datas[i] = {
-            value: line.data[x].value,
-            valueString: line.data[x].valueString,
-            valueNumber: line.data[x].valueNumber,
-            valueBoolean: line.data[x].valueBoolean,
-            valueObjectId: line.data[x].valueObjectId,
-            valueDate: vDate,
-            _id: line.data[x]._id,
-            line: line.number,
-            column: this.table.columns[i],
+        table.columns.forEach(function(c) {
+          if(c.type.realName === 'relation') columnsRelation.push(c._id);
+        });
+
+        var dataRelation = [];
+        table.lines.forEach(function (line) {
+          line.data.forEach(function (data) {
+            if (columnsRelation.includes(data.column)) {
+              data.valueObjectId.forEach((objectId) => dataRelation.push(objectId));
+            }
+          })
+        });
+
+        var index = 0;
+        if(dataRelation.length <= 0) this.loadingLabels = false;
+        dataRelation.forEach(function(obj) {
+          if(linesLabel[obj] === null || linesLabel[obj] === undefined) {
+            const url = `http://localhost:3000/bases/line/${obj}/label`;
+            fetch(url)
+              .then(res => res.json())
+              .then((rep) => {
+                linesLabel[obj] = rep
+                index++;
+                if(index >= dataRelation.length) {
+                  this.linesLabel = linesLabel;
+                  this.loadingLabels = false;
+                }
+              });
+          } else {
+            index++;
+            if(index >= dataRelation.length) {
+              this.linesLabel = linesLabel;
+              this.loadingLabels = false;
+            }
+          }
+        }, this);
+
+        /*
+        var index = 0;
+
+        table.lines.forEach(function(l) {
+          index++;
+          console.log('check line ');
+          table.columns.forEach(function(c) {
+            console.log('check colunm ' + c.name);
+            l.data.forEach(function(d) {
+              console.log('check data ' + d.value);
+              if(d.column === c._id && c.type.realName === 'relation') {
+                console.log('Column relation ' + c.name);
+                if(d.valueObjectId !== undefined && d.valueObjectId !== null && Array.isArray(d.valueObjectId)) {
+                  console.log('Data contain object id');
+                  var i = 0;
+                  d.valueObjectId.forEach(function(objId) {
+                    i++;
+                    console.log('check data ' + objId);
+                    if(linesLabel[objId] === null || linesLabel[objId] === undefined) {
+                      const url = `http://localhost:3000/bases/line/${objId}/label`;
+                      fetch(url)
+                        .then(res => res.json())
+                        .then((rep) => {
+                          linesLabel[objId] = rep
+                          if(index >= table.lines.length && i >= d.valueObjectId.length) {
+                            this.linesLabel = linesLabel;
+                            console.log(this.linesLabel);
+                          }
+                          console.log('ID: ' + objId + ', LABEL: ' + rep.label);
+                          console.log(this.linesLabel[objId]);
+                        }, this);
+                    }
+                  }, this)
+                }
+              }
+            }, this);
+          }, this);
+          if(index >= table.lines.length) {
+            this.linesLabel = linesLabel;
+            console.log(this.linesLabel);
+          }
+        }, this);
+
+         */
+
+      },
+
+      initArrayUpdateLine: function initArrayUpdateLine(line) {
+        for (let i = 0; i < this.table.columns.length; i++) {
+          let x = 0
+          while (x < line.data.length && line.data[x].column !== this.table.columns[i]._id) x++;
+          if (x >= line.data.length) {
+            this.lineUpdate.datas[i] = {
+              value: null,
+              valueString: null,
+              valueNumber: null,
+              valueBoolean: null,
+              valueDate: null,
+              valueObjectId: [],
+              line: line.number,
+              column: this.table.columns[i],
+            };
+          } else {
+            let dateFormat = 'yyyy-MM-dd';
+
+            let vDate;
+            if(this.table.columns[i].type.realName === 'date') vDate = format(new Date(line.data[x].valueDate), dateFormat);
+            else vDate = null;
+
+            this.lineUpdate.datas[i] = {
+              value: line.data[x].value,
+              valueString: line.data[x].valueString,
+              valueNumber: line.data[x].valueNumber,
+              valueBoolean: line.data[x].valueBoolean,
+              valueObjectId: line.data[x].valueObjectId,
+              valueDate: vDate,
+              _id: line.data[x]._id,
+              line: line.number,
+              column: this.table.columns[i],
+            }
           }
         }
-      }
-    },
+      },
 
-    debug: function debug(x) {
-      console.log(x);
-    },
+      debug: function debug(x) {
+        console.log(x);
+      },
 
-    addData: function addData() {
-      this.errorsAddData = [];
+      addData: function addData() {
+        this.errorsAddData = [];
 
-      this.newDatas.datas.forEach(function(e) {
-        e.value =
-          (e.valueDate != null) ? e.valueDate :
-            (e.valueString != null) ? e.valueString :
-              (e.valueNumber != null) ? e.valueNumber :
-                (e.valueBoolean != null) ? e.valueBoolean :
-                  (e.valueObjectId != null) ? e.valueObjectId.toString() : null;
+        this.newDatas.datas.forEach(function(e) {
+          e.value =
+            (e.valueDate != null) ? e.valueDate :
+              (e.valueString != null) ? e.valueString :
+                (e.valueNumber != null) ? e.valueNumber :
+                  (e.valueBoolean != null) ? e.valueBoolean :
+                    (e.valueObjectId != null) ? e.valueObjectId.toString() : null;
 
-        if(e.line == null) e.line = -1;
-        if(e.valueBoolean === '0') e.valueBoolean = false;
-        if(e.valueBoolean === '1') e.valueBoolean = true;
-        if((e.valueObjectId !== null && e.valueObjectId !== undefined) && !Array.isArray(e.valueObjectId)) {
-          e.valueObjectId = [e.valueObjectId];
-        }
-      });
+          if(e.line == null) e.line = -1;
+          if(e.valueBoolean === '0') e.valueBoolean = false;
+          if(e.valueBoolean === '1') e.valueBoolean = true;
+          if((e.valueObjectId !== null && e.valueObjectId !== undefined) && !Array.isArray(e.valueObjectId)) {
+            e.valueObjectId = [e.valueObjectId];
+          }
+        });
 
-      const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line`;
-      fetch(url, {
+        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line`;
+        fetch(url, {
           method: 'POST',
           headers: {
             'content-type': 'application/json',
           },
           body: JSON.stringify(this.newDatas),
         })
-        .then(res => res.json())
-        .then((rep) => {
-          if(Array.isArray(rep)) {
-            this.errorsAddData = rep;
-            console.log('ERRORS :' + rep);
-          } else {
-            console.log(rep);
-            this.table = rep;
-            this.loadingLabels = true;
-            this.loadingArray = true;
-            this.initArrayData();
-            this.initLabelsReferences();
-          }
+          .then(res => res.json())
+          .then((rep) => {
+            if(Array.isArray(rep)) {
+              this.errorsAddData = rep;
+              console.log('ERRORS :' + rep);
+            } else {
+              console.log(rep);
+              this.table = rep;
+              this.loadingLabels = true;
+              this.loadingArray = true;
+              this.initArrayData();
+              this.initLabelsReferences();
+            }
+          });
+      },
+
+      updateLine: function updateLine() {
+        this.errorsAddData = [];
+        this.lineUpdate.datas.forEach(function(e) {
+          e.value =
+            (e.valueDate != null) ? e.valueDate :
+              (e.valueString != null) ? e.valueString :
+                (e.valueNumber != null) ? e.valueNumber :
+                  (e.valueBoolean != null) ? e.valueBoolean :
+                    (e.valueObjectId != null) ? e.valueObjectId.toString() : null;
+
+          if((e.valueObjectId !== null && e.valueObjectId !== undefined) && !Array.isArray(e.valueObjectId)) {
+            e.valueObjectId = [e.valueObjectId];
+          } else if(!Array.isArray(e.valueObjectId)) e.valueObjectId = [];
+
+          if(e.valueBoolean === '0') e.valueBoolean = false;
+          if(e.valueBoolean === '1') e.valueBoolean = true;
         });
-    },
-
-    updateLine: function updateLine() {
-      this.errorsAddData = [];
-      this.lineUpdate.datas.forEach(function(e) {
-        e.value =
-          (e.valueDate != null) ? e.valueDate :
-            (e.valueString != null) ? e.valueString :
-              (e.valueNumber != null) ? e.valueNumber :
-                (e.valueBoolean != null) ? e.valueBoolean :
-                  (e.valueObjectId != null) ? e.valueObjectId.toString() : null;
-
-        if((e.valueObjectId !== null && e.valueObjectId !== undefined) && !Array.isArray(e.valueObjectId)) {
-          e.valueObjectId = [e.valueObjectId];
-        } else if(!Array.isArray(e.valueObjectId)) e.valueObjectId = [];
-
-        if(e.valueBoolean === '0') e.valueBoolean = false;
-        if(e.valueBoolean === '1') e.valueBoolean = true;
-      });
-      var index = this.table.lines.indexOf(this.dataSelected[0]);
-      const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line/${this.dataSelected[0]._id}`;
-      fetch(url, {
-        method: 'PUT',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(this.lineUpdate),
-      })
-        .then(res => res.json())
-        .then((rep) => {
-          if(Array.isArray(rep)) {
-            this.errorsAddData = rep;
-            console.log('ERRORS :' + rep);
-          } else {
-            this.table.lines.splice(index, 1, rep);
-            this.showToolBar();
-            this.dataSelected = [];
-            this.reloadTable();
-          }
-        });
-    },
-
-    showToolBar: function showToolBar(name) {
-      switch(name) {
-        case 'add-column':
-          this.showInsertData = false;
-          this.showAddColumn = true;
-          this.showDeleteColumn = false;
-          this.showEditData = false;
-          break;
-        case 'add-data':
-          this.showAddColumn = false;
-          this.showInsertData = true;
-          this.showEditData = false;
-          this.showDeleteColumn = false;
-          break;
-        case 'edit-data':
-          if(this.dataSelected.length === 1) {
-            this.showAddColumn = false;
-            this.showInsertData = false;
-            this.showDeleteColumn = false;
-            this.showEditData = true;
-            this.initArrayUpdateLine(this.dataSelected[0]);
-          } else {
-            this.showAddColumn = false;
-            this.showInsertData = false;
-            this.showDeleteColumn = false;
-            this.showEditData = false;
-          }
-          break;
-        case 'delete-column':
-          this.showInsertData = false;
-          this.showAddColumn = false;
-          this.showEditData = false;
-          this.showDeleteColumn = true;
-          break;
-        default:
-          this.showAddColumn = false;
-          this.showInsertData = false;
-          this.showEditData = false;
-          this.showDeleteColumn = false;
-          break;
-      }
-    },
-
-    addColumn: function addColumn() {
-
-      if(this.$refs['newcolumn-min'] !== undefined && this.$refs['newcolumn-min'][0] !== undefined) this.newColumn.min = this.$refs['newcolumn-min'][0].value;
-      if(this.$refs['newcolumn-max'] !== undefined && this.$refs['newcolumn-max'][0] !== undefined) this.newColumn.max = this.$refs['newcolumn-max'][0].value;
-      if(this.$refs['step-value'] !== undefined && this.$refs['step-value'][0] !== undefined) this.newColumn.numberStepValue = this.$refs['step-value'][0].value;
-      if(this.$refs['default-text'] !== undefined && this.$refs['default-text'][0] !== undefined) this.newColumn.defaultStringValue = this.$refs['default-text'][0].value;
-
-      if (this.newColumn.name.length > 0 && this.newColumn.type.length > 0) {
-        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/column`;
+        var index = this.table.lines.indexOf(this.dataSelected[0]);
+        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line/${this.dataSelected[0]._id}`;
         fetch(url, {
-          method: 'POST',
+          method: 'PUT',
           headers: {
             'content-type': 'application/json',
           },
-          body: JSON.stringify(this.newColumn),
+          body: JSON.stringify(this.lineUpdate),
         })
-          .then(rep => rep.json())
-          .then((res) => {
-            const tmp = this.table;
-            tmp.columns.push(res);
-            this.table = tmp;
-            this.initArrayData();
-            this.getDataSelectors();
-            this.tableChoice = null;
-            this.newColumn = {
-              name: '',
-              type: String,
-              nullable: true,
-              min: Number,
-              max: Number,
-              defaultStringValue: String,
-              numberStepValue: Number,
-              dateIsToday: false,
-              dateIsFree: false,
-              relationType: null,
-              tableReference: String,
-            };
-          });
-      }
-    },
-    getDateSettings: function getDateSettings(value) {
-      this.dateInterval = false;
-      this.newColumn.dateIsToday = false;
-      this.newColumn.dateIsFree = false;
-      switch (value) {
-        // Libre
-        case '1':
-          this.newColumn.dateIsFree = true;
-          this.nullableOption = true;
-          break;
-        // Entre deux dates
-        case '2':
-          this.dateInterval = true;
-          this.nullableOption = true;
-          break;
-        // Date du jour
-        case '3':
-          this.nullableOption = false;
-          this.newColumn.nullable = false;
-          this.newColumn.dateIsToday = true;
-          break;
-        default:
-          break;
-      }
-    },
-    getRelationSettings: function getRelationSettings(tableId) {
-      var table = null;
-      this.base.tables.forEach(function(e) {
-        if(e._id === tableId) {
-          table = e;
-        }
-      });
-      this.newColumn.tableReference = (table !== null && table !== undefined) ? table._id : null;
-      this.tableChoice = table;
-    },
-    getColumnSettings: function getColumnSettings(typeRealname) {
-      this.dateInterval = false;
-      switch (typeRealname) {
-        case 'number':
-          this.newColumn.min = -1000;
-          this.newColumn.max = 1000;
-          this.newColumn.numberStepValue = 1;
-          this.nullableOption = true;
-          this.columnConstraints = [
-            {
-              id: 'newcolumn-min',
-              title: 'Valeur minimum',
-              cible: this.newColumn.min,
-              type: 'number',
-            },
-            {
-              id: 'newcolumn-max',
-              title: 'Valeur maximum',
-              cible: this.newColumn.max,
-              type: 'number',
-            },
-            {
-              id: 'step-value',
-              title: 'Valeur du pas',
-              cible: this.newColumn.numberStepValue,
-              type: 'number',
-              helper: 'Exemple: 0.01, 0.1, 1, 10',
-            },
-          ];
-          break;
-        case 'shorttext':
-          this.nullableOption = true;
-          this.newColumn.min = 0;
-          this.newColumn.max = 20;
-          this.newColumn.defaultStringValue = '';
-          this.columnConstraints = [
-            {
-              id: 'default-text',
-              title: 'Texte par défaut',
-              cible: this.newColumn.defaultStringValue,
-              type: 'text',
-            },
-            {
-              id: 'newcolumn-min',
-              title: 'Longueur minimum',
-              cible: this.newColumn.min,
-              type: 'number',
-            },
-            {
-              id: 'newcolumn-max',
-              title: 'Longueur maximum',
-              cible: this.newColumn.max,
-              type: 'number',
-            },
-          ];
-          break;
-        case 'longtext':
-          this.newColumn.min = 0;
-          this.newColumn.max = 250;
-          this.nullableOption = true;
-          this.newColumn.defaultStringValue = '';
-          this.columnConstraints = [
-            {
-              id: 'default-text',
-              title: 'Texte par défaut',
-              cible: this.newColumn.defaultStringValue,
-              type: 'text',
-            },
-            {
-              id: 'newcolumn-min',
-              title: 'Longueur minimum',
-              cible: this.newColumn.min,
-              type: 'number',
-            },
-            {
-              id: 'newcolumn-max',
-              title: 'Longueur maximum',
-              cible: this.newColumn.max,
-              type: 'number',
-            },
-          ];
-          break;
-        case 'date':
-          this.nullableOption = false;
-          this.columnConstraints = [
-            {
-              id: 'select-type-date',
-              title: 'Type de date',
-              cible: this.typeDate,
-              type: 'select',
-              options: [
-                { name: 'Libre', id: '1' },
-                { name: 'Compris entre deux dates', id: '2' },
-                { name: 'Date du jour', id: '3' },
-              ],
-              input: this.getDateSettings,
-            },
-          ];
-          break;
-        case 'relation':
-          this.nullableOption = true;
-          this.tableChoice = null;
-          var options = [];
-          var tableId = this.table._id;
-          this.base.tables.forEach(function(e) {
-            if(tableId !== e._id) {
-              let obj = { name: e.name, id: e._id };
-              options.push(obj);
+          .then(res => res.json())
+          .then((rep) => {
+            if(Array.isArray(rep)) {
+              this.errorsAddData = rep;
+              console.log('ERRORS :' + rep);
+            } else {
+              this.table.lines.splice(index, 1, rep);
+              this.showToolBar();
+              this.dataSelected = [];
+              this.reloadTable();
             }
           });
-          this.columnConstraints = [
-            {
-              id: 'select-relation-table',
-              title: 'Table ciblée',
-              cible: this.typeDate,
-              type: 'select',
-              options: options,
-              input: this.getRelationSettings,
+      },
+
+      showToolBar: function showToolBar(name) {
+        switch(name) {
+          case 'add-column':
+            this.showInsertData = false;
+            this.showAddColumn = true;
+            this.showDeleteColumn = false;
+            this.showEditData = false;
+            break;
+          case 'add-data':
+            this.showAddColumn = false;
+            this.showInsertData = true;
+            this.showEditData = false;
+            this.showDeleteColumn = false;
+            break;
+          case 'edit-data':
+            if(this.dataSelected.length === 1) {
+              this.showAddColumn = false;
+              this.showInsertData = false;
+              this.showDeleteColumn = false;
+              this.showEditData = true;
+              this.initArrayUpdateLine(this.dataSelected[0]);
+            } else {
+              this.showAddColumn = false;
+              this.showInsertData = false;
+              this.showDeleteColumn = false;
+              this.showEditData = false;
+            }
+            break;
+          case 'delete-column':
+            this.showInsertData = false;
+            this.showAddColumn = false;
+            this.showEditData = false;
+            this.showDeleteColumn = true;
+            break;
+          default:
+            this.showAddColumn = false;
+            this.showInsertData = false;
+            this.showEditData = false;
+            this.showDeleteColumn = false;
+            break;
+        }
+      },
+
+      addColumn: function addColumn() {
+
+        if(this.$refs['newcolumn-min'] !== undefined && this.$refs['newcolumn-min'][0] !== undefined) this.newColumn.min = this.$refs['newcolumn-min'][0].value;
+        if(this.$refs['newcolumn-max'] !== undefined && this.$refs['newcolumn-max'][0] !== undefined) this.newColumn.max = this.$refs['newcolumn-max'][0].value;
+        if(this.$refs['step-value'] !== undefined && this.$refs['step-value'][0] !== undefined) this.newColumn.numberStepValue = this.$refs['step-value'][0].value;
+        if(this.$refs['default-text'] !== undefined && this.$refs['default-text'][0] !== undefined) this.newColumn.defaultStringValue = this.$refs['default-text'][0].value;
+
+        if (this.newColumn.name.length > 0 && this.newColumn.type.length > 0) {
+          const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/column`;
+          fetch(url, {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json',
             },
-          ];
-          break;
-        case 'boolean':
-          this.columnConstraints = [];
-          break;
-        default:
-          this.columnConstraints = [];
-          break;
-      }
+            body: JSON.stringify(this.newColumn),
+          })
+            .then(rep => rep.json())
+            .then((res) => {
+              const tmp = this.table;
+              tmp.columns.push(res);
+              this.table = tmp;
+              this.initArrayData();
+              this.getDataSelectors();
+              this.tableChoice = null;
+              this.newColumn = {
+                name: '',
+                type: String,
+                nullable: true,
+                min: Number,
+                max: Number,
+                defaultStringValue: String,
+                numberStepValue: Number,
+                dateIsToday: false,
+                dateIsFree: false,
+                relationType: null,
+                tableReference: String,
+              };
+            });
+        }
+      },
+      getDateSettings: function getDateSettings(value) {
+        this.dateInterval = false;
+        this.newColumn.dateIsToday = false;
+        this.newColumn.dateIsFree = false;
+        switch (value) {
+          // Libre
+          case '1':
+            this.newColumn.dateIsFree = true;
+            this.nullableOption = true;
+            break;
+          // Entre deux dates
+          case '2':
+            this.dateInterval = true;
+            this.nullableOption = true;
+            break;
+          // Date du jour
+          case '3':
+            this.nullableOption = false;
+            this.newColumn.nullable = false;
+            this.newColumn.dateIsToday = true;
+            break;
+          default:
+            break;
+        }
+      },
+      getRelationSettings: function getRelationSettings(tableId) {
+        var table = null;
+        this.base.tables.forEach(function(e) {
+          if(e._id === tableId) {
+            table = e;
+          }
+        });
+        this.newColumn.tableReference = (table !== null && table !== undefined) ? table._id : null;
+        this.tableChoice = table;
+      },
+      getColumnSettings: function getColumnSettings(typeRealname) {
+        this.dateInterval = false;
+        switch (typeRealname) {
+          case 'number':
+            this.newColumn.min = -1000;
+            this.newColumn.max = 1000;
+            this.newColumn.numberStepValue = 1;
+            this.nullableOption = true;
+            this.columnConstraints = [
+              {
+                id: 'newcolumn-min',
+                title: 'Valeur minimum',
+                cible: this.newColumn.min,
+                type: 'number',
+              },
+              {
+                id: 'newcolumn-max',
+                title: 'Valeur maximum',
+                cible: this.newColumn.max,
+                type: 'number',
+              },
+              {
+                id: 'step-value',
+                title: 'Valeur du pas',
+                cible: this.newColumn.numberStepValue,
+                type: 'number',
+                helper: 'Exemple: 0.01, 0.1, 1, 10',
+              },
+            ];
+            break;
+          case 'shorttext':
+            this.nullableOption = true;
+            this.newColumn.min = 0;
+            this.newColumn.max = 20;
+            this.newColumn.defaultStringValue = '';
+            this.columnConstraints = [
+              {
+                id: 'default-text',
+                title: 'Texte par défaut',
+                cible: this.newColumn.defaultStringValue,
+                type: 'text',
+              },
+              {
+                id: 'newcolumn-min',
+                title: 'Longueur minimum',
+                cible: this.newColumn.min,
+                type: 'number',
+              },
+              {
+                id: 'newcolumn-max',
+                title: 'Longueur maximum',
+                cible: this.newColumn.max,
+                type: 'number',
+              },
+            ];
+            break;
+          case 'longtext':
+            this.newColumn.min = 0;
+            this.newColumn.max = 250;
+            this.nullableOption = true;
+            this.newColumn.defaultStringValue = '';
+            this.columnConstraints = [
+              {
+                id: 'default-text',
+                title: 'Texte par défaut',
+                cible: this.newColumn.defaultStringValue,
+                type: 'text',
+              },
+              {
+                id: 'newcolumn-min',
+                title: 'Longueur minimum',
+                cible: this.newColumn.min,
+                type: 'number',
+              },
+              {
+                id: 'newcolumn-max',
+                title: 'Longueur maximum',
+                cible: this.newColumn.max,
+                type: 'number',
+              },
+            ];
+            break;
+          case 'date':
+            this.nullableOption = false;
+            this.columnConstraints = [
+              {
+                id: 'select-type-date',
+                title: 'Type de date',
+                cible: this.typeDate,
+                type: 'select',
+                options: [
+                  { name: 'Libre', id: '1' },
+                  { name: 'Compris entre deux dates', id: '2' },
+                  { name: 'Date du jour', id: '3' },
+                ],
+                input: this.getDateSettings,
+              },
+            ];
+            break;
+          case 'relation':
+            this.nullableOption = true;
+            this.tableChoice = null;
+            var options = [];
+            var tableId = this.table._id;
+            this.base.tables.forEach(function(e) {
+              if(tableId !== e._id) {
+                let obj = { name: e.name, id: e._id };
+                options.push(obj);
+              }
+            });
+            this.columnConstraints = [
+              {
+                id: 'select-relation-table',
+                title: 'Table ciblée',
+                cible: this.typeDate,
+                type: 'select',
+                options: options,
+                input: this.getRelationSettings,
+              },
+            ];
+            break;
+          case 'boolean':
+            this.columnConstraints = [];
+            break;
+          default:
+            this.columnConstraints = [];
+            break;
+        }
+      },
     },
-  },
-};
+  };
 </script>
