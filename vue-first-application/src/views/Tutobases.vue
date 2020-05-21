@@ -1,35 +1,49 @@
 <template>
-<div class="container-fluid tuto">
-  <div class="container bandeaututo tutobleu">
-    <h1>Tutoriel : <br> Comment créer une base</h1>
-    <div class="infostuto">
-    <p>Difficulté : facile </p>
-    <p class="tempstuto">Temps : 5 minutes</p>
+  <div class="container">
+    <div class="homepage-header">
+      <h1>Power-Data</h1>
+      <div class="links-header">
+        <router-link to="/register" class="btn-register">S'inscrire</router-link>
+        <router-link to="/login" class="btn-infos">Se connecter</router-link>
+      </div>
+    </div>
+
+    <div class="tutoriel-header">
+      <div class="tutoriel-top-header">
+        <div class="tutoriel-description">
+          <h4>tutoriel</h4>
+          <h3>Comment créer une base</h3>
+        </div>
+        <div class="tutoriel-picture">
+          <img src="../assets/img/learn.svg" alt="tutoriel"/>
+        </div>
+      </div>
+      <div class="tutoriel-footer-header">
+        <span>Difficulté: facile</span>
+        <span>Temps: 5 minutes</span>
+      </div>
+    </div>
+
+    <div class="tutoriel-content">
+      <div class="tutoriel-element">
+        <h3>Qu'est ce qu'une base ?</h3>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur nulla optio tempore dolorem sint commodi eos consequatur aspernatur, nam amet, ipsum assumenda eum, maiores velit! Sit nam voluptatibus quis quibusdam maxime dolore deleniti! Earum necessitatibus maxime sunt architecto repellendus dignissimos veniam quis a nisi, sequi nulla dolorum quos. Rerum vero ullam, odio velit alias sint tenetur repellat ea eveniet suscipit accusantium voluptas ut eligendi quos est repudiandae facilis porro aspernatur saepe blanditiis reiciendis natus quisquam! Fuga pariatur dicta tenetur, numquam velit minima nihil quo, impedit, iste laboriosam a id amet vel ad architecto dolorum tempora. Praesentium natus nihil tenetur dolore.</p>
+      </div>
+      <div class="tutoriel-element">
+        <h3>Qu'est ce qu'une base ?</h3>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur nulla optio tempore dolorem sint commodi eos consequatur aspernatur, nam amet, ipsum assumenda eum, maiores velit! Sit nam voluptatibus quis quibusdam maxime dolore deleniti! Earum necessitatibus maxime sunt architecto repellendus dignissimos veniam quis a nisi, sequi nulla dolorum quos. Rerum vero ullam, odio velit alias sint tenetur repellat ea eveniet suscipit accusantium voluptas ut eligendi quos est repudiandae facilis porro aspernatur saepe blanditiis reiciendis natus quisquam! Fuga pariatur dicta tenetur, numquam velit minima nihil quo, impedit, iste laboriosam a id amet vel ad architecto dolorum tempora. Praesentium natus nihil tenetur dolore.</p>
+      </div>
+      <div class="tutoriel-element">
+        <h3>Qu'est ce qu'une base ?</h3>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur nulla optio tempore dolorem sint commodi eos consequatur aspernatur, nam amet, ipsum assumenda eum, maiores velit! Sit nam voluptatibus quis quibusdam maxime dolore deleniti! Earum necessitatibus maxime sunt architecto repellendus dignissimos veniam quis a nisi, sequi nulla dolorum quos. Rerum vero ullam, odio velit alias sint tenetur repellat ea eveniet suscipit accusantium voluptas ut eligendi quos est repudiandae facilis porro aspernatur saepe blanditiis reiciendis natus quisquam! Fuga pariatur dicta tenetur, numquam velit minima nihil quo, impedit, iste laboriosam a id amet vel ad architecto dolorum tempora. Praesentium natus nihil tenetur dolore.</p>
+      </div>
+    </div>
+
+    <div class="tutoriel-footer">
+      <p>Envie d'en savoir plus ?
+        <router-link to="/tutotables"> <md-icon style="color: #2AB7CA ;">keyboard_arrow_right</md-icon> Decouvrir comment creer une table</router-link>
+      </p>
     </div>
   </div>
-  <div class="container tutoetapes">
-    <h2 id="ancresavoirplus">Que-est-ce qu'une base ?</h2>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur nulla optio tempore dolorem sint commodi eos consequatur aspernatur, nam amet, ipsum assumenda eum, maiores velit! Sit nam voluptatibus quis quibusdam maxime dolore deleniti! Earum necessitatibus maxime sunt architecto repellendus dignissimos veniam quis a nisi, sequi nulla dolorum quos. Rerum vero ullam, odio velit alias sint tenetur repellat ea eveniet suscipit accusantium voluptas ut eligendi quos est repudiandae facilis porro aspernatur saepe blanditiis reiciendis natus quisquam! Fuga pariatur dicta tenetur, numquam velit minima nihil quo, impedit, iste laboriosam a id amet vel ad architecto dolorum tempora. Praesentium natus nihil tenetur dolore.</p>
-    <h2> <span class="numerotuto">1</span> Comment l'utiliser ?</h2>
-    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Facilis veniam, voluptatum unde consectetur maiores quis soluta non hic assumenda et, vitae accusantium. Iure natus accusamus corporis quia exercitationem non odit quas, reprehenderit aspernatur maiores modi quo esse optio iusto corrupti, earum odio dicta quidem fugit vero possimus itaque! Aperiam, alias?</p>
-    <h2> <span class="numerotuto">2</span> Comment l'utiliser ?</h2>
-    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Facilis veniam, voluptatum unde consectetur maiores quis soluta non hic assumenda et, vitae accusantium. Iure natus accusamus corporis quia exercitationem non odit quas, reprehenderit aspernatur maiores modi quo esse optio iusto corrupti, earum odio dicta quidem fugit vero possimus itaque! Aperiam, alias?</p>
-    <h2> <span class="numerotuto">3</span> Comment l'utiliser ?</h2>
-    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Facilis veniam, voluptatum unde consectetur maiores quis soluta non hic assumenda et, vitae accusantium. Iure natus accusamus corporis quia exercitationem non odit quas, reprehenderit aspernatur maiores modi quo esse optio iusto corrupti, earum odio dicta quidem fugit vero possimus itaque! Aperiam, alias?</p>
-    <h2> <span class="numerotuto">4</span> Comment l'utiliser ?</h2>
-    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Facilis veniam, voluptatum unde consectetur maiores quis soluta non hic assumenda et, vitae accusantium. Iure natus accusamus corporis quia exercitationem non odit quas, reprehenderit aspernatur maiores modi quo esse optio iusto corrupti, earum odio dicta quidem fugit vero possimus itaque! Aperiam, alias?</p>
-  </div>
-   <router-link to="/tutotables" class="lientutosuivant">
-       <div class="tutosuivant">
-        <h3>Voir aussi : comment créer une table</h3>
-        <i class="fa fa-arrow-right" aria-hidden="true"></i>
-     </div>
-   </router-link>
-</div>
-
 </template>
 
-<script>
-
-
-</script>

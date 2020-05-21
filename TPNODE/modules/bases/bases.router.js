@@ -20,7 +20,8 @@ router.route('/:baseId/table')
     .post(BM.addTable);
 
 router.route('/:baseId/:tableId')
-    .get(BM.getTable);
+    .get(BM.getTable)
+    .delete(BM.deleteTable);
 
 router.route('/:baseId/:tableId/data-selectors')
     .get(BM.getDataSelectors);
@@ -33,6 +34,9 @@ router.route('/:baseId/:tableId/column/:columnId')
 
 router.route('/:baseId/:tableId/data')
     .get(BM.getData);
+
+router.route('/:baseId/:tableId/:columnId')
+    .delete(BM.deleteColumn);
 
 router.route('/:baseId/:tableId/data/line')
     .post(BM.testValidity, BM.setLine, BM.addDataline);

@@ -103,11 +103,6 @@ const routes = [
     component: () => import('../views/Tutotables.vue'),
   },
   {
-    path: '/Tutoformulaires',
-    name: 'Tutoformulaires',
-    component: () => import('../views/Tutoformulaires.vue'),
-  },
-  {
     path: '/Tutodonnees',
     name: 'Tutodonnees',
     component: () => import('../views/Tutodonnees.vue'),

@@ -1,19 +1,23 @@
 <template>
-<div class="fondbleu">
+  <div class="login-bloc">
     <form class="formregister">
-      <h4 class="formtitle">Login</h4>
+      <h4 class="formtitle">Connexion</h4>
 
-      <label for="email" >E-Mail Address</label> <br>
-      <input id="email" type="email" v-model="email" required autofocus>
-      <br>
-      <label for="password" >Password</label> <br>
-      <input id="password" type="password" v-model="password" required>
-      <br>
-      <button class="registerbtn" type="submit" @click="handleSubmit">
-        Login
-      </button>
-      <p>vous n'avez pas de comptev? <br>  <router-link to="/register"> créer vous un compte </router-link> </p>
       <p class="error" v-if="error">{{ error }}</p>
+
+      <md-field>
+        <label>Adresse email</label>
+        <md-input v-model="email" required></md-input>
+      </md-field>
+
+      <md-field>
+        <label>Mot de passe</label>
+        <md-input v-model="password" type="password" required></md-input>
+      </md-field>
+
+      <md-button class="md-dense md-raised md-primary" @click="handleSubmit">connexion</md-button>
+
+      <p>Pas encore de compte ? <router-link to="/register"> S'inscrire maintenant </router-link> </p>
     </form>
   </div>
 </template>

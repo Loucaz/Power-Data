@@ -1,25 +1,33 @@
 <template>
-  <div class="fondbleu">
+  <div class="login-bloc">
     <form class="formregister">
-      <h4 class="formtitle">Register</h4>
+      <h4 class="formtitle">Inscription</h4>
 
-      <label for="name">Name</label> <br>
-      <input id="name" type="text" v-model="name" required autofocus>
-      <br>
-      <label for="email" >E-Mail Address</label> <br>
-      <input id="email" type="email" v-model="email" required>
-      <br>
-      <label for="password">Password</label> <br>
-      <input id="password" type="password" v-model="password" required>
-      <br>
-      <label for="password-confirm">Confirm Password</label> <br>
-      <input id="password-confirm" type="password" v-model="password_confirmation" required>
-      <br>
-        <button class="registerbtn" type="submit" @click="handleSubmit">
-          Register
-        </button>
-         <p>vous avez déja un compte ? <br>  <router-link to="/login"> connectez vous </router-link> </p>
-        <p class="error" v-if="error">{{ error }}</p>
+      <p class="error" v-if="error">{{ error }}</p>
+
+      <md-field>
+        <label>Nom</label>
+        <md-input v-model="name" md-counter="30" required></md-input>
+      </md-field>
+
+      <md-field>
+        <label>Adresse email</label>
+        <md-input v-model="email" type="email" md-counter="40" required></md-input>
+      </md-field>
+
+      <md-field>
+        <label>Mot de passe</label>
+        <md-input v-model="password" type="password" required></md-input>
+      </md-field>
+
+      <md-field>
+        <label>Confirmation</label>
+        <md-input v-model="password_confirmation" type="password" required></md-input>
+      </md-field>
+
+      <md-button class="md-dense md-raised md-primary" @click="handleSubmit">inscription</md-button>
+
+      <p>Déjà un compte ? <br>  <router-link to="/login"> Se connecter </router-link> </p>
     </form>
   </div>
 </template>

@@ -239,7 +239,7 @@ module.exports = {
 
     columnIdParam: function (req, res, next, id) {
         Column.findOne({"_id": id}).exec(function(err, column) {
-            if (err) {
+            if (err || column === null || column === undefined) {
                 return next({
                     status: 404,
                     message: "La colonne n'a pas pu être récupérée."
@@ -403,135 +403,269 @@ module.exports = {
     },
 
     deleteBase: function (req, res, next) {
-        req.data.base.tables.forEach(item => {
-           item.remove(function(err, itemRemoved) {
-               if (err) {
-                   return next({
-                       message: "La base n'a pas pu etre supprimé."
-                   });
-               }
-               req.data.base.remove(function(err, baseRemoved) {
-                   if (err) {
-                       return next({
-                           message: "La base n'a pas pu etre supprimé."
-                       });
-                   }
-                   res.send({success: 1});
-               });
-           });
-        });
+        var asyncForeach = function asyncForeach(req, res) {
+            return new Promise(function (resolve, reject) {
+                var index = 0;
+                if(req.data.base.tables.length <= 0) resolve();
+                req.data.base.tables.forEach(item => {
+                    item.remove(function(err, itemRemoved) {
+                        if (err) {
+                            return next({
+                                message: "La base n'a pas pu etre supprimé."
+                            });
+                        }
+                        index++;
+                        if(index >= req.data.base.tables.length) resolve();
+                    });
+                });
+            });
+        }
+
+        asyncForeach(req, res).then(function() {
+            req.data.base.remove(function(err, baseRemoved) {
+                if (err) {
+                    return next({
+                        message: "La base n'a pas pu etre supprimé."
+                    });
+                }
+                res.send({ success: 1 });
+            });
+        })
     },
 
-    deleteLine: function(req, res, next) {
-        var found = true;
-
-        if(found) {
-            console.log("Line find in lines");
-            var asyncForeach = function asyncForeach(req, res) {
-                return new Promise(function (resolve, reject) {
-                    let line = req.data.line;
-                    var index = 0;
-                    if (line.data.length === 0) resolve();
-
-                    console.log("Recherche de references.. ");
-                    Data
-                        .find({})
-                        .populate({
-                            path: 'columns',
-                            populate: {
-                                path: 'type',
-                                model: 'Type'
-                            }
-                        })
-                        .exec(function(err, datas) {
-                            var asyncDataEdit = function asyncForeach(req, res) {
-                                return new Promise(function (resolve, reject) {
-                                    var index = 0;
-                                    datas.forEach(function (data) {
-                                        if (data.valueObjectId !== null && data.valueObjectId !== undefined && data.valueObjectId.indexOf(req.data.line._id) > -1) {
-                                            data.valueObjectId.splice(data.valueObjectId.indexOf(req.data.line._id), 1);
-                                            data.save(function (err, dataSave) {
-                                                if (err) {
-                                                    return next({
-                                                        message: "Impossible de supprimer les references."
-                                                    });
-                                                }
-                                                index++;
-                                                if (index >= datas.length) resolve();
-                                            });
-                                        } else index++;
-                                        if (index >= datas.length) resolve();
-                                    });
-                                });
-                            };
-
-                            asyncDataEdit(req, res).then(function () {
-                                console.log('references supprimées');
-                                var i = 0;
-                                req.data.line.data.forEach(function(d) {
-                                    Data.deleteOne({_id: d._id}, function(err) {
-                                        if(err) {
-                                            console.log("Suppression impossible : " + d.value);
-                                            return next({
-                                                message: "Une donnée na pas pu être supprimée."
-                                            });
-                                        }
-                                        console.log("Suppression réussie : " + d.value);
-                                        i++;
-                                        if (i >= line.data.length) resolve();
-                                    })
-                                })
-                            });
+    deleteTable: function (req, res, next) {
+        var asyncForeach = function asyncForeach(req, res) {
+            return new Promise(function (resolve, reject) {
+                var columnsToDelete = [];
+                Column.find({tableReference: req.data.table._id}, function (err, columns) {
+                    if (err) {
+                        return next({
+                            message: "Erreur survenue."
                         });
-
-                        /*
-                        Data.deleteOne({_id: d._id}, function(err) {
-                            if(err) {
-                                console.log("Suppression impossible : " + d.value);
+                    }
+                    if(columns === undefined || columns === null) columns = [];
+                    columnsToDelete = columns;
+                    var index = 0;
+                    var dataToDelete = [];
+                    if(index >= columnsToDelete.length) {
+                        resolve({
+                            columns: columnsToDelete,
+                            data: dataToDelete,
+                            lines : req.data.table.lines,
+                            table: [req.data.table],
+                        });
+                    }
+                    columnsToDelete.forEach(function (c) {
+                        Data.find({column:c._id}).exec(function(err, dataFind) {
+                            if (err) {
                                 return next({
-                                    message: "Une donnée na pas pu être supprimée."
+                                    message: "Erreur survenue."
                                 });
                             }
-                            console.log("Suppression réussie : " + d.value);
+                            if(dataFind === null || dataFind === undefined) dataFind = [];
                             index++;
-                            if (index >= line.data.length) resolve();
+                            dataToDelete = dataToDelete.concat(dataFind);
+                            if(index >= columnsToDelete.length) {
+                                resolve({
+                                    columns: columnsToDelete,
+                                    data: dataToDelete,
+                                    lines : [],
+                                    table: [req.data.table],
+                                });
+                            }
                         })
-                         */
+                    });
+                });
+            });
+        };
+
+        asyncForeach(req, res).then(function(toRemove) {
+            toRemove.lines.forEach(function (l) {
+                toRemove.data = toRemove.data.concat(l.data);
+            });
+
+            toRemove.columns = toRemove.columns.concat(req.data.table.columns)
+
+            var dIndex = 0;
+            var cIndex = 0;
+            var lIndex = 0;
+            var tIndex = 0;
+
+            var asyncDelete = function asyncDelete(Model, array) {
+                return new Promise(function (resolve, reject) {
+                    let i = 0;
+                    if(i >= array.length) resolve();
+                    array.forEach(function(e) {
+                        Model.deleteOne({_id:e._id}, function() {
+                            i++;
+                            if(i >= array.length) resolve();
+                        });
+                    });
                 })
             };
 
-            asyncForeach(req, res).then(function () {
-                console.log("All data supprimées, MAJ table");
-                Table.updateOne({ lines: req.data.table.lines.pull(req.data.line._id) }, { _id: req.data.line._id }, function(err, tableUpdated) {
-                    if(err) {
-                        console.log("ERREUR MAJ table");
-                        return next({
-                            message: "La table n'a pa pu être mise à jour"
-                        });
-                    }
-                    console.log("MAJ table réussie");
-                    Line.deleteOne({_id: req.data.line._id}, function(err) {
-                        if(err) {
-                            console.log("ERREUR SUPPRESSION LIGNE");
-                            return next({
-                                message: "la ligne n'a pas pu être supprimée."
-                            });
-                        }
-                        console.log("Ligne supprimée");
-                        res.send(tableUpdated);
-                    })
+            asyncDelete(Table, toRemove.table)
+                .then(function() {
+                    asyncDelete(Column, toRemove.columns)
+                        .then(function() {
+                            asyncDelete(Line, toRemove.lines)
+                                .then(function() {
+                                    asyncDelete(Data, toRemove.data)
+                                        .then(function() {
+                                            res.send({ok:true})
+                                        })
+                                })
+                        })
                 })
-            });
-        } else {
-            req.data.table.lines.forEach((x) => console.log(x._id));
-            console.log(req.data.line._id);
-            req.data.table.lines.includes()
+        })
 
+    },
 
-            return next({
-                message: "Erreur de ligne."
+    deleteColumn: function (req, res, next) {
+        var asyncForeach = function asyncForeach(req, res) {
+            return new Promise(function (resolve, reject) {
+                var linesUp
+                Data.find({column:req.data.column._id}).exec(function(err, datas) {
+                    if(err) {
+                       return next({
+                           message: "Les données associées n'ont pas été recupérées."
+                       });
+                    }
+                    var index = 0;
+                    if(datas.length <= 0) resolve();
+                    datas.forEach(d => {
+                        d.remove(function(err, dataRemoved) {
+                            if (err) {
+                                return next({
+                                    message: "La base n'a pas pu etre supprimé."
+                                });
+                            }
+                            index++;
+                            if(index >= datas.length) resolve();
+                        });
+                    });
+                });
             });
         }
+
+        asyncForeach(req, res).then(function() {
+            req.data.column.remove(function(err, dataRemoved) {
+                if (err) {
+                    return next({
+                        message: "La colonne n'a pas pu etre supprimé."
+                    });
+                }
+                Table
+                    .findOne({_id:req.data.table._id})
+                    .populate([{
+                        path: 'lines',
+                        populate: {
+                            path: 'data',
+                            model: 'Data'
+                        }
+                    },{
+                        path: 'columns',
+                        populate: {
+                            path: 'type',
+                            model: 'Type'
+                        }
+                    }])
+                    .exec(function(err, tableFind) {
+                    if(err || tableFind === null || tableFind === undefined) {
+                        return next({
+                            message: "Colonne supprimée mais table introuvable."
+                        });
+                    }
+                    res.send(tableFind);
+                });
+            });
+        })
+
+    },
+
+    deleteLine: function(req, res, next) {
+        console.log("Line find in lines");
+        var asyncForeach = function asyncForeach(req, res) {
+            return new Promise(function (resolve, reject) {
+                let line = req.data.line;
+                var index = 0;
+                if (line.data.length === 0) resolve();
+
+                console.log("Recherche de references.. ");
+                Data
+                    .find({})
+                    .populate({
+                        path: 'columns',
+                        populate: {
+                            path: 'type',
+                            model: 'Type'
+                        }
+                    })
+                    .exec(function(err, datas) {
+                        var asyncDataEdit = function asyncForeach(req, res) {
+                            return new Promise(function (resolve, reject) {
+                                var index = 0;
+                                datas.forEach(function (data) {
+                                    if (data.valueObjectId !== null && data.valueObjectId !== undefined && data.valueObjectId.indexOf(req.data.line._id) > -1) {
+                                        data.valueObjectId.splice(data.valueObjectId.indexOf(req.data.line._id), 1);
+                                        data.save(function (err, dataSave) {
+                                            if (err) {
+                                                return next({
+                                                    message: "Impossible de supprimer les references."
+                                                });
+                                            }
+                                            index++;
+                                            if (index >= datas.length) resolve();
+                                        });
+                                    } else index++;
+                                    if (index >= datas.length) resolve();
+                                });
+                            });
+                        };
+
+                        asyncDataEdit(req, res).then(function () {
+                            console.log('references supprimées');
+                            var i = 0;
+                            req.data.line.data.forEach(function(d) {
+                                Data.deleteOne({_id: d._id}, function(err) {
+                                    if(err) {
+                                        console.log("Suppression impossible : " + d.value);
+                                        return next({
+                                            message: "Une donnée na pas pu être supprimée."
+                                        });
+                                    }
+                                    console.log("Suppression réussie : " + d.value);
+                                    i++;
+                                    if (i >= line.data.length) resolve();
+                                })
+                            })
+                        });
+                    });
+            })
+        };
+
+        asyncForeach(req, res).then(function () {
+            console.log("All data supprimées, MAJ table");
+            Table.updateOne({ lines: req.data.table.lines.pull(req.data.line._id) }, { _id: req.data.line._id }, function(err, tableUpdated) {
+                if(err) {
+                    console.log("ERREUR MAJ table");
+                    return next({
+                        message: "La table n'a pa pu être mise à jour"
+                    });
+                }
+                console.log("MAJ table réussie");
+                Line.deleteOne({_id: req.data.line._id}, function(err) {
+                    if(err) {
+                        console.log("ERREUR SUPPRESSION LIGNE");
+                        return next({
+                            message: "la ligne n'a pas pu être supprimée."
+                        });
+                    }
+                    console.log("Ligne supprimée");
+                    res.send(tableUpdated);
+                })
+            })
+        });
 
         if(req.data.table.lines.includes(req.data.line)) {
             req.data.line.data.forEach(function(d) {
@@ -858,7 +992,6 @@ module.exports = {
         }
 
         asyncForeach(req, res, next).then(function(dataLabels) {
-            console.log("ASYNK OK, next")
             let label;
             if(dataLabels.length <= 0) label = req.data.line._id;
             else {
@@ -867,10 +1000,6 @@ module.exports = {
                     label += d.value + ' ';
                 });
             }
-            console.log({
-                _id: req.data.line._id,
-                label: label
-            });
             return res.send({
                 _id: req.data.line._id,
                 label: label

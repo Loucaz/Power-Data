@@ -13,21 +13,21 @@
       <div class="base-actions">
         <a href="#"><i class="fa fa-external-link" aria-hidden="true"></i></a>
         <a href="#"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-        <a @click="deleteTable()"><i class="fa fa-trash" aria-hidden="true"></i></a>
+        <a @click="deleteBase()"><i class="fa fa-trash" aria-hidden="true"></i></a>
       </div>
     </div>
     <div class="base-tables">
       <h2>Liste des tables :</h2>
       <div class="list-tables">
-        <router-link v-for="table in base.tables" :key="table.name" :data="table" :to="{ name: 'table', params: { id: base._id, idTable: table._id }}">
-          <div class="table-icon table-red">
-            <i class="fa fa-address-book-o" aria-hidden="true"></i>
+        <router-link v-for="table in base.tables" :key="table._id" :data="table" :to="{ name: 'table', params: { id: base._id, idTable: table._id }}">
+          <div class="table-icon">
+            <i class="fa fa-bars" aria-hidden="true"></i>
           </div>
           <p>{{ table.name }}</p>
         </router-link>
 
         <a @click="$bvModal.show('bv-modal-add-table')">
-          <div class="table-icon table-orange">
+          <div class="table-icon">
             <i class="fa fa-plus" aria-hidden="true"></i>
           </div>
           <p>Ajouter</p>
@@ -112,7 +112,7 @@ export default {
           this.loading = false;
         });
     },
-    deleteTable: function deleteTable() {
+    deleteBase: function deleteBase() {
       const url = `http://localhost:3000/bases/${this.base._id}`;
       fetch(url, { method: 'DELETE' })
         .then(console.log);

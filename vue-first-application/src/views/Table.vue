@@ -3,7 +3,7 @@
     <div class="table-header">
       <div class="base-informations">
         <div class="base-icon table-blue">
-          <i class="fa fa-envelope" aria-hidden="true"></i>
+          <i class="fa fa-bars" aria-hidden="true"></i>
         </div>
         <div class="base-description">
           <h2>
@@ -12,13 +12,11 @@
             </router-link>
             > {{table.name}}
           </h2>
-          <p>Créer le 14/01/2020 par <a href="#">Julien Lardet</a></p>
         </div>
       </div>
       <div class="base-actions">
         <a href="#"><i class="fa fa-external-link" aria-hidden="true"></i></a>
-        <a href="#"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-        <a href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
+        <a @click="deleteTable" href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
       </div>
     </div>
 
@@ -31,7 +29,7 @@
           <a class="dropdown-item" @click="showToolBar('add-column')">Ajouter une colonne</a>
           <a class="dropdown-item" @click="showToolBar('add-data')">Ajouter une ligne</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Exporter</a>
+          <a class="dropdown-item" @click="showToolBar('delete-column')">Supprimer une colonne</a>
         </div>
       </div>
       <div class="dropdown">
@@ -187,6 +185,37 @@
         </div>
       </transition>
       <!-- END BLOC INSERT DATA -->
+
+      <!-- BLOC DELETE COLUMN -->
+      <transition name="slide-fade">
+        <div class="table-bloc-settings" v-if="showDeleteColumn">
+          <div class="table-settings-header">
+            <a class="table-settings-close-btn" @click="showToolBar">x</a>
+            <h3 class="table-settings-title">Supprimer une colonne</h3>
+          </div>
+          <div class="table-settings-content">
+            <p>Les données liées à la colonne seront supprimées</p>
+
+            <div v-if="errorsAddData.length > 0" class="error-bloc">
+              <p v-for="e in errorsAddData" v-bind:key="e.column"><strong>{{ e.column }}</strong> : {{ e.message }}</p>
+            </div>
+
+            <div>
+              <md-field required>
+                <label>Colonne à supprimer</label>
+                <md-select v-model="columnToDelete" md-dense>
+                  <md-option v-for="c in table.columns" :value="c._id" v-bind:key="c._id">{{ c.name }}</md-option>
+                </md-select>
+              </md-field>
+            </div>
+
+            <md-button class="md-primary" @click="deleteColumn">Supprimer</md-button>
+            <md-button @click="showToolBar()">Annuler</md-button>
+          </div>
+        </div>
+      </transition>
+      <!-- END BLOC DELETE COLUMN -->
+
       <!-- BLOC EDIT DATA -->
       <transition name="slide-fade">
         <div class="table-bloc-settings" v-if="showEditData">
@@ -306,6 +335,7 @@ export default {
           _id: String,
         }]
       },
+      columnToDelete: String,
       typeDate: Number,
       dateInterval: false,
       nullableOption: true,
@@ -326,6 +356,7 @@ export default {
       loadingLabels: true,
       showAddColumn: false,
       showInsertData: false,
+      showDeleteColumn: false,
       showEditData: false,
       tableChoice: null,
       dataSelectors: [],
@@ -391,6 +422,8 @@ export default {
     },
 
     reloadTable: function reloadTable() {
+      this.loadingLabels = true;
+      this.loadingArray = true;
       const url = `http://localhost:3000/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
       fetch(url)
         .then(res => res.json())
@@ -398,6 +431,7 @@ export default {
           this.base = rep.base;
           this.table = rep.table;
           this.initArrayData();
+          this.initLabelsReferences();
         });
     },
 
@@ -423,7 +457,6 @@ export default {
           (column.type !== undefined && column.type !== null) &&
             (column.type.realName !== undefined && column.type.realName !== null)) {
 
-        let label = '';
         switch(column.type.realName) {
           case 'date':
             let date = new Date(data.valueDate);
@@ -467,24 +500,6 @@ export default {
 
       if(this.dataSelected.length === 1) this.showToolBar('edit-data');
       else this.showToolBar();
-
-      /*
-
-      if(this.dataSelected.includes(item)) {
-        let index = this.dataSelected.indexOf(item);
-        if (index > -1) {
-          this.dataSelected.splice(index, 1);
-        }
-        item.selected = false;
-        if(this.dataSelected.length === 1) this.showToolBar('edit-data');
-        else this.showToolBar();
-      } else {
-        item.selected = true;
-        this.dataSelected.push(item)
-        if(this.dataSelected.length === 1) this.showToolBar('edit-data');
-        else this.showToolBar();
-      }
-       */
     },
 
     deleteSelected: function deleteSelected() {
@@ -506,15 +521,32 @@ export default {
       }
     },
 
+    deleteColumn: function deleteColumn() {
+      if(this.columnToDelete !== null && this.columnToDelete !== undefined) {
+        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/${this.columnToDelete}`;
+        fetch(url, {
+            method: 'DELETE'
+          })
+          .then(res => res.json())
+          .then((rep) => {
+            console.log(rep);
+            this.table = rep;
+          })
+      }
+    },
+
     getClass: function getStyle(l) {
       if(l.selected) return 'cursor: pointer; background-color: #448aff; color: #fff;';
       else return 'cursor: pointer;';
     },
 
     deleteTable: function deleteTable() {
-      const url = `http://localhost:3000/bases/${this.base._id}`;
-      fetch(url, { method: 'DELETE' });
-      this.$router.push({ name: 'home' });
+      const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}`;
+      fetch(url, { method: 'DELETE' })
+        .then(res => res.json())
+        .then((rep) => {
+          this.$router.push({ name: 'base', params: { id: this.base._id } });
+        });
     },
 
     initArrayData: function initArrayData() {
@@ -535,7 +567,6 @@ export default {
     },
 
     initLabelsReferences: function initLabelsReferences() {
-      console.log('START LABEL MODIFICATIONS');
       var table = this.table;
       var linesLabel = this.linesLabel;
       var columnsRelation = [];
@@ -679,10 +710,8 @@ export default {
         if(e.line == null) e.line = -1;
         if(e.valueBoolean === '0') e.valueBoolean = false;
         if(e.valueBoolean === '1') e.valueBoolean = true;
-        if(e.column.type.realName === 'relation') {
-          if((e.valueObjectId !== null && e.valueObjectId !== undefined) && !Array.isArray(e.valueObjectId)) {
-            e.valueObjectId = [e.valueObjectId];
-          } else if(!Array.isArray(e.valueObjectId)) e.valueObjectId = [];
+        if((e.valueObjectId !== null && e.valueObjectId !== undefined) && !Array.isArray(e.valueObjectId)) {
+          e.valueObjectId = [e.valueObjectId];
         }
       });
 
@@ -703,6 +732,8 @@ export default {
             console.log(rep);
             this.table = rep;
             this.loadingLabels = true;
+            this.loadingArray = true;
+            this.initArrayData();
             this.initLabelsReferences();
           }
         });
@@ -740,10 +771,10 @@ export default {
             this.errorsAddData = rep;
             console.log('ERRORS :' + rep);
           } else {
-            this.reloadTable();
-            this.dataSelected = [];
-            this.showToolBar();
             this.table.lines.splice(index, 1, rep);
+            this.showToolBar();
+            this.dataSelected = [];
+            this.reloadTable();
           }
         });
     },
@@ -753,29 +784,40 @@ export default {
         case 'add-column':
           this.showInsertData = false;
           this.showAddColumn = true;
+          this.showDeleteColumn = false;
           this.showEditData = false;
           break;
         case 'add-data':
           this.showAddColumn = false;
           this.showInsertData = true;
           this.showEditData = false;
+          this.showDeleteColumn = false;
           break;
         case 'edit-data':
           if(this.dataSelected.length === 1) {
             this.showAddColumn = false;
             this.showInsertData = false;
+            this.showDeleteColumn = false;
             this.showEditData = true;
             this.initArrayUpdateLine(this.dataSelected[0]);
           } else {
             this.showAddColumn = false;
             this.showInsertData = false;
+            this.showDeleteColumn = false;
             this.showEditData = false;
           }
+          break;
+        case 'delete-column':
+          this.showInsertData = false;
+          this.showAddColumn = false;
+          this.showEditData = false;
+          this.showDeleteColumn = true;
           break;
         default:
           this.showAddColumn = false;
           this.showInsertData = false;
           this.showEditData = false;
+          this.showDeleteColumn = false;
           break;
       }
     },

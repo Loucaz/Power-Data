@@ -48,12 +48,27 @@ p a {
     background-color: #57ACE5 !important;
     border: 10px solid #7EBCE6;
 }
+
 .table-green {
     background-color: rgb(50, 201, 70) !important;
     border: 10px solid rgb(85, 224, 115);
 }
 
+.table-red i {
+    color: #eee !important;
+}
+.table-blue i {
+    color: #eee !important;
+}
+.table-orange i {
+    color: #eee !important;
+}
+.table-green i {
+    color: #eee !important;
+}
+
 .navigation-bar {
+    position: fixed;
     width: 300px;
     height: 100vh;
     border-right: 1px solid #eee;
@@ -147,9 +162,12 @@ p a {
 }
 
 .container {
-    width: 100%;
-    max-width: 100% !important;
+    max-width: calc(100% - 300px) !important;
+    height: 100%;
+    position: fixed;
+    right: 0;
     padding: 2rem;
+    overflow-y: auto;
 }
 
 .element-block {
@@ -233,11 +251,12 @@ p a {
     background-color: #fbfbfb;
     border: 1px solid #eee;
     text-decoration: none;
-    box-shadow: 0 1px 10px rgba(0,0,0,.1);
+    box-shadow: 0 1px 1px rgba(0,0,0,.1);
 }
 
 .list-tables a:hover {
-    box-shadow: 0 1px 10px rgba(0,0,0,.2);
+    background-color: #fff;
+    box-shadow: 0 1px 5px rgba(0,0,0,.1);
     transition: 0.2s;
 }
 
@@ -245,25 +264,28 @@ p a {
     text-transform: uppercase;
     text-align: center;
     padding: 0.4rem;
-    font-weight: 400;
-    color: #2C2C34;
+    font-weight: 300;
+    letter-spacing: 0.015rem;
+    color: #3e3e3e99;
 }
 
 .table-icon {
     width: 100%;
     text-align: center;
-    padding: 1.5rem 0;
+    padding: 1rem 0;
 }
 
 .table-icon i {
-    color: #fff;
+    color: #3e3e3e40;
     font-size: 2rem;
 }
 
 .table-container {
+    width: calc(100% - 300px) !important;
+    height: 100%;
+    position: fixed;
+    right: 0;
     padding: 0;
-    width: 100%;
-    height: 100vh;
 }
 
 .table-header {
@@ -341,6 +363,208 @@ p a {
 }
 
 /* page d'accueil */
+
+.homepage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    margin-bottom: 3rem;
+}
+
+.homepage-header h1 {
+    font-family: 'Gayathri', sans-serif;
+    font-size: 2rem;
+    font-weight: 100;
+    letter-spacing: 0.2rem;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.links-header a:not(:last-child) {
+    margin-right: 2rem;
+}
+
+.links-header a {
+    padding: 0.3rem 0.8rem;
+    font-size: 1rem;
+    border-radius: 1rem;
+}
+
+.links-header .btn-infos {
+    color: rgb(42, 183, 202) !important;
+    background-color: #fff;
+    border: 1px solid rgb(42, 183, 202);
+}
+
+.links-header .btn-register {
+    color: #fff !important;
+    background-color: rgb(42, 183, 202);
+}
+
+.main-illustration-bloc {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 auto;
+}
+
+.main-illustration-bloc .illustration img {
+    width: 80%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.main-illustration-bloc .description {
+    text-align: left;
+}
+
+.main-illustration-bloc .description h2 {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    margin-bottom: 0.8rem;
+}
+
+.main-illustration-bloc .description p {
+    font-family: 'Work Sans', sans-serif;
+    max-width: 80%;
+    font-weight: 300;
+    font-size: 1.2rem;
+    margin-left: 1rem;
+}
+
+.tutoriel-header {
+    margin: 0 auto;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 1rem;
+    background-color: #fbfbfb;
+    border: 1px solid #eee;
+    border-radius: 1rem;
+}
+
+.tutoriel-top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tutoriel-picture img {
+    width: 140px;
+    height: auto;
+}
+
+.tutoriel-footer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 300;
+    text-transform: uppercase;
+}
+
+.tutoriel-description h4 {
+    text-transform: uppercase;
+    font-size: 1rem;
+}
+
+.tutoriel-description h3 {
+    font-size: 1.4rem;
+    font-weight: 300;
+}
+
+.tutoriel-content {
+    margin: 2rem auto 0;
+    width: 80%;
+}
+
+.tutoriel-element {
+    margin-bottom: 2.5rem;
+}
+
+.tutoriel-element h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.tutoriel-element p {
+    padding-left: 1rem;
+    font-size: 1.1rem;
+    font-weight: 300;
+    line-height: 1.5rem;
+}
+
+.tutoriel-footer {
+    width: 80%;
+    margin: 0 auto 2rem;
+    text-align: left;
+}
+
+.tutoriel-footer p {
+    font-size: 1rem;
+    text-transform: uppercase;
+    font-weight: 300;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.tutoriel-footer a {
+    border-bottom: 1px solid #2AB7CA;
+    display: flex;
+    align-items: center;
+}
+
+.tutoriels-bloc {
+    width: 80%;
+    margin: 4rem auto 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tutoriels-bloc .description {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tutoriels-bloc .description h2 {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    margin-bottom: 0.8rem;
+}
+
+.tutoriels-bloc .description p {
+    text-align: center;
+    font-family: 'Work Sans', sans-serif;
+    max-width: 70%;
+    font-weight: 300;
+    font-size: 1.2rem;
+}
+
+.tutoriels-list {
+    margin-top: 2rem;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+}
+
+.tutoriels-list a {
+    width: 140px;
+    text-align: center;
+}
+
+.tutoriels-list a p {
+    margin-top: 0.5rem;
+}
+
 
 .home{
     background-color: rgb(34, 150, 165);
@@ -596,36 +820,25 @@ form input{
 
 /* login register login */
 
-.fondbleu{
-    background-color: rgb(34, 150, 165);
-    padding-bottom: 300px;
+.login-bloc {
+    height: 100%;
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .formregister .formtitle{
     margin-bottom: 15px;
 }
 .formregister{
-    margin-left: auto;
-    margin-right:  auto;
-    margin-top: 20vh;
-    padding: 30px 40px 30px 40px ;
-    background-color: #eee;
+    padding: 2rem;
+    background-color: #fbfbfb;
     text-align: center;
     border-radius: 5px;
-    box-shadow: 20px 20px 5px 5px rgba(0, 0, 0, 0.15);
+    border: 1px solid #eee;
     width:300px;
 }
 
-.formregister label{
-    margin-bottom: 2px;
-}
-.formregister input{
-    border: none;
-    border-radius: 2px;
-    background-color: #d1d1d1;
-    margin-bottom: 15px;
-    padding: 5px;
-}
 .formregister .registerbtn{
     border: none;
     border-radius: 2px;
@@ -638,6 +851,11 @@ form input{
 .formregister p{
     margin-top: 10px;
     font-size: 0.8em;
+}
+
+.formregister .error {
+    text-align: left;
+    color: red;
 }
 
 /* Page formulaire */
