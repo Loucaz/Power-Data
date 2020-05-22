@@ -629,8 +629,25 @@ p a {
 }
 
 .table-bloc-settings {
+    width: 300px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: calc(100vh - 145px);
+    z-index: 10;
+    overflow-y: auto;
     background-color: #fbfbfb;
     border-left: 1px solid #eee;
+}
+
+.delete-select-block {
+    background-color: rgb(255, 220, 220);
+    height: 60px;
+    color: rgba(0,0,0,0.87);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5rem;
 }
 
 .table-settings-header {
