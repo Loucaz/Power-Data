@@ -80,7 +80,7 @@ export default {
       document.getElementById(id).remove();
     },
     addPost: function addPost() {
-      console.log(this.newPost);
+      //console.log(this.newPost);
       fetch(this.$adresse+'/posts', {
         method: 'POST',
         headers: {
