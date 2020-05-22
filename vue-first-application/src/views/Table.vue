@@ -384,7 +384,7 @@
           this.getDataSelectors();
         });
 
-      const urlTypes = 'http://localhost:3000/types';
+      const urlTypes = this.$adresse + `/types`;
       fetch(urlTypes)
         .then(res => res.json())
         .then((rep) => {
