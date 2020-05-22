@@ -125,6 +125,14 @@
                   <span v-if="c.helper != null" class="md-helper-text">{{ c.helper }}</span>
                 </md-field>
               </div>
+              <div v-if="dateInterval">
+                <md-datepicker id="date-start" ref="date-start" v-model="newColumn.dateStart">
+                  <label>Date minimum</label>
+                </md-datepicker>
+                <md-datepicker id="date-end" ref="date-end" v-model="newColumn.dateEnd">
+                  <label>Date maximum</label>
+                </md-datepicker>
+              </div>
               <div v-if="tableChoice != null && tableChoice !== undefined">
                 <div class="choice-relation-bloc">
                   <md-radio v-model="newColumn.relationType" value="one-to-one" class="md-primary">Relation "Un pour un"</md-radio>
@@ -440,10 +448,13 @@
         var dataSelectors = [];
         this.table.columns.forEach(function(e) {
           if(e.type.realName === 'relation') {
+            console.log(e)
+            console.log(`http://localhost:3000/bases/${baseId}/${e.tableReference}/data-selectors`)
             const url = `http://localhost:3000/bases/${baseId}/${e.tableReference}/data-selectors`;
             fetch(url)
               .then(res => res.json())
               .then((rep) => {
+                console.log(rep);
                 dataSelectors[e._id] = rep;
               });
           }
@@ -712,6 +723,8 @@
           if(e.valueBoolean === '1') e.valueBoolean = true;
           if((e.valueObjectId !== null && e.valueObjectId !== undefined) && !Array.isArray(e.valueObjectId)) {
             e.valueObjectId = [e.valueObjectId];
+          } else if (!Array.isArray(e.valueObjectId)) {
+            e.valueObjectId = [];
           }
         });
 
@@ -840,6 +853,7 @@
           })
             .then(rep => rep.json())
             .then((res) => {
+              console.log(res);
               const tmp = this.table;
               tmp.columns.push(res);
               this.table = tmp;

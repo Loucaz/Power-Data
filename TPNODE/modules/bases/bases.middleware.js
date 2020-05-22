@@ -21,100 +21,143 @@ module.exports = {
     },
 
     addColumn: function (req, res, next) {
-        Type.findOne({realName: req.body.type }).exec(function(err, typeFind) {
-            if (err) {
-                return next({
-                    status: 404,
-                    message: "Type de colonne incorrect."
-                });
-            } else {
-                var c = new Column();
-                var n = (null === req.body.nullable || undefined === req.body.nullable) ? false : req.body.nullable;
-                switch (typeFind.realName) {
-                    case 'number':
-                        c = new Column({
-                            name: req.body.name,
-                            type: typeFind,
-                            min: (req.body.min == null) ? -99999999999999999 : req.body.min,
-                            max: (req.body.max == null) ? 9999999999999999999 : req.body.max,
-                            numberStepValue: (req.body.numberStepValue == null) ? 0.001 : req.body.numberStepValue,
-                            nullable: n,
-                        });
-                        if(c.min > c.max) {
-                            let tmp = c.min;
-                            c.min = c.max;
-                            c.max = tmp;
-                        }
-                        break;
-                    case 'shorttext':
-                        c = new Column({
-                            name: req.body.name,
-                            type: typeFind,
-                            min: (req.body.min == null) ? 0 : req.body.min,
-                            max: (req.body.max == null) ? 255 : req.body.max,
-                            defaultStringValue: (req.body.defaultStringValue == null) ? '' : req.body.defaultStringValue,
-                            nullable: n,
-                        });
-                        break;
-                    case 'longtext':
-                        c = new Column({
-                            name: req.body.name,
-                            type: typeFind,
-                            min: (req.body.min == null) ? 0 : req.body.min,
-                            max: (req.body.max == null) ? 2500 : req.body.max,
-                            defaultStringValue: (req.body.defaultStringValue == null) ? '' : req.body.defaultStringValue,
-                            nullable: n,
-                        });
-                        break;
-                    case 'relation':
-                        c = new Column({
-                            name: req.body.name,
-                            type: typeFind,
-                            min: (req.body.min == null) ? 0 : req.body.min,
-                            max: (req.body.max == null) ? 2500 : req.body.max,
-                            defaultStringValue: (req.body.defaultStringValue == null) ? '' : req.body.defaultStringValue,
-                            nullable: n,
-                        });
-                        break;
-                    case 'boolean':
-                        c = new Column({
-                            name: req.body.name,
-                            type: typeFind,
-                            nullable: n,
-                        });
-                        break;
-                    case 'date':
-                        c = new Column({
-                            name: req.body.name,
-                            type: typeFind,
-                            dateStart: req.body.dateStart,
-                            dateEnd: req.body.dateEnd,
-                            dateIsToday: (req.body.dateIsToday == null) ? false : req.body.dateIsToday,
-                            dateIsFree: (req.body.dateIsFree == null) ? false : req.body.dateIsFree,
-                            nullable: n,
-                        });
-                        break;
-                    default:
-                        break;
-                }
-
-                c.save(function(err, columnSaved) {
+        var asyncTask = function asyncTask(req, res, next) {
+            return new Promise(function (resolve, reject) {
+                var errorMessages = [];
+                console.log(req.data);
+                Type.findOne({realName: req.body.type}).exec(function (err, typeFind) {
                     if (err) {
-                        return next({
-                            message: "La colonne n'a pas pu etre ajouté"
-                        });
-                    }
-                    req.data.table.columns.push(columnSaved);
-                    req.data.table.save(function(err, tableUpdated) {
-                        if (err) {
-                            return next({
-                                message: "La colonne à été créée mais n'a pas pu être ajoutée à la table",
-                            });
+                        errorMessages.push({message: "Type non valide."});
+                        resolve(null, errorMessages);
+                    } else {
+                        var c = new Column();
+                        var n = (null === req.body.nullable || undefined === req.body.nullable) ? false : req.body.nullable;
+                        var isLabel = (null === req.body.isLabel || undefined === req.body.isLabel) ? false : req.body.isLabel;
+                        switch (typeFind.realName) {
+                            case 'number':
+                                c = new Column({
+                                    name: req.body.name,
+                                    type: typeFind,
+                                    isLabel: isLabel,
+                                    min: (req.body.min == null) ? -99999999999999999 : req.body.min,
+                                    max: (req.body.max == null) ? 9999999999999999999 : req.body.max,
+                                    numberStepValue: (req.body.numberStepValue == null) ? 0.001 : req.body.numberStepValue,
+                                    nullable: n,
+                                });
+                                if (c.min > c.max) {
+                                    let tmp = c.min;
+                                    c.min = c.max;
+                                    c.max = tmp;
+                                }
+                                resolve(c, errorMessages);
+                                break;
+                            case 'relation':
+                                console.log("TYPE RELATION");
+                                if (['one-to-one', 'one-to-many'].indexOf(req.body.relationType) === -1 || req.body.tableReference == null) {
+                                    errorMessages.push({message: "Parametres de la relation incorrects."});
+                                    resolve(null, errorMessages);
+                                } else {
+                                    Table.findOne({_id: req.body.tableReference}).exec(function (err, tableFind) {
+                                        if (err) {
+                                            errorMessages.push({message: "Table de reference introuvable."});
+                                            resolve(null, errorMessages);
+                                        }
+                                        console.log("TABLE REF FIND :");
+                                        c = new Column({
+                                            name: req.body.name,
+                                            type: typeFind,
+                                            isLabel: isLabel,
+                                            relationType: req.body.relationType,
+                                            tableReference: tableFind._id,
+                                            nullable: n,
+                                        });
+                                        console.log(c);
+                                        resolve(c, errorMessages);
+                                    });
+                                }
+                                break;
+                            case 'shorttext':
+                                c = new Column({
+                                    name: req.body.name,
+                                    type: typeFind,
+                                    isLabel: isLabel,
+                                    min: (req.body.min == null) ? 0 : req.body.min,
+                                    max: (req.body.max == null) ? 255 : req.body.max,
+                                    defaultStringValue: (req.body.defaultStringValue == null) ? '' : req.body.defaultStringValue,
+                                    nullable: n,
+                                });
+                                resolve(c, errorMessages);
+                                break;
+                            case 'longtext':
+                                c = new Column({
+                                    name: req.body.name,
+                                    type: typeFind,
+                                    isLabel: isLabel,
+                                    min: (req.body.min == null) ? 0 : req.body.min,
+                                    max: (req.body.max == null) ? 2500 : req.body.max,
+                                    defaultStringValue: (req.body.defaultStringValue == null) ? '' : req.body.defaultStringValue,
+                                    nullable: n,
+                                });
+                                resolve(c, errorMessages);
+                                break;
+                            case 'boolean':
+                                c = new Column({
+                                    name: req.body.name,
+                                    type: typeFind,
+                                    isLabel: isLabel,
+                                    nullable: n,
+                                });
+                                resolve(c, errorMessages);
+                                break;
+                            case 'date':
+                                c = new Column({
+                                    name: req.body.name,
+                                    type: typeFind,
+                                    isLabel: isLabel,
+                                    dateStart: req.body.dateStart,
+                                    dateEnd: req.body.dateEnd,
+                                    dateIsToday: (req.body.dateIsToday == null) ? false : req.body.dateIsToday,
+                                    dateIsFree: (req.body.dateIsFree == null) ? false : req.body.dateIsFree,
+                                    nullable: n,
+                                });
+                                resolve(c, errorMessages);
+                                break;
+                            default:
+                                errorMessages.push({message: "Erreur type de la colonne."});
+                                resolve(null, errorMessages);
+                                break;
                         }
-                        res.send(columnSaved);
-                    });
+                    }
+                });
+            })
+        }
+
+        asyncTask(req, res, next).then(function(column, errorMessages) {
+            if(errorMessages !== null && errorMessages !== undefined && errorMessages.length > 0) {
+                return next({
+                    status: 500,
+                    message:errorMessages
                 });
             }
+            column.save(function (err, columnSaved) {
+                if (err) {
+                    console.log(err);
+                    console.log(column);
+                    return next({
+                        status: 500,
+                        message: "La colonne n'a pas pu etre ajouté"
+                    });
+                }
+                req.data.table.columns.push(columnSaved);
+                req.data.table.save(function (err, tableUpdated) {
+                    if (err) {
+                        return next({
+                            message: "La colonne à été créée mais n'a pas pu être ajoutée à la table",
+                        });
+                    }
+                    res.send(columnSaved);
+                });
+            });
         });
     },
 
@@ -139,7 +182,7 @@ module.exports = {
 
     tableIdParam: function (req, res, next, id) {
         Table
-            .find({"_id": id})
+            .findOne({_id: id})
             .populate([{
                 path: 'lines',
                 populate: {
@@ -154,19 +197,15 @@ module.exports = {
                 }
             }])
             .exec(function(err, table) {
-                if (err) {
+                if (err || table === null || table === undefined) {
+                    console.log('ERROR');
                     return next({
                         status: 404,
                         message: "La table n'a pas pu être récupérée."
                     });
                 }
-                if (table.length !== 1) {
-                    return next({
-                        status: 404,
-                        message: "table introuvable"
-                    })
-                }
-                req.data.table = table[0];
+                console.log(table);
+                req.data.table = table;
                 next();
             });
     },
@@ -198,11 +237,11 @@ module.exports = {
     },
 
     columnIdParam: function (req, res, next, id) {
-        Column.findOne({_id: id}).exec(function(err, column) {
+        Column.findOne({"_id": id}).exec(function(err, column) {
             if (err || column === null || column === undefined) {
                 return next({
                     status: 404,
-                    message: "Ligne introuvable."
+                    message: "La colonne n'a pas pu être récupérée."
                 });
             }
             req.data.column = column;
@@ -271,6 +310,7 @@ module.exports = {
                                 valueString: e.valueString,
                                 valueNumber: e.valueNumber,
                                 valueBoolean: e.valueBoolean,
+                                valueObjectId: e.valueObjectId,
                                 valueDate: e.valueDate,
                                 value: e.value,
                                 column: e.column,
@@ -292,6 +332,7 @@ module.exports = {
                             let update = {
                                 valueString: e.valueString,
                                 valueNumber: e.valueNumber,
+                                valueObjectId: e.valueObjectId,
                                 valueBoolean: e.valueBoolean,
                                 valueDate: e.valueDate,
                                 value: e.value,
@@ -346,6 +387,19 @@ module.exports = {
         });
     },
 
+    updateColumn: function(req, res, next) {
+        req.data.column.name = req.body.name;
+        req.data.column.isLabel = req.body.isLabel;
+
+        req.data.column.save(function (err) {
+            if (err) {
+                return next({
+                    message: "Impossible de modifier la colonne"
+                });
+            }
+            res.send(req.data.column);
+        });
+    },
 
     deleteBase: function (req, res, next) {
         var asyncForeach = function asyncForeach(req, res) {
@@ -469,11 +523,12 @@ module.exports = {
     deleteColumn: function (req, res, next) {
         var asyncForeach = function asyncForeach(req, res) {
             return new Promise(function (resolve, reject) {
+                var linesUp
                 Data.find({column:req.data.column._id}).exec(function(err, datas) {
                     if(err) {
-                       return next({
-                           message: "Les données associées n'ont pas été recupérées."
-                       });
+                        return next({
+                            message: "Les données associées n'ont pas été recupérées."
+                        });
                     }
                     var index = 0;
                     if(datas.length <= 0) resolve();
@@ -515,13 +570,13 @@ module.exports = {
                         }
                     }])
                     .exec(function(err, tableFind) {
-                    if(err || tableFind === null || tableFind === undefined) {
-                        return next({
-                            message: "Colonne supprimée mais table introuvable."
-                        });
-                    }
-                    res.send(tableFind);
-                });
+                        if(err || tableFind === null || tableFind === undefined) {
+                            return next({
+                                message: "Colonne supprimée mais table introuvable."
+                            });
+                        }
+                        res.send(tableFind);
+                    });
             });
         })
 
@@ -613,13 +668,13 @@ module.exports = {
 
         if(req.data.table.lines.includes(req.data.line)) {
             req.data.line.data.forEach(function(d) {
-               Data.deleteOne({ _id:d._id }, function(err) {
-                   if(err) {
-                       return next({
-                           message: "Une donnée na pas pu être supprimée."
-                       });
-                   }
-               })
+                Data.deleteOne({ _id:d._id }, function(err) {
+                    if(err) {
+                        return next({
+                            message: "Une donnée na pas pu être supprimée."
+                        });
+                    }
+                })
             });
         }
     },
@@ -681,52 +736,98 @@ module.exports = {
                             .findOne({ _id: e.column })
                             .populate('type')
                             .exec(function (err, column) {
-                            if(err) {
-                                index++;
-                                errorMessages.push({column: column.name, message: "Colonne non valide."});
-                            }
-                            else {
-                                index++;
-                                if(!column.nullable && (e.value == null || e.value.length == 0)) errorMessages.push({column: column.name, message: "La donnée ne peut être vide."});
+                                if(err) {
+                                    index++;
+                                    errorMessages.push({column: column.name, message: "Colonne non valide."});
+                                }
                                 else {
-                                    switch(column.type.realName) {
-                                        case 'longtext':
-                                        case 'shorttext':
-                                            if(e.value != null && column.min != null && e.value.length < column.min) errorMessages.push({column: column.name, message: "La donnée doit avoir au moins " + column.min + " caractères."});
-                                            if(e.value != null && column.max != null && e.value.length > column.max) errorMessages.push({column: column.name, message: "La donnée doit avoir au plus " + column.max + " caractères."});
-                                            break;
-                                        case 'number':
-                                            if(!column.nullable && e.valueNumber == null) errorMessages.push({column: column.name, message: "La donnée envoyée n'est pas valide."});
-                                            else {
-                                                if(e.valueNumber != null && column.min != null && e.valueNumber < column.min) errorMessages.push({column: column.name, message: "La donnée ne peut pas être inferieure à " + column.min + "."});
-                                                if(e.valueNumber != null && column.max != null && e.valueNumber > column.max) errorMessages.push({column: column.name, message: "La donnée ne peut pas être supérieure à " + column.max + "."});
-                                            }
-                                            break;
-                                        case 'date':
-                                            if(column.dateIsToday) {
-                                                e.valueDate = new Date();
-                                                e.value = e.valueDate;
-                                            } else {
-                                                if(!column.dateIsFree && column.dateStart != null && column.valueDate != null) {
-                                                    if(e.valueDate == null || e.valueDate.getTime() < column.dateStart.getTime()) errorMessages.push({column: column.name, message: "La donnée ne peut pas être inférieure à " + column.dateStart + "."});
+                                    if(!column.nullable && (e.value == null || e.value.length === 0)) {
+                                        index++;
+                                        errorMessages.push({column: column.name, message: "La donnée ne peut être vide."});
+                                    } else {
+                                        switch(column.type.realName) {
+                                            case 'longtext':
+                                            case 'shorttext':
+                                                index++;
+                                                if(e.value != null && column.min != null && e.value.length < column.min) errorMessages.push({column: column.name, message: "La donnée doit avoir au moins " + column.min + " caractères."});
+                                                if(e.value != null && column.max != null && e.value.length > column.max) errorMessages.push({column: column.name, message: "La donnée doit avoir au plus " + column.max + " caractères."});
+                                                break;
+                                            case 'number':
+                                                index++;
+                                                if(!column.nullable && e.valueNumber == null) errorMessages.push({column: column.name, message: "La donnée envoyée n'est pas valide."});
+                                                else {
+                                                    if(e.valueNumber != null && column.min != null && e.valueNumber < column.min) errorMessages.push({column: column.name, message: "La donnée ne peut pas être inferieure à " + column.min + "."});
+                                                    if(e.valueNumber != null && column.max != null && e.valueNumber > column.max) errorMessages.push({column: column.name, message: "La donnée ne peut pas être supérieure à " + column.max + "."});
                                                 }
-                                                if(!column.dateIsFree && column.dateEnd != null && column.valueDate != null) {
-                                                    if(e.valueDate == null || e.valueDate.getTime() > column.dateEnd.getTime()) errorMessages.push({column: column.name, message: "La donnée ne peut pas être supérieure à " + column.dateStart + "."});
+                                                break;
+                                            case 'date':
+                                                index++;
+                                                if(column.dateIsToday) {
+                                                    e.valueDate = new Date();
+                                                    e.value = e.valueDate;
+                                                } else {
+                                                    if(!column.dateIsFree && column.dateStart != null && column.valueDate != null) {
+                                                        if(e.valueDate == null || e.valueDate.getTime() < column.dateStart.getTime()) errorMessages.push({column: column.name, message: "La donnée ne peut pas être inférieure à " + column.dateStart + "."});
+                                                    }
+                                                    if(!column.dateIsFree && column.dateEnd != null && column.valueDate != null) {
+                                                        if(e.valueDate == null || e.valueDate.getTime() > column.dateEnd.getTime()) errorMessages.push({column: column.name, message: "La donnée ne peut pas être supérieure à " + column.dateStart + "."});
+                                                    }
                                                 }
-                                            }
-                                            break;
-                                        case 'boolean':
-                                            if (e.valueBoolean !== true && e.valueBoolean !== false && !column.nullable) errorMessages.push({column: column.name, message: "Type de donnée invalide."});
-                                            break;
-                                        default:
-                                            errorMessages.push({column: column.name, message: "Le type de colonne n'est pas valide." + column.type.realName});
-                                            break;
+                                                break;
+                                            case 'boolean':
+                                                index++;
+                                                if (e.valueBoolean !== true && e.valueBoolean !== false && !column.nullable) errorMessages.push({column: column.name, message: "Type de donnée invalide."});
+                                                break;
+                                            case 'relation':
+                                                if(column.relationType === 'one-to-one') {
+                                                    console.log(e.valueObjectId);
+                                                    console.log(!Array.isArray(e.valueObjectId));
+                                                    if(!Array.isArray(e.valueObjectId) || e.valueObjectId.length > 1) {
+                                                        console.log('A1');
+                                                        errorMessages.push({column: column.name, message: "donnée incorrecte."});
+                                                        index++;
+                                                    } else {
+                                                        console.log('A2');
+                                                        Table.findOne({_id:column.tableReference}).exec(function(err, tableFind) {
+                                                            index++;
+                                                            if(err || tableFind === null || tableFind === undefined) errorMessages.push({column: column.name, message: "Table de reference introuvable."});
+                                                            else {
+                                                                if(e.valueObjectId.length > 0 && !tableFind.lines.includes(e.valueObjectId[0])) errorMessages.push({column: column.name, message: "donnée incorrecte."});
+                                                            }
+                                                            if(index >= req.body.datas.length) resolve(errorMessages);
+                                                        });
+                                                    }
+                                                } else if(column.relationType === 'one-to-many') {
+                                                    if(!Array.isArray(e.valueObjectId)) {
+                                                        errorMessages.push({column: column.name, message: "donnée incorrecte."});
+                                                        index++;
+                                                    } else {
+                                                        Table.findOne({_id:column.tableReference}).exec(function(err, tableFind) {
+                                                            index++;
+                                                            if(err || tableFind === null || tableFind === undefined) errorMessages.push({column: column.name, message: "Table de reference introuvable."});
+                                                            else {
+                                                                e.valueObjectId.forEach(function(lineId) {
+                                                                    if(!tableFind.lines.includes(lineId)) errorMessages.push({column: column.name, message: "donnée incorrecte."});
+                                                                })
+                                                            }
+                                                            if(index >= req.body.datas.length) resolve(errorMessages);
+                                                        });
+                                                    }
+                                                } else {
+                                                    errorMessages.push({column: column.name, message: "Le type de relation de la colonne est incorrect."});
+                                                    index++;
+                                                }
+                                                break;
+                                            default:
+                                                index++;
+                                                errorMessages.push({column: column.name, message: "Le type de colonne n'est pas valide." + column.type.realName});
+                                                break;
 
+                                        }
                                     }
                                 }
-                            }
-                            if(index >= req.body.datas.length) resolve(errorMessages);
-                        });
+                                if(index >= req.body.datas.length) resolve(errorMessages);
+                            });
                     }
                     if(index >= req.body.datas.length) resolve(errorMessages);
                 });
@@ -734,12 +835,14 @@ module.exports = {
         };
 
         asyncTask(req, res, next).then(function(errorMessages) {
+            console.log(errorMessages);
             if(errorMessages.length > 0) {
                 return next({
                     status: 500,
                     message:errorMessages
                 });
             }
+            console.log(req.body);
             next();
         });
 
@@ -770,6 +873,7 @@ module.exports = {
                             valueString: e.valueString,
                             valueNumber: e.valueNumber,
                             valueBoolean: e.valueBoolean,
+                            valueObjectId: e.valueObjectId,
                             valueDate: e.valueDate,
                             value: e.value,
                             column: e.column,
@@ -783,6 +887,7 @@ module.exports = {
                                     message: "cannot save data"
                                 });
                             }
+                            console.log(dataSaved);
                             lineSaved.data.push(dataSaved);
                             console.log("DATA SAVE " + data.value + ", iterator : "+ iterator +",length : " + req.body.datas.length);
                             iterator++;
@@ -858,6 +963,7 @@ module.exports = {
                 returnDataSelectors.push(dataSelector);
             }
         });
+        console.log(returnDataSelectors);
         res.send(returnDataSelectors);
     },
 
@@ -901,6 +1007,7 @@ module.exports = {
             });
         });
     },
+
 
     addData: function(req, res, next) {
         /*

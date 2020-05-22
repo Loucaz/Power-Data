@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 let DataSchema = new Schema({
 
     value: {
-      type: String,
-      required: false
+        type: String,
+        required: false
     },
 
     valueString: {
@@ -27,6 +27,11 @@ let DataSchema = new Schema({
         type: Boolean,
         required: false
     },
+
+    valueObjectId: [{
+        type: Schema.Types.ObjectId,
+        required: false
+    }],
 
     column: {
         type: Schema.Types.ObjectId,
