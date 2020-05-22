@@ -372,7 +372,7 @@
       };
     },
     created() {
-      const url = `http://localhost:3000/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
+      const url = this.$adresse + `/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
       fetch(url)
         .then(res => res.json())
         .then((rep) => {
@@ -432,7 +432,7 @@
       reloadTable: function reloadTable() {
         this.loadingLabels = true;
         this.loadingArray = true;
-        const url = `http://localhost:3000/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
+        const url = this.$adresse + `/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
         fetch(url)
           .then(res => res.json())
           .then((rep) => {
@@ -449,8 +449,8 @@
         this.table.columns.forEach(function(e) {
           if(e.type.realName === 'relation') {
           //  console.log(e)
-           // console.log(`http://localhost:3000/bases/${baseId}/${e.tableReference}/data-selectors`)
-            const url = `http://localhost:3000/bases/${baseId}/${e.tableReference}/data-selectors`;
+           // console.log(this.$adresse + `/bases/${baseId}/${e.tableReference}/data-selectors`)
+            const url = this.$adresse + `/bases/${baseId}/${e.tableReference}/data-selectors`;
             fetch(url)
               .then(res => res.json())
               .then((rep) => {
@@ -483,7 +483,7 @@
       changeIsLabel: function changeIsLabel(column) {
         if(column.type.realName !== 'relation') {
           column.isLabel = (null === column.isLabel || undefined === column.isLabel) ? false : !column.isLabel;
-          const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/column/${column._id}`;
+          const url = this.$adresse + `/bases/${this.base._id}/${this.table._id}/column/${column._id}`;
           fetch(url, {
             method: 'PUT',
             headers: {
@@ -519,7 +519,7 @@
           var table = this.table;
 
           this.dataSelected.forEach(function(i) {
-            const url = `http://localhost:3000/bases/${base._id}/${table._id}/data/line/${i._id}`;
+            const url = this.$adresse + `/bases/${base._id}/${table._id}/data/line/${i._id}`;
             fetch(url, { method: 'DELETE' });
             let index = table.lines.indexOf(i);
             if (index > -1) {
@@ -534,7 +534,7 @@
 
       deleteColumn: function deleteColumn() {
         if(this.columnToDelete !== null && this.columnToDelete !== undefined) {
-          const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/${this.columnToDelete}`;
+          const url = this.$adresse + `/bases/${this.base._id}/${this.table._id}/${this.columnToDelete}`;
           fetch(url, {
             method: 'DELETE'
           })
@@ -552,7 +552,7 @@
       },
 
       deleteTable: function deleteTable() {
-        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}`;
+        const url = this.$adresse + `/bases/${this.base._id}/${this.table._id}`;
         fetch(url, { method: 'DELETE' })
           .then(res => res.json())
           .then((rep) => {
@@ -599,7 +599,7 @@
         if(dataRelation.length <= 0) this.loadingLabels = false;
         dataRelation.forEach(function(obj) {
           if(linesLabel[obj] === null || linesLabel[obj] === undefined) {
-            const url = `http://localhost:3000/bases/line/${obj}/label`;
+            const url = this.$adresse + `/bases/line/${obj}/label`;
             fetch(url)
               .then(res => res.json())
               .then((rep) => {
@@ -638,7 +638,7 @@
                     i++;
                     console.log('check data ' + objId);
                     if(linesLabel[objId] === null || linesLabel[objId] === undefined) {
-                      const url = `http://localhost:3000/bases/line/${objId}/label`;
+                      const url = this.$adresse + `/bases/line/${objId}/label`;
                       fetch(url)
                         .then(res => res.json())
                         .then((rep) => {
@@ -728,7 +728,7 @@
           }
         });
 
-        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line`;
+        const url = this.$adresse + `/bases/${this.base._id}/${this.table._id}/data/line`;
         fetch(url, {
           method: 'POST',
           headers: {
@@ -770,7 +770,7 @@
           if(e.valueBoolean === '1') e.valueBoolean = true;
         });
         var index = this.table.lines.indexOf(this.dataSelected[0]);
-        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line/${this.dataSelected[0]._id}`;
+        const url = this.$adresse + `/bases/${this.base._id}/${this.table._id}/data/line/${this.dataSelected[0]._id}`;
         fetch(url, {
           method: 'PUT',
           headers: {
@@ -843,7 +843,7 @@
         if(this.$refs['default-text'] !== undefined && this.$refs['default-text'][0] !== undefined) this.newColumn.defaultStringValue = this.$refs['default-text'][0].value;
 
         if (this.newColumn.name.length > 0 && this.newColumn.type.length > 0) {
-          const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/column`;
+          const url = this.$adresse + `/bases/${this.base._id}/${this.table._id}/column`;
           fetch(url, {
             method: 'POST',
             headers: {
