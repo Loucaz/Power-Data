@@ -448,13 +448,13 @@
         var dataSelectors = [];
         this.table.columns.forEach(function(e) {
           if(e.type.realName === 'relation') {
-            console.log(e)
-            console.log(`http://localhost:3000/bases/${baseId}/${e.tableReference}/data-selectors`)
+          //  console.log(e)
+           // console.log(`http://localhost:3000/bases/${baseId}/${e.tableReference}/data-selectors`)
             const url = `http://localhost:3000/bases/${baseId}/${e.tableReference}/data-selectors`;
             fetch(url)
               .then(res => res.json())
               .then((rep) => {
-                console.log(rep);
+               // console.log(rep);
                 dataSelectors[e._id] = rep;
               });
           }
@@ -540,7 +540,7 @@
           })
             .then(res => res.json())
             .then((rep) => {
-              console.log(rep);
+             // console.log(rep);
               this.table = rep;
             })
         }
@@ -704,7 +704,7 @@
       },
 
       debug: function debug(x) {
-        console.log(x);
+        //console.log(x);
       },
 
       addData: function addData() {
@@ -740,9 +740,9 @@
           .then((rep) => {
             if(Array.isArray(rep)) {
               this.errorsAddData = rep;
-              console.log('ERRORS :' + rep);
+             // console.log('ERRORS :' + rep);
             } else {
-              console.log(rep);
+             // console.log(rep);
               this.table = rep;
               this.loadingLabels = true;
               this.loadingArray = true;
@@ -782,7 +782,7 @@
           .then((rep) => {
             if(Array.isArray(rep)) {
               this.errorsAddData = rep;
-              console.log('ERRORS :' + rep);
+             // console.log('ERRORS :' + rep);
             } else {
               this.table.lines.splice(index, 1, rep);
               this.showToolBar();
@@ -853,7 +853,7 @@
           })
             .then(rep => rep.json())
             .then((res) => {
-              console.log(res);
+              //console.log(res);
               const tmp = this.table;
               tmp.columns.push(res);
               this.table = tmp;
