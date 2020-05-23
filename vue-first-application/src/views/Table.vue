@@ -446,11 +446,12 @@
       getDataSelectors: function getDataSelectors() {
         var baseId = this.base._id;
         var dataSelectors = [];
+        var adr = this.$adresse;
         this.table.columns.forEach(function(e) {
           if(e.type.realName === 'relation') {
           //  console.log(e)
            // console.log(this.$adresse + `/bases/${baseId}/${e.tableReference}/data-selectors`)
-            const url = this.$adresse + `/bases/${baseId}/${e.tableReference}/data-selectors`;
+            const url= adr+`/bases/${baseId}/${e.tableReference}/data-selectors`;
             fetch(url)
               .then(res => res.json())
               .then((rep) => {
@@ -517,9 +518,9 @@
         if(this.dataSelected.length > 0) {
           var base = this.base;
           var table = this.table;
-
+          var adr = this.$adresse;
           this.dataSelected.forEach(function(i) {
-            const url = this.$adresse + `/bases/${base._id}/${table._id}/data/line/${i._id}`;
+            const url = adr + `/bases/${base._id}/${table._id}/data/line/${i._id}`;
             fetch(url, { method: 'DELETE' });
             let index = table.lines.indexOf(i);
             if (index > -1) {
@@ -597,9 +598,10 @@
 
         var index = 0;
         if(dataRelation.length <= 0) this.loadingLabels = false;
+        var adr = this.$adresse;
         dataRelation.forEach(function(obj) {
           if(linesLabel[obj] === null || linesLabel[obj] === undefined) {
-            const url = this.$adresse + `/bases/line/${obj}/label`;
+            const url = adr + `/bases/line/${obj}/label`;
             fetch(url)
               .then(res => res.json())
               .then((rep) => {
