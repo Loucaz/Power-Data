@@ -22,72 +22,57 @@
       </div>
     </div>
 
-   <div class="btnformtable">
-
+    <div class="btnformtable">
         <router-link :to="{ name: 'table', params: { id: base._id, idTable: table._id }}">
-      <button> <i class="fa fa-arrow-left" aria-hidden="true"></i> Retour à la base </button>
+      <button> <i class="fa fa-arrow-left" aria-hidden="true"></i> Retour à la base </button> 
         </router-link>
-
     </div>
+    <!-- BLOC INSERT DATA -->
+    <div class="table-settings-content">
+      <p>Les données seront ajoutées dans la table <strong>{{ table.name }}</strong></p>
+      <div v-if="errorsAddData.length > 0" class="error-bloc">
+        <p v-for="e in errorsAddData" v-bind:key="e.column"><strong>{{ e.column }}</strong> : {{ e.message }}</p>
+      </div>
 
-          <div>
-            <md-checkbox v-model="array" value="1">Array</md-checkbox>
-            <md-checkbox v-model="obj" :value="obj2"  v-for="c in table.columns" v-bind:key="c.id"> {{ c.name }} </md-checkbox>
-            <table>
-              <tr>
-                <th>Array</th>
-                <th>Object</th>
-              </tr>
-
-              <tr>
-                <td>{{ array }}</td>
-                <td>{{ obj }}</td>
-              </tr>
-            </table>
-          </div>
-
-
-
-          <div>
-            <form>
-              <h2>selection des données</h2>
-              <b-form-group
-                v-for="c in table.columns" v-bind:key="c.id"
-                v-model="selected">
-                  <b-form-checkbox-group
-                    id="checkbox-group"
-                    v-model="selected"
-                  >
-                  <b-form-checkbox> {{ c.name }} </b-form-checkbox>
-                  </b-form-checkbox-group>
-              </b-form-group>
-              <b-button type="reset" variant="danger">Reset</b-button>
-            </form>
-
-            <div>Selected: <strong>{{ selected }}</strong></div>
-
-            <b-form @submit="onSubmit" @reset="onReset" v-if="show">
-              <h2>rempir les données</h2>
-              <b-form-group
-              v-for="c in table.columns" v-bind:key="c.id"
-              id="input-group"
-              label-for="input"
-              >
-                <p>{{ c.name }} :</p>
-                <!-- label="Email address:" -->
-                <!-- description="We'll never share your email with anyone else." -->
-                <b-form-input
-                  id="input"
-                  class="col-3"
-                  required=""
-                >
-                </b-form-input>
-              </b-form-group>
-              <b-button type="submit" class="submit" variant="primary">Submit</b-button>
-              <b-button type="reset" variant="danger">Reset</b-button>
-            </b-form>
-          </div>
-  </div>
+      <form class="formformulaire">
+        <div v-for="(c, index) in table.columns" :key="c.id">
+          <md-field v-if="c.type.realName != 'date'">
+            <label>{{ c.name }}</label>
+            <md-input v-if="c.type.realName == 'shorttext' || c.type.realName == 'longtext'" v-model="newDatas.datas[index].valueString" md-counter="30"></md-input>
+            <md-input v-if="c.type.realName == 'number'" v-model="newDatas.datas[index].valueNumber" type="number"></md-input>
+            <md-select v-if="c.type.realName == 'boolean'" v-model="newDatas.datas[index].valueBoolean" md-dense>
+              <md-option value="1">Oui</md-option>
+              <md-option value="0">Non</md-option>
+            </md-select>
+            <md-select v-if="c.type.realName === 'relation' && c.relationType === 'one-to-many'" v-model="newDatas.datas[index].valueObjectId" md-dense multiple>
+              <md-option v-for="ds in dataSelectors[c._id]" :value="ds.id" v-bind:key="ds.id">{{ ds.label }}</md-option>
+            </md-select>
+            <md-select v-if="c.type.realName === 'relation' && c.relationType === 'one-to-one'" v-model="newDatas.datas[index].valueObjectId" md-dense>
+              <md-option v-for="ds in dataSelectors[c._id]" :value="ds.id" v-bind:key="ds.id">{{ ds.label }}</md-option>
+            </md-select>
+            <span v-if="c.helper != null" class="md-helper-text">{{ c.helper }}</span>
+          </md-field>
+          <md-datepicker v-if="c.type.realName == 'date'" v-model="newDatas.datas[index].valueDate">
+            <label>{{ c.name }}</label>
+          </md-datepicker>
+        </div>
+            <md-button type="reset" class="md-raised md-primary" @click="addData">
+              <a class="envoyer-form" @click="$bvModal.show('bv-modal-comfirm-add-line')">
+                Envoyer
+              </a>
+              </md-button>
+            <md-button type="reset"> Reset</md-button>
+          </form>       
+      </div>  
+      <b-modal id="bv-modal-comfirm-add-line" hide-footer>
+        <template v-slot:modal-title>
+          Comfirmation
+        </template>
+        <p>Les données ont bien été ajoutées dans la table <strong>{{ table.name }}</strong></p>
+        <md-button class="md-raised md-primary" @click="$bvModal.hide('bv-modal-comfirm-add-line')">Continuer</md-button>
+      </b-modal>    
+      <!-- END BLOC INSERT DATA -->       
+    </div>
 </template>
 
 <script>
@@ -96,6 +81,7 @@ import format from 'date-fns/format';
 export default {
   name: 'RegularCheckboxes',
   name: 'table',
+  name: 'base',
   data: function data() {
     const dateFormat = 'yyyy-MM-dd';
     const now = new Date();
@@ -134,6 +120,9 @@ export default {
         dateIsFree: false,
         dateStart: format(now, dateFormat),
         dateEnd: format(now, dateFormat),
+        relationType: String,
+        tableReference: String,
+        isLabel: false,
       },
       dataSelected: [],
       newDatas: {
@@ -143,6 +132,7 @@ export default {
           valueNumber: Number,
           valueBoolean: Boolean,
           valueDate: Date,
+          valueObjectId: Array,
           line: Number,
           Column: String,
         }]
@@ -175,22 +165,30 @@ export default {
         description: String,
       },
       loading: true,
+      loadingArray: true,
+      loadingLabels: true,
       showAddColumn: false,
       showInsertData: false,
       showEditData: false,
+      tableChoice: null,
+      dataSelectors: [],
+      linesLabel: [],
     };
   },
   created() {
-    const url = this.$adresse+`/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
+    const url = `http://localhost:3000/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
     fetch(url)
       .then(res => res.json())
       .then((rep) => {
+        this.loading = false;
         this.base = rep.base;
         this.table = rep.table;
         this.initArrayData();
+        this.initLabelsReferences();
+        this.getDataSelectors();
       });
 
-    const urlTypes = this.$adresse+'/types';
+    const urlTypes = 'http://localhost:3000/types';
     fetch(urlTypes)
       .then(res => res.json())
       .then((rep) => {
@@ -236,7 +234,7 @@ export default {
     },
 
     reloadTable: function reloadTable() {
-      const url = this.$adresse+`/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
+      const url = `http://localhost:3000/bases/${this.$route.params.id}/${this.$route.params.idTable}`;
       fetch(url)
         .then(res => res.json())
         .then((rep) => {
@@ -244,6 +242,58 @@ export default {
           this.table = rep.table;
           this.initArrayData();
         });
+    },
+
+    getDataSelectors: function getDataSelectors() {
+      var baseId = this.base._id;
+      var dataSelectors = [];
+      this.table.columns.forEach(function(e) {
+        if(e.type.realName === 'relation') {
+          const url = `http://localhost:3000/bases/${baseId}/${e.tableReference}/data-selectors`;
+          fetch(url)
+            .then(res => res.json())
+            .then((rep) => {
+              dataSelectors[e._id] = rep;
+            });
+        }
+      });
+      this.dataSelectors = dataSelectors;
+    },
+
+    getDataLabel: function getDataLabel(data, column)
+    {
+      if((column !== undefined && column !== null) &&
+          (column.type !== undefined && column.type !== null) &&
+            (column.type.realName !== undefined && column.type.realName !== null)) {
+
+        let label = '';
+        switch(column.type.realName) {
+          case 'date':
+            let date = new Date(data.valueDate);
+            return date.getDate() +'/'+ date.getMonth() +'/'+ date.getFullYear();
+            break;
+          default:
+            return data.value;
+            break;
+        }
+      } else return '';
+    },
+
+    changeIsLabel: function changeIsLabel(column) {
+      if(column.type.realName !== 'relation') {
+        column.isLabel = (null === column.isLabel || undefined === column.isLabel) ? false : !column.isLabel;
+        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/column/${column._id}`;
+        fetch(url, {
+          method: 'PUT',
+          headers: {
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify(column),
+        })
+          .then(res => res.json())
+          .then((rep) => {
+          });
+      }
     },
 
     onSelect: function onSelect(item) {
@@ -286,7 +336,7 @@ export default {
         var table = this.table;
 
         this.dataSelected.forEach(function(i) {
-          const url = this.$adresse+`/bases/${base._id}/${table._id}/data/line/${i._id}`;
+          const url = `http://localhost:3000/bases/${base._id}/${table._id}/data/line/${i._id}`;
           fetch(url, { method: 'DELETE' });
           let index = table.lines.indexOf(i);
           if (index > -1) {
@@ -305,7 +355,7 @@ export default {
     },
 
     deleteTable: function deleteTable() {
-      const url = this.$adresse+`/bases/${this.base._id}`;
+      const url = `http://localhost:3000/bases/${this.base._id}`;
       fetch(url, { method: 'DELETE' });
       this.$router.push({ name: 'home' });
     },
@@ -318,11 +368,103 @@ export default {
           valueString: null,
           valueNumber: null,
           valueBoolean: null,
+          valueObjectId: null,
           valueDate: null,
           line: null,
           column: this.table.columns[i],
         };
       }
+      this.loadingArray = false;
+    },
+
+    initLabelsReferences: function initLabelsReferences() {
+      console.log('START LABEL MODIFICATIONS');
+      var table = this.table;
+      var linesLabel = this.linesLabel;
+      var columnsRelation = [];
+
+      table.columns.forEach(function(c) {
+        if(c.type.realName === 'relation') columnsRelation.push(c._id);
+      });
+
+      var dataRelation = [];
+      table.lines.forEach(function (line) {
+        line.data.forEach(function (data) {
+          if (columnsRelation.includes(data.column)) {
+            data.valueObjectId.forEach((objectId) => dataRelation.push(objectId));
+          }
+        })
+      });
+
+      var index = 0;
+      if(dataRelation.length <= 0) this.loadingLabels = false;
+      dataRelation.forEach(function(obj) {
+        if(linesLabel[obj] === null || linesLabel[obj] === undefined) {
+          const url = `http://localhost:3000/bases/line/${obj}/label`;
+          fetch(url)
+            .then(res => res.json())
+            .then((rep) => {
+              linesLabel[obj] = rep
+              index++;
+              if(index >= dataRelation.length) {
+                this.linesLabel = linesLabel;
+                this.loadingLabels = false;
+              }
+            });
+        } else {
+          index++;
+          if(index >= dataRelation.length) {
+            this.linesLabel = linesLabel;
+            this.loadingLabels = false;
+          }
+        }
+      }, this);
+
+      /*
+      var index = 0;
+
+      table.lines.forEach(function(l) {
+        index++;
+        console.log('check line ');
+        table.columns.forEach(function(c) {
+          console.log('check colunm ' + c.name);
+          l.data.forEach(function(d) {
+            console.log('check data ' + d.value);
+            if(d.column === c._id && c.type.realName === 'relation') {
+              console.log('Column relation ' + c.name);
+              if(d.valueObjectId !== undefined && d.valueObjectId !== null && Array.isArray(d.valueObjectId)) {
+                console.log('Data contain object id');
+                var i = 0;
+                d.valueObjectId.forEach(function(objId) {
+                  i++;
+                  console.log('check data ' + objId);
+                  if(linesLabel[objId] === null || linesLabel[objId] === undefined) {
+                    const url = `http://localhost:3000/bases/line/${objId}/label`;
+                    fetch(url)
+                      .then(res => res.json())
+                      .then((rep) => {
+                        linesLabel[objId] = rep
+                        if(index >= table.lines.length && i >= d.valueObjectId.length) {
+                          this.linesLabel = linesLabel;
+                          console.log(this.linesLabel);
+                        }
+                        console.log('ID: ' + objId + ', LABEL: ' + rep.label);
+                        console.log(this.linesLabel[objId]);
+                      }, this);
+                  }
+                }, this)
+              }
+            }
+          }, this);
+        }, this);
+        if(index >= table.lines.length) {
+          this.linesLabel = linesLabel;
+          console.log(this.linesLabel);
+        }
+      }, this);
+
+       */
+
     },
 
     initArrayUpdateLine: function initArrayUpdateLine(line) {
@@ -358,7 +500,6 @@ export default {
           }
         }
       }
-      console.log(this.lineUpdate)
     },
 
     debug: function debug(x) {
@@ -373,15 +514,20 @@ export default {
           (e.valueDate != null) ? e.valueDate :
             (e.valueString != null) ? e.valueString :
               (e.valueNumber != null) ? e.valueNumber :
-                (e.valueBoolean != null) ? e.valueBoolean : null;
+                (e.valueBoolean != null) ? e.valueBoolean :
+                  (e.valueObjectId != null) ? e.valueObjectId.toString() : null;
+
         if(e.line == null) e.line = -1;
         if(e.valueBoolean === '0') e.valueBoolean = false;
         if(e.valueBoolean === '1') e.valueBoolean = true;
+        if(e.column.type.realName === 'relation') {
+          if((e.valueObjectId !== null && e.valueObjectId !== undefined) && !Array.isArray(e.valueObjectId)) {
+            e.valueObjectId = [e.valueObjectId];
+          } else if(!Array.isArray(e.valueObjectId)) e.valueObjectId = [];
+        }
       });
 
-      console.log("FUNCTION ADD DATA");
-
-      const url = this.$adresse+`/bases/${this.base._id}/${this.table._id}/data/line`;
+      const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line`;
       fetch(url, {
           method: 'POST',
           headers: {
@@ -394,9 +540,11 @@ export default {
           if(Array.isArray(rep)) {
             this.errorsAddData = rep;
             console.log('ERRORS :' + rep);
-          }
-          else {
+          } else {
+            console.log(rep);
             this.table = rep;
+            this.loadingLabels = true;
+            this.initLabelsReferences();
           }
         });
     },
@@ -412,9 +560,8 @@ export default {
         if(e.valueBoolean === '0') e.valueBoolean = false;
         if(e.valueBoolean === '1') e.valueBoolean = true;
       });
-      console.log("FUNCTION UPDATE LINE");
       var index = this.table.lines.indexOf(this.dataSelected[0]);
-      const url = this.$adresse+`/bases/${this.base._id}/${this.table._id}/data/line/${this.dataSelected[0]._id}`;
+      const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/data/line/${this.dataSelected[0]._id}`;
       fetch(url, {
         method: 'PUT',
         headers: {
@@ -432,29 +579,8 @@ export default {
             this.dataSelected = [];
             this.showToolBar();
             this.table.lines.splice(index, 1, rep);
-            console.log(this.table.lines);
           }
         });
-    },
-
-    addType: function addType() {
-      if (this.newType.name.length > 0 && this.newType.realName.length > 0 && this.newType.description.length > 0) {
-        const url = this.$adresse+'/types';
-        fetch(url, {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-          },
-          body: JSON.stringify(this.newType),
-        })
-          .then(res => res.json())
-          .then((res) => {
-            console.log(res);
-          });
-        this.newType.name = '';
-        this.newType.realName = '';
-        this.newType.description = '';
-      }
     },
 
     showToolBar: function showToolBar(name) {
@@ -492,12 +618,12 @@ export default {
     addColumn: function addColumn() {
 
       if(this.$refs['newcolumn-min'] !== undefined && this.$refs['newcolumn-min'][0] !== undefined) this.newColumn.min = this.$refs['newcolumn-min'][0].value;
-      if(this.$refs['newcolumn-max'] !== undefined) this.newColumn.max = this.$refs['newcolumn-max'][0].value;
-      if(this.$refs['step-value'] !== undefined) this.newColumn.numberStepValue = this.$refs['step-value'][0].value;
-      if(this.$refs['default-text'] !== undefined) this.newColumn.defaultStringValue = this.$refs['default-text'][0].value;
+      if(this.$refs['newcolumn-max'] !== undefined && this.$refs['newcolumn-max'][0] !== undefined) this.newColumn.max = this.$refs['newcolumn-max'][0].value;
+      if(this.$refs['step-value'] !== undefined && this.$refs['step-value'][0] !== undefined) this.newColumn.numberStepValue = this.$refs['step-value'][0].value;
+      if(this.$refs['default-text'] !== undefined && this.$refs['default-text'][0] !== undefined) this.newColumn.defaultStringValue = this.$refs['default-text'][0].value;
 
       if (this.newColumn.name.length > 0 && this.newColumn.type.length > 0) {
-        const url = this.$adresse+`/bases/${this.base._id}/${this.table._id}/column`;
+        const url = `http://localhost:3000/bases/${this.base._id}/${this.table._id}/column`;
         fetch(url, {
           method: 'POST',
           headers: {
@@ -505,12 +631,14 @@ export default {
           },
           body: JSON.stringify(this.newColumn),
         })
-          .then(res => res.json())
+          .then(rep => rep.json())
           .then((res) => {
             const tmp = this.table;
             tmp.columns.push(res);
             this.table = tmp;
             this.initArrayData();
+            this.getDataSelectors();
+            this.tableChoice = null;
             this.newColumn = {
               name: '',
               type: String,
@@ -521,6 +649,8 @@ export default {
               numberStepValue: Number,
               dateIsToday: false,
               dateIsFree: false,
+              relationType: null,
+              tableReference: String,
             };
           });
       }
@@ -549,6 +679,16 @@ export default {
         default:
           break;
       }
+    },
+    getRelationSettings: function getRelationSettings(tableId) {
+      var table = null;
+      this.base.tables.forEach(function(e) {
+        if(e._id === tableId) {
+          table = e;
+        }
+      });
+      this.newColumn.tableReference = (table !== null && table !== undefined) ? table._id : null;
+      this.tableChoice = table;
     },
     getColumnSettings: function getColumnSettings(typeRealname) {
       this.dateInterval = false;
@@ -584,6 +724,7 @@ export default {
           this.nullableOption = true;
           this.newColumn.min = 0;
           this.newColumn.max = 20;
+          this.newColumn.defaultStringValue = '';
           this.columnConstraints = [
             {
               id: 'default-text',
@@ -609,6 +750,7 @@ export default {
           this.newColumn.min = 0;
           this.newColumn.max = 250;
           this.nullableOption = true;
+          this.newColumn.defaultStringValue = '';
           this.columnConstraints = [
             {
               id: 'default-text',
@@ -644,6 +786,28 @@ export default {
                 { name: 'Date du jour', id: '3' },
               ],
               input: this.getDateSettings,
+            },
+          ];
+          break;
+        case 'relation':
+          this.nullableOption = true;
+          this.tableChoice = null;
+          var options = [];
+          var tableId = this.table._id;
+          this.base.tables.forEach(function(e) {
+            if(tableId !== e._id) {
+              let obj = { name: e.name, id: e._id };
+              options.push(obj);
+            }
+          });
+          this.columnConstraints = [
+            {
+              id: 'select-relation-table',
+              title: 'Table ciblée',
+              cible: this.typeDate,
+              type: 'select',
+              options: options,
+              input: this.getRelationSettings,
             },
           ];
           break;
