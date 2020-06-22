@@ -19,22 +19,10 @@
         </div>
       <div class="navigation">
         <h2>Tutoriels:</h2>
-        <router-link to="/tutobases">
+        <router-link to="/tuto">
           <i class="fa fa-database" aria-hidden="true"></i>
-          Créer une base
+          Utiliser Power Data
         </router-link>
-        <router-link to="/tutotables">
-          <i class="fa fa-bars" aria-hidden="true"></i>
-          Créer des tables
-        </router-link>
-        <router-link to="/tutodonnees">
-          <i class="fa fa-flag-checkered" aria-hidden="true"></i>
-          Collecter des donn&eacute;es
-        </router-link>
-        <a href="#">
-          <i class="fa fa-plus" aria-hidden="true"></i>
-          Voir plus
-        </a>
       </div>
     </div>
     <div v-if="username" class="user-block">

@@ -22,36 +22,15 @@
   <div class="tutoriels-bloc">
     <div class="description">
       <h2>Envie d'en savoir plus ?</h2>
-      <p>Apprenez en plus sur le fonctionnement et les différentes fonctionnalitées de l'application grâce aux tutoriels disponibles</p>
+      <p>Apprenez en plus sur le fonctionnement et les différentes fonctionnalitées de l'application grâce au tutoriel</p>
     </div>
     <div class="tutoriels-list">
 
-      <router-link to="/tutobases">
+      <router-link to="/tuto">
         <div class="table-icon table-blue">
           <i class="fa fa-database" aria-hidden="true"></i>
         </div>
-        <p>Créer une base</p>
-      </router-link>
-
-      <router-link to="/tutotables">
-        <div class="table-icon table-orange">
-          <i class="fa fa-bars" aria-hidden="true"></i>
-        </div>
-        <p>Créer des tables</p>
-      </router-link>
-
-      <router-link to="/tutoformulaires">
-        <div class="table-icon table-green">
-          <i class="fa fa-check-square-o" aria-hidden="true"></i>
-        </div>
-        <p>Créer des formulaires</p>
-      </router-link>
-
-      <router-link to="/tutodonnees">
-        <div class="table-icon table-red">
-          <i class="fa fa-flag-checkered" aria-hidden="true"></i>
-        </div>
-        <p>Collecter des données</p>
+        <p>comment utiliser Power data</p>
       </router-link>
 
     </div>

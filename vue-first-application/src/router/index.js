@@ -90,19 +90,9 @@ const routes = [
     }
   },
   {
-    path: '/tutobases',
-    name: 'tutobases',
-    component: () => import('../views/Tutobases.vue'),
-  },
-  {
-    path: '/Tutotables',
-    name: 'Tutotables',
-    component: () => import('../views/Tutotables.vue'),
-  },
-  {
-    path: '/Tutodonnees',
-    name: 'Tutodonnees',
-    component: () => import('../views/Tutodonnees.vue'),
+    path: '/tuto',
+    name: 'tuto',
+    component: () => import('../views/Tuto.vue'),
   },
 ];
 
