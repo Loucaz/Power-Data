@@ -23,23 +23,40 @@
     <div class="tutoriel-content">
       <div class="tutoriel-element">
         <h3>Créer une base</h3>
-        <p>Une base est composé d'une ou plusieurs tables. Cela permet de créer un groupe de tables.
-          Pour créer une cliquez sur "créer une base" dans le menu à gauche, entrez le nom de votre base puis cliquez sur créer
+        <p>Une base est composée d'une ou plusieurs tables. Cela permet de créer un groupe de tables.
+         <br />
+          Pour créer une base, cliquez sur "créer" dans le menu à gauche, entrez le nom de votre base puis cliquez sur "Créer"
         </p>
       </div>
       <div class="tutoriel-element">
         <h3>Créer une table</h3>
         <p>
-          Une table est composée des colonnes et de lignes. Chaque colonnes possede autant de lignes que spuhaité avec des parametres déffinissable
-          Pour créer une base, aller sur le bouton "créer une base" entrez le nom de votre base puis cliquez sur créer.
-          AJOUTER ICI pour créer une colonne et un ligne.
-          Vous pouvez aussi créer des liens entre plusieurs tables d’une même base. Par exemple reprendre une liste de prénoms
+          Une table est composée des colonnes et de lignes. Chaque colonne possède autant de lignes que souhaité avec des paramètres définissables. 
+          <br />
+          Pour créer une table, Rendez vous sur votre base puis cliquez sur "Ajouter", entrez le nom de votre base puis cliquez sur créer.
+          <br />
+          Une fois sur la table vous pouvez ajouter une colonne ou une ligne en cliquant sur le bouton "Table".
+          Un panneau s'affiche à droite pour entrer le nom de la colonne ou de la ligne puis cliquez sur "Créer".
+          <br />
+          Vous pouvez aussi créer des liens entre plusieurs tables d’une même base. Par exemple reprendre une liste de prénoms dans une autre table.
+          Pour ce faire cliquez sur l'étoile de la colonne où se trouve votre liste. 
+          Dans l'autre table, créez en une de type "Relation avec une table" ensuite sélectionnez la table correspondante.
+          Vous aurez votre liste de prénom qui s'affichera lorsque vous ajouterez une ligne
         </p>
+        <div class="row">
+          <div class="col"><img src="stickers.jpg" alt="oui">2</div>
+          <div class="col"><img src="" alt="">1</div>
+          <div class="col"><img src="" alt="">1</div>
+          <div class="col"><img src="" alt="">1</div>
+          <div class="col"><img src="" alt="">1</div>
+        </div>
       </div>
       <div class="tutoriel-element">
         <h3>Collecter des données</h3>
         <p>Le formulaire est très pratique pour récolter les informations d’autres personnes.
           Vous pouvez générer un formulaire à partir de votre table et ensuite partager le lien avec les personnes de votre choix. Une fois qu’elles auront rempli le formulaire les données iront directement dans votre table.
+          <br />
+          Il suffit d'appuyer sur "Formulaire" dans la table pour créer le formulaire. Le bouton "Envoyer" permet d'envoyer les données du formulaire dans la table.
         </p>
       </div>
     </div>
