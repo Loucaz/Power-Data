@@ -35,20 +35,23 @@
           <br />
           Pour créer une table, Rendez vous sur votre base puis cliquez sur "Ajouter", entrez le nom de votre base puis cliquez sur créer.
           <br />
-          Une fois sur la table vous pouvez ajouter une colonne ou une ligne en cliquant sur le bouton "Table".
-          Un panneau s'affiche à droite pour entrer le nom de la colonne ou de la ligne puis cliquez sur "Créer".
+          Une fois sur la table vous pouvez ajouter une colonne ou une ligne en cliquant sur le bouton "Table".(1)
+          Un panneau s'affiche à droite pour entrer le nom de la colonne ou de la ligne puis cliquez sur "Créer".(2)
           <br />
           Vous pouvez aussi créer des liens entre plusieurs tables d’une même base. Par exemple reprendre une liste de prénoms dans une autre table.
-          Pour ce faire cliquez sur l'étoile de la colonne où se trouve votre liste. 
-          Dans l'autre table, créez en une de type "Relation avec une table" ensuite sélectionnez la table correspondante.
-          Vous aurez votre liste de prénom qui s'affichera lorsque vous ajouterez une ligne
+          Pour ce faire cliquez sur l'étoile de la colonne où se trouve votre liste.(3) 
+          Dans l'autre table, créez en une de type "Relation avec une table" (4) ensuite sélectionnez la table correspondante.
+          Vous aurez votre liste de prénom qui s'affichera lorsque vous ajouterez une ligne. 
         </p>
         <div class="row">
-          <div class="col"><img src="stickers.jpg" alt="oui">2</div>
-          <div class="col"><img src="" alt="">1</div>
-          <div class="col"><img src="" alt="">1</div>
-          <div class="col"><img src="" alt="">1</div>
-          <div class="col"><img src="" alt="">1</div>
+          <div class="col tutophoto1">(1)</div>
+          <div class="col tutophoto2">(2)</div>
+          
+        </div>
+        <div class="row">
+          <div class="col-3 tutophoto3">(3)</div>
+          <div class="col tutophoto4">(4)</div>
+          <div class="col tutophoto5">(5)</div>
         </div>
       </div>
       <div class="tutoriel-element">

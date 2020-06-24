@@ -775,6 +775,41 @@ p a {
     font-weight: 400;
 }
 
+.tutophoto1{
+    background-image: url(../img/ajout-colonnes.PNG);
+    background-repeat: no-repeat;  width: auto;
+    height:500px ;
+    border: 2px solid rgb(34, 150, 165);
+}
+.tutophoto2{
+    background-image: url(../img/ajout-colonnes-2.PNG);
+    background-repeat: no-repeat;
+    height: 500px ;
+    border: 2px solid rgb(34, 150, 165);
+}
+.tutophoto3{
+    background-image: url(../img/colonne-etoile.PNG);
+    background-repeat: no-repeat;
+    height: 560px ;
+    border: 2px solid rgb(34, 150, 165);
+}
+.tutophoto4{
+    background-image: url(../img/creation-reference.PNG);
+    background-repeat: no-repeat;
+    height: 560px ;
+    border: 2px solid rgb(34, 150, 165);
+}
+.tutophoto5{
+    background-image: url(../img/liens-clients.PNG);
+    background-repeat: no-repeat;
+    height: 560px ;
+    border: 2px solid rgb(34, 150, 165);
+}
+
+
+
+
+
 /* page table */
 
 .tabs{
@@ -877,4 +912,3 @@ form input{
 .md-table-head-label i {
     font-size: 1rem !important;
 }
-
