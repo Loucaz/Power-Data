@@ -116,7 +116,7 @@ export default {
     deleteTable: function deleteTable() {
       const url = this.$adresse+`/bases/${this.base._id}`;
       fetch(url, { method: 'DELETE' })
-        .then(console.log);
+        .then();
       this.$router.push({ name: 'home' });
     },
   },
