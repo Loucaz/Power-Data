@@ -1,5 +1,5 @@
 <template>
-  <div class="table-container" v-if="!loading">
+  <div class="table-container" v-if="!loading" style="overflow-y: scroll;">
     <div class="table-header">
       <div class="base-informations">
         <div class="base-icon table-blue">

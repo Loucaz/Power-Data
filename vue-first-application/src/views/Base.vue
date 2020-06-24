@@ -7,7 +7,7 @@
         </div>
         <div class="base-description">
           <h2>{{ base.name }}</h2>
-          <p>Créer le 14/01/2020 par <a href="#">Julien Lardet</a></p>
+          <p>Base de données</p>
         </div>
       </div>
       <div class="base-actions">
