@@ -44,14 +44,14 @@
           Vous aurez votre liste de prénom qui s'affichera lorsque vous ajouterez une ligne. 
         </p>
         <div class="row">
-          <div class="col tutophoto1">(1)</div>
-          <div class="col tutophoto2">(2)</div>
+          <div class="col tutophoto1"></div>
+          <div class="col tutophoto2"></div>
           
         </div>
         <div class="row">
-          <div class="col-3 tutophoto3">(3)</div>
-          <div class="col tutophoto4">(4)</div>
-          <div class="col tutophoto5">(5)</div>
+          <div class="col-3 tutophoto3"></div>
+          <div class="col tutophoto4"></div>
+          <div class="col tutophoto5"></div>
         </div>
       </div>
       <div class="tutoriel-element">
